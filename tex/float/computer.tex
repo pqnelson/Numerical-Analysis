@@ -1,0 +1,465 @@
+We can now refine our model of floating-point arithmetic to factor in
+the aspects we simplified:
+\begin{enumerate}
+\item Exponents range from $e_{\text{min}}$ to $e_{\text{max}}$ (finite integers)
+\item Infinities are encoded as numbers (denoted $+\infty$ and $-\infty$)
+\item Invalid operations are encoded as special quantities, denoted
+  ``\NaN'', called ``Not-a-Number''
+\end{enumerate}
+Everything that has been said so far still holds for actual \ieee-754
+floating-point numbers (non-associativity, the fundamental axiom of
+floating-point, rounding schemes, etc.). But the algorithm and proof may
+no longer be correct when underflowing occurs.
+
+Further, the arithmetic operations may be given a more concrete
+implementation, and we have grounds for preferring a radix $\beta=2$.
+
+\subsection{Extended Real Number System*}
+
+We should bear in mind that \ieee-754 floating-point arithmetic strives
+to emulate the \emph{extended reals}
+\begin{equation}
+  \extendedRR = \RR\cup\{-\infty,+\infty\}.
+\end{equation}
+The usual intuition holds with arithmetic operators involving
+infinities, except the following are ``indeterminate forms'' and illegal
+(left undefined):
+\begin{itemize}
+\item $\infty-\infty$
+\item $0\times(\pm\infty)$
+\item $\pm\infty/\infty$ (and $\pm\infty/(-\infty)$).
+\end{itemize}
+Though it is useful in probability and measure theory to define
+$0\times(\pm\infty)=0$.
+
+\begin{axiom}[Addition]
+  For any finite $x\in\RR$, we have
+  $$x+\infty=\infty+x=\infty.$$
+  Further
+  $$\infty+\infty=\infty.$$
+\end{axiom}
+\begin{xca}
+  Prove or find a counter-example: addition is commutative in the
+  extended real-number system.
+\end{xca}
+\begin{axiom}[Subtraction]
+  For any finite $x\in\RR$, we have
+  $$x-\infty=-\infty+x=-\infty.$$
+  Further, we have
+  $$-\infty-\infty=-\infty.$$
+\end{axiom}
+\begin{axiom}[Multiplication]
+  For any positive $x\in\RR$, $x>0$, we have
+  $$x\times(\pm\infty)=(\pm\infty)\times x = \pm\infty$$
+  and
+  $$(-x)\times(\pm\infty)=(\pm\infty)\times(-x)=\mp\infty.$$
+  This permits us to treat $-\infty$ as $-1\times(+\infty)$.
+\end{axiom}
+\begin{xca}
+  Prove or find a counter-example: multiplication is commutative in the
+  extended real-number system.
+\end{xca}
+\begin{axiom}[Division]
+  If $x\in\RR$, then
+  $$\frac{x}{\infty}=\frac{x}{-\infty}=0$$.
+\end{axiom}
+
+\begin{rmk}[Extended Reals with Dedekind Cuts]
+For real analysts (and lovers of set theoretic constructs), we could
+define $\extendedRR$ using Dedekind cuts. Recall, a Dedekind cut is a
+pair $(L,U)$ of subsets $L\subset\QQ$ and $U\subset\QQ$ such that
+\begin{itemize}
+\item $L\neq\emptyset$ and $U\neq\emptyset$
+\item if $a\in L$ and $b\in U$, then $a<b$
+\item if $a\in L$, then there is an $\ell\in L$ such that $a < \ell$
+\item if $b\in U$, then there is some $u\in U$ such that $u < b$
+\item if $a\in L$ and $b\in\QQ$ such that $b < a$, then $b\in L$
+\item if $b\in U$ and $u\in\QQ$ such that $b < u$, then $u\in U$
+\end{itemize}
+Then a real number is defined as a cut $x := (L,U)$ such that every
+$\ell\in L$ satisfies $\ell < x$, and every $u\in U$ satisfies $x < u$.
+
+We can construct the extended reals $\extendedRR$ using ``extended
+Dedekind cuts'', permitting (1) $L=\emptyset$ and $U=\QQ$, and (2)
+$L=\QQ$ and $U=\emptyset$. These model $-\infty$ and $+\infty$,
+respectively. All other conditions on Dedekind cuts (besides
+non-emptiness) are imposed on extended Dedekind cuts, and we get a
+rigorous construction of the extended real number system.
+\end{rmk}
+
+\begin{xca}
+  Prove or find a counter-example: $\extendedRR$ is an ordered field, an
+  ordered ring, or a group (using either multiplication or addition, whichever).
+\end{xca}
+\begin{xca}
+  If we consider $\extendedRR^{*}=\extendedRR\cup\{u\}$ where $u$ is the
+  special ``undefined'' constant, where we now have $\infty-\infty=u$,
+  $0\times(\pm\infty)=u$, $(\pm\infty)/\infty=(\pm\infty)/(-\infty)=u$,
+  and for any $a\in\extendedRR^{*}$ and any binary operation
+  $\star\in\{+,-,\times,/\}$ we have $u\star a = a\star u = u$;
+  then does $\extendedRR^{*}$ form a field? A ring? A group?
+\end{xca}
+\begin{xca}
+  When working in $\extendedRR$, what should $\tanh(\pm\infty)$ be?
+  [Hint: consider what $\exp(\pm\infty)$ should be, then use the
+    definition of hyperbolic tangent.]
+\end{xca}
+\begin{xca}
+  In the extended reals, what should $\arctan(\pm\infty)$ be?
+\end{xca}
+
+\subsection{Defining Numbers}
+\begin{defn}
+  Let $\beta>1$ be a fixed integer, $t>0$ an integer,
+  $e_{\text{min}}<-t<0<t<e_{\text{max}}$ be
+  fixed integers. Then we define the set of \define{Floating-Point Numbers}
+  in radix $\beta$ to be the set
+  \begin{equation}
+    \mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}} = \{(s,m,e)\in\ZZ^{3}|
+    s\in\{0,1\}, 0\leq m<\beta^{t}, e_{\text{min}}\leq e\leq e_{\text{max}}\}.
+  \end{equation}
+  We call $m$ the \define{Mantissa} (or \emph{Significand}), $s$ the
+  \define{Sign}, and $e$ the \define{Exponent}.
+\end{defn}
+\begin{rmk}
+  The \ieee-754 standard specifies the following bounds for $\beta=2$:
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+      Name   & $e_{\text{min}}$ & $e_{\text{max}}$ & $t$ \\\hline
+      Single & $-126$         & $127$          & $24$\\
+      Double & $-1022$        & $1023$         & $53$\\
+      Quad   & $-16382$       & $16383$        & $113$\\
+      Octuple & $-262142$     & $262143$       & $237$
+    \end{tabular}
+  \end{center}
+  Most contemporary hardware (as of 2021) supports single and
+  double-precision floating-point, and have begun to support
+  quad-precision arithmetic (e.g., Intel i5-4440S apparently supports
+  it, or more precisely: \textsc{gfortran} $9.3.0$ supports
+  it). \emph{Double-precision should be the default} (unless speed is important
+  and precision is less important, in which single-precision may be used).
+\end{rmk}
+\begin{defn}
+  We call a number $r\in\RR$ \define{Representable} in
+  $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$ if we can write
+  \begin{equation}
+    r = (-1)^{s}\frac{m}{\beta^{t}}\beta^{e}
+  \end{equation}
+  for some $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
+\end{defn}
+\begin{defn}
+  Floating-point numbers with $\beta=2$ and $e>e_{\text{min}}$, we may
+  assume the mantissa $m$ has implicitly a leading-bit of 1,
+  called the \define{Implicit Leading Bit}.
+\end{defn}
+\begin{rmk}
+  \ieee-754 specifies $\beta=2$ or $\beta=10$. Numerous studies~\cite{DBLP:journals/corr/abs-1004-3374,10.1145/363235.363240,5009112,10.1145/362003.362013,4039164}
+have found $\beta=2$ with an implicit leading bit has better worst-case
+and average-case accuracy than other choices of $\beta$. Although, there
+is a theoretical case to be made for $\beta=\E\approx2.71828\dots$ as a
+choice of radix, its implementation seems impossible.
+\end{rmk}
+\begin{defn}\label{def:computer-float:normal-subnormal-denormal}
+We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+\begin{itemize}
+\item\define{Normal} if $\beta^{t-1}\leq m<\beta^{t}$ or $m=e=0$;
+\item\define{Subnormal} if $e=e_{\text{min}}$ and $0<m<\beta^{t-1}$;
+\item All others are \define{Denormalized}.
+\end{itemize}
+\end{defn}
+\begin{thm}
+  Every representable number in $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+  is either normal or subnormal, but not both.
+\end{thm}
+\begin{proof}
+  Let  $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$ be
+  arbitrary. By
+  definition~\ref{def:computer-float:normal-subnormal-denormal},
+  it's either normal, subnormal, or denormal. We need to consider the
+  denormal situation.
+
+  \textsc{Case 1:} If $m=0$, then $(0,0,e)=0$ which is normal.
+
+  \textsc{Case 2:} If $m\neq0$, then $m<\beta^{t-1}$, so it's ``leading
+  digit'' is 0. If we write the base-$\beta$ expansion
+  \begin{equation}
+    m=\sum^{t-1}_{i=0}d_{i}\beta^{i}
+  \end{equation}
+  and suppose $d_{t-1}=\dots=d_{t-k}=0$ but $d_{t-(k+1)}\neq0$ (for some
+  $k\geq1$), then $(s,m\beta^{\ell},e-\ell)$ where $\ell=\min\{k,e-e_{\text{min}}\}$
+  is either normal (when $\ell=k$) or subnormal (when $\ell<k$).
+\end{proof}
+\begin{defn}
+Let $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+have $0<m<\beta^{t-1}$. Then we define the transformation
+\begin{equation}
+  (s,m,e)\to(s,m\beta^{\ell},e-\ell)
+\end{equation}
+where $\ell$ is the number of leading zeroes of the mantissa, the
+transformation is defined as \define{Normalization}.
+\end{defn}
+\begin{rmk}
+In other words, any denormalized floating-point number can be normalized
+into a subnormal or normal.
+\end{rmk}
+\begin{thm}
+The normal and subnormal floating-point representations are unique.
+\end{thm}
+\begin{defn}
+  The largest finite floating-point number in $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+  is denoted
+  \begin{equation}
+    \Omega := (\beta - \beta^{1-t})\beta^{e_{\text{max}}}.
+  \end{equation}
+  The smallest positive subnormal number is denoted
+  \begin{equation}
+    \alpha := \beta^{e_{\text{min}}-t+1}. 
+  \end{equation}
+\end{defn}
+
+\subsubsection{Representing Infinities}
+
+In $\beta=2$, an infinity is represented by $(s,0,e_{\text{max}})=(-1)^{s}\infty$.
+Floating-point infinities enjoy all the properties we may expect, e.g.,
+$\infty + x = x + \infty = \infty$ for any finite floating-point $x$.
+
+\begin{axiom}
+  We have
+  \begin{equation*}
+    (-\infty)\otimes(-\infty) = \infty\otimes\infty = +\infty.
+  \end{equation*}
+\end{axiom}
+\begin{axiom}
+  We have $\infty\ominus(-\infty)=\infty\oplus\infty=\infty$.
+\end{axiom}
+\begin{axiom}
+  We have $(-\infty)\oplus(-\infty)=(-\infty)\ominus(+\infty)=-\infty$.
+\end{axiom}
+\begin{axiom}
+  We have $\sqrt{+\infty}=+\infty$.
+\end{axiom}
+\begin{axiom}
+  If $x>0$ is a finite floating-point number, then
+  \begin{equation*}
+    \frac{\pm x}{0} = \pm\infty.
+  \end{equation*}
+\end{axiom}
+\begin{axiom}
+  If $x$ is a finite floating-point number, then
+  \begin{equation*}
+    \frac{x}{\pm\infty}=0.
+  \end{equation*}
+\end{axiom}
+\begin{axiom}
+ In floating-point arithmetic, we have $\log(0)=-\infty$ and $\log(+\infty)=+\infty$.
+\end{axiom}
+
+\subsubsection{Encoding NaN}
+
+The \ieee-754 standard attempts to emulate \emph{real} numbers. There
+are times when we could produce an indeterminate quantity (e.g., zero divided
+by zero) or a complex quantity (e.g., $\sqrt{-1}$). The standard models
+these quantities as \emph{not a number}, i.e., a special quantity
+denoted \NaN.
+
+We have two sorts of \NaN\ numbers: signaling and quiet. A signalling
+\NaN\ raises an exception interrupting computation, a quiet one does
+not. The \ieee-754 standard specifies \NaN\ is encoded as $(s,m,e_{\text{max}})$
+for $m>0$ and $s\in\{0,1\}$ arbitrary, but does not specify how to
+distinguish a quiet from a signaling \NaN. The 2008 revision suggests
+\begin{enumerate}
+\item For $\beta=2$, the most significant bit of the mantissa should be an
+  ``\verb|is_quiet|'' flag (which is 1 for quiet \NaN\ and 0 for signaling)
+\item For $\beta=10$, the top five bits of the combination field after
+  the sign bit is set to 1. The sixth bit of the field is the ``\verb|is_quiet|''
+  flag.
+\end{enumerate}
+We must stress that different processors have different conventions. For
+example, Intel has the second most significant bit of the mantissa set
+to 1 for ``quiet \NaN\ Floating-Point Indefinite''.
+
+\begin{defn}
+  A \define{Not-a-Number} (or ``\emph{NaN}'') is a floating-point number
+  $(s,m,e)$ such that $e=e_{\text{max}}$ and $m>0$.
+\end{defn}
+
+\begin{defn}
+  Let $(s,m,e_{\text{max}})$ be an \NaN. Then we call $m$ the \define{Payload}.
+\end{defn}
+
+Now we will list when \NaN\ will result from a computation. This is not
+intended to be exhaustive!
+
+\begin{axiom}
+  The quotient of zero with zero, or infinity with infinity, is \NaN:
+  \begin{equation}
+    \frac{\pm0}{0} = \frac{\pm \infty}{\infty} = \NaN.
+  \end{equation}
+\end{axiom}
+
+\begin{axiom}
+  Multiplying infinity by zero produces a \NaN:
+  \begin{equation}
+    (\pm 0)\otimes(\infty)=(\pm0)\otimes(-\infty)=\NaN.
+  \end{equation}
+\end{axiom}
+
+\begin{axiom}
+  Adding infinities of different signs (or subtracting infinities of the
+  same sign) produces \NaN:
+  \begin{subequations}
+    \begin{equation}
+      \infty\oplus(-\infty)=\infty\ominus\infty=\NaN
+    \end{equation}
+    \begin{equation}
+      (-\infty)\oplus\infty = \NaN.
+    \end{equation}
+  \end{subequations}
+\end{axiom}
+
+\begin{axiom}
+If $x$ and $y$ are floating-point numbers and at least one of them is a \NaN,
+then $x\oplus y$, $x\ominus y$, $x\otimes y$, $x\oslash y$ all produce \NaN.
+\end{axiom}
+
+\begin{axiom}
+  In any computation where a complex number should be produced (e.g.,
+  $\sqrt{-4}$ and $\sqrt{-\infty}$), a \NaN\ shall be produced.
+\end{axiom}
+
+\begin{defn}
+  We denote the \define{Quiet NaN} as \qNaN.
+\end{defn}
+\begin{defn}
+  We denote the \define{Signaling NaN} as \sNaN.
+\end{defn}
+\begin{defn}
+  \ieee-754 defines the predicates for any floating-point number $x$,
+  \begin{itemize}
+  \item $\isNaN(x)$ return ``true'' if and only if $x=\NaN$. 
+  \item $\isSignaling(x)$ return ``true'' if and only if $x=\sNaN$.
+  \end{itemize}
+\end{defn}
+\begin{rmk}
+  \FORTRAN/-1998 has the \verb|ieee_arithmetic| module\footnote{See,
+  e.g., \url{http://fortranwiki.org/fortran/show/ieee_arithmetic}}
+  contain \verb|ieee_is_nan(x)| for the $\isNaN(x)$
+  predicate, and \CEE/ has \verb|isnan(arg)| defined in \verb|<math.h>|.
+\end{rmk}
+
+% chapter 3 of
+% Floating-Point Arithmetic and Program Correctness Proofs
+% https://ecommons.cornell.edu/handle/1813/6276
+% discusses Hoare logic of floating-point
+
+\subsection{Arithmetic Operations}
+
+We will summarize the rules and heuristics for floating-point arithmetic
+operators. The exact implementation details depend on the choice of
+hardware.
+
+\subsubsection{Normalization}
+
+We will routinely have a number of steps which should be abstracted away
+to a ``normalization'' algorithm.
+
+\algbegin Algorithm N (Normalization of Floating-Point canddiate). Given
+a rounding-mode $R$ on floating-point numbers, and
+some triple $(s_{x}, m_{x}, e_{x})$ where $m_{x}\in\NN_{0}$ and
+$e_{x}\in\ZZ$, try to produce a normalized version $(s_{r}, m_{r}, e_{r})$
+such that $\beta^{t-1}\leq m_{r}<\beta^{t}$ and there is an $\ell\in\ZZ$
+such that $e_{r}=e_{x}-\ell$ and $e_{\text{min}}\leq e_{r}\leq e_{\text{max}}$
+and $m_{r} = \beta^{\ell}m_{x}$. If $e_{x}> e_{\text{max}}$, then the
+result is $(-1)^{s_{r}}\infty$. If $e_{x} < e_{\text{min}}$, then a
+signed zero is returned.
+
+\algstep N0. [{\it Initialize\/}] Set $\ell\gets0$. Go to step N1.
+
+\algstep N1. If $\beta^{t-1}\leq m_{r}<\beta^{t}$, then go to step N4;
+otherwise go to step N2.
+
+\algstep N2. If $m_{r} < \beta^{t-1}$, then determine the number $\ell$
+of leading zeros. [We should have $\ell>0$.] Go to step N4.
+
+\algstep N3. If $m_{r} \geq \beta^{t}$, then shift to the right by
+$\ell$ places where $\ell = -\max\{k\in\NN | m_{r}\beta^{-k}<\beta^{t}\}$.
+[We should have $\ell < 0$.]
+Go to step N4.
+
+\algstep N4. Set $(s_{r},m_{r},e_{r})\gets R(s_{r},\beta^{\ell}m_{r},e_{r}+\ell)$.
+Go to step N5.
+
+\algstep N5. [{\it Handle overflow\/}] If $e_{r}>e_{\text{max}}$, then
+return $(-1)^{s_{r}}\infty$ and terminate the algorithm. Otherwise go to
+step N6.
+
+\algstep N6. [{\it Handle underflow\/}] If $e_{r}<e_{\text{min}}$, then
+return a signed zero $(-1)^{s_{r}}0$ and terminate the
+algorithm. Otherwise, return $(s_{r},m_{r},e_{r})$ and terminate the algorithm.\quad\slug
+
+\subsubsection{Addition}
+
+The algorithm for adding [finite] floating-point numbers $x$ and $y$ is
+done in the following steps:
+
+\algbegin Algorithm A (Floating-Point Addition). Given two floating
+point numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y},m_{y},e_{y})$ ---
+both finite numbers --- this
+will compute their sum $x\oplus y = (s_{r}, m_{r}, e_{r})$ as a
+floating-point number.
+
+\algstep A0.
+If $x = 0$, return $y$ and terminate the algorithm.
+If $y=0$, then return x and terminate the algorithm.
+If $x$ is $\NaN$ or if $y$ is $\NaN$, then return a quiet $\NaN$
+and terminate the algorithm.
+If $y > x$, then swap $t\gets x$, $x\gets y$, and $y\gets t$.
+Now, unless terminated, go to step A1. [Ensures $x\geq y$]
+
+\algstep A1. [{\it Initialize\/}]
+Set $s_{r}\gets s_{x}$ the sign of the
+result to be the sign of the larger value, and assign $s_{z} \gets \XOR(s_{x},s_{y})$
+[so we need to compute $(-1)^{s_{x}}(|m_{x}| + (-1)^{s_{z}}|m_{y}|\beta^{-(e_{x}-e_{y})})$]
+Set $e_{r}\gets e_{x}$. Continue to step A2.
+
+\algstep A2. [{\it Significand alignment\/}] Compute $m_{t}\gets m_{y}\beta^{-(e_{x}-e_{y})}$
+shifting the mantissa $m_{y}$ to the right by $e_{x}-e_{y}$ digit
+positions. Continue to step A3.
+
+\algstep A3. Compute the result significand $m_{r}\gets m_{x} + (-1)^{s_{z}}m_{t}$
+where $s_{z}$ depends on the sign of $s_{y}$ and $s_{x}$. If $m_{r}$
+is negative (so $s_{z}=1$ and $x>0>-x>y$), it is negated and $s_{r}\gets 1$.
+[We have the tenative answer $(s_{r}, m_{r}, e_{r})$] Continue to step A4.
+
+\algstep A4. [{\it Normalize\/}] We call algorithm N on $(s_{r}, m_{r}, e_{r})$
+to normalize the sum, and whatever its results are, we return that and
+terminate the algorithm.\quad\slug
+
+\begin{rmk}[Subtraction]
+  Floating-point subtraction $x\ominus y$ is just $x\oplus y'$ where
+  $y' = (\XOR(1,s_{y}),m_{y},e_{y})$ is the negated floating-point
+  number of $y$.
+\end{rmk}
+
+\subsubsection{Multiplication}
+
+\algbegin Algorithm M (Multiplication). Given a couple floating-point
+numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
+their product.
+
+\algstep M1. [{\it Short-circuit NaN\/}] If either $x$ or $y$ is an
+\NaN, then return \qNaN\ and terminate. Otherwise continue to step M2.
+
+\algstep M2. [{\it Handle infinities\/}] If either $x$ is infinite and
+$y=0$ \emph{or} $x=0$ and $y$ is infinite, then return \qNaN\ and
+terminate the algorithm.
+If $x=(-1)^{s_{x}}\infty$ or $y=(-1)^{s_{y}}\infty$, then set
+$s_{r}\gets\XOR(s_{x},s_{y})$, return $(-1)^{s_{r}}\infty$, and
+terminate the algorithm.
+Otherwise continue to step M3.
+
+\algstep M3. [{\it Short-circuit zeroes\/}] If $x=0$ or $y=0$, then
+return 0 and terminate the algorithm. Otherwise, set
+$(s_{r}, m_{r},e_{r})\gets (\XOR(s_{x},s_{y}), m_{x}m_{y}, e_{x}+e_{y})$,
+then invoke algorithm N to normalize the product. Return the normalized
+product and terminate the algorithm.\quad\slug

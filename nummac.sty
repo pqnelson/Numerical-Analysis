@@ -1,0 +1,141 @@
+\ProvidesPackage{nummac}[2021/06/05 Numerical Macros Package]
+\RequirePackage{datetime2}
+\RequirePackage{titlesec}
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+%\RequirePackage{epigraph}
+\RequirePackage{marginnote}
+%\RequirePackage{siunitx}
+\RequirePackage{noweb}
+\RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
+\RequirePackage{amssymb,amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{bm}
+\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+\RequirePackage[hidelinks]{hyperref}
+
+\setcounter{secnumdepth}{5}
+
+\def\compiledTimestamp{Compiled:~\DTMnow}
+
+\noweboptions{english}
+
+\def\marginpar#1{\marginnote{\footnotesize\em #1}}
+
+% based on Knuth's taocpmac.tex
+
+\titleformat{\section}
+  {\large\sffamily\bfseries}
+  {\thesection}
+  {1em}
+  {}
+
+\titleformat{\subsection}
+  {\large\sffamily\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+
+\titleformat{\subsubsection}
+  {\large\sffamily\bfseries}
+  {\thesubsubsection}
+  {1em}
+  {}  
+% theorems
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{axiom}[thm]{Axiom}
+\newtheorem*{fundamentalAxiomFloat}{Fundamental Axiom of Floating Point}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
+\newtheorem{xca}[thm]{Exercise}
+\newtheorem{puzzle}[thm]{Puzzle}
+
+\theoremstyle{remark}
+\newtheorem{rmk}{Remark}[thm]
+\newtheorem{note}[rmk]{Note}
+\newtheorem{notation}[rmk]{Notation}
+
+% adjust whitespace between code chunks
+% https://www.cs.tufts.edu/~nr/noweb/FAQ.html
+\def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
+\let\nwdocspar=\smallbreak
+
+
+%% % avoid making the page numbers reset in mainmatter
+%% % https://tex.stackexchange.com/a/61473/14751
+%% \def\pagenumbering#1{%
+%%   %\global\c@page \@ne
+%%   \gdef\thepage{\csname @#1\endcsname
+%%    \c@page}}
+
+%%% Knuth style algorithms
+\newcommand{\slug}{$\qedsymbol$}%\hbox{\kern1.5pt\vrule width2.5pt height6pt depth1.5pt\kern1.5pt}}
+\def\xskip{\hskip 7pt plus 3pt minus 4pt}
+\newdimen\algindent
+\newif\ifitempar \itempartrue % normally true unless briefly set false
+\def\algindentset#1{\setbox0\hbox{{\bf #1.\kern.25em}}\algindent=\wd0\relax}
+\def\algbegin #1 #2{\algindentset{#21}\alg #1 #2} % when steps all have 1 digit
+\def\aalgbegin #1 #2{\algindentset{#211}\alg #1 #2} % when 10 or more steps
+\def\alg#1(#2). {\medbreak % Usage: \algbegin Algorithm A (algname). This...
+  \noindent{\bf#1}({\it#2\/}).\xskip\ignorespaces}
+\def\algstep#1.{\ifitempar\smallskip\noindent\else\itempartrue
+  \hskip-\parindent\fi
+  \hbox to\algindent{\bf\hfil #1.\kern.25em}%
+  \hangindent=\algindent\hangafter=1\ignorespaces}
+
+
+
+%%% Notation and logos
+% programming languages
+\def\CEE/{\textsf{C}}
+\def\FORTRAN/{\textsc{Fortran}}
+
+% notation
+\let\oldvec\vec
+\let\vec\bm
+\def\D{\mathrm{d}} % for ordinary derivatives, differentials, etc.
+\def\E{\mathrm{e}} % \E \approx 2.7182...
+\def\I{\mathrm{i}} % \I^2 = -1
+\def\materialD{\mathrm{D}}
+\def\NN{\mathbb{N}}
+\def\QQ{\mathbb{Q}}
+\def\RR{\mathbb{R}}
+\def\extendedRR{\overline{\RR}}
+\def\ZZ{\mathbb{Z}}
+\def\FF{\mathbf{F}}
+\def\ieee{\textsc{ieee}}
+\DeclareMathOperator{\fl}{\mathtt{fl}}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\RN}{RN}
+\DeclareMathOperator{\RZ}{RZ}
+\DeclareMathOperator{\XOR}{XOR}
+\DeclareMathOperator{\isNaN}{isNaN}
+\DeclareMathOperator{\isSignaling}{isSignaling}
+\newcommand\NaN{\mbox{\textup{\texttt{NaN}}}}
+\newcommand\qNaN{\mbox{\textup{\texttt{qNaN}}}}
+\newcommand\sNaN{\mbox{\textup{\texttt{sNaN}}}}
+
+\newcommand\grad{\vec{\nabla}}
+\newcommand\curl{\vec{\nabla}\times}
+
+\newcommand\into{\hookrightarrow}
+\newcommand\onto{\twoheadrightarrow}
+
+\newcommand\roundError{\varepsilon}
+
+
+\def\@end@code@rule{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}}
+\renewcommand\nwendcode{\endtrivlist\endgroup}
+\let\nwdocspar=\smallbreak
+
+
+\def\define#1{\textbf{``#1''}}
+
+\endinput
+
