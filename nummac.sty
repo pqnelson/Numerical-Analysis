@@ -48,6 +48,7 @@
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{lemma}[thm]{Lemma}
 \newtheorem{axiom}[thm]{Axiom}
+\newtheorem{heuristic}[thm]{Heuristic}
 \newtheorem*{fundamentalAxiomFloat}{Fundamental Axiom of Floating Point}
 
 \theoremstyle{definition}
@@ -61,18 +62,38 @@
 \newtheorem{note}[rmk]{Note}
 \newtheorem{notation}[rmk]{Notation}
 
+% Bourbaki's dangerous bend environment
+\RequirePackage{manfnt}
+
+
+% Danger, Will Robinson!
+\newenvironment{danger}{\medbreak\noindent\hangindent=2pc\hangafter=-2%
+  \clubpenalty=10000%
+  \hbox to0pt{\hskip-\hangindent\dbend\hfill}\small\ignorespaces}%
+  {\medbreak\par}
+
+% Danger! Danger!
+\newenvironment{ddanger}{\medbreak\noindent\hangindent=3pc\hangafter=-2%
+  \clubpenalty=10000%
+  \hbox to0pt{\hskip-\hangindent\dbend\kern2pt\dbend\hfill}\small\ignorespaces}%
+  {\medbreak\par}
+
 % adjust whitespace between code chunks
 % https://www.cs.tufts.edu/~nr/noweb/FAQ.html
 \def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
 \let\nwdocspar=\smallbreak
 
+\def\arXiv{\@ifnextchar[{\@arXivWith}{\@arXivWithout}}
+\def\@arXivWith[#1]#2{\texttt{\href{http://arxiv.org/abs/#2}{arXiv:#2} [#1]}}
+\def\@arXivWithout#1{\texttt{\href{http://arxiv.org/abs/#1}{arXiv:#1}}}
+% \def\doi#1{\texttt{\href{http://dx.doi.org/#1}{doi:#1}}}
 
-%% % avoid making the page numbers reset in mainmatter
-%% % https://tex.stackexchange.com/a/61473/14751
-%% \def\pagenumbering#1{%
-%%   %\global\c@page \@ne
-%%   \gdef\thepage{\csname @#1\endcsname
-%%    \c@page}}
+% avoid making the page numbers reset in mainmatter
+% https://tex.stackexchange.com/a/61473/14751
+\def\pagenumbering#1{%
+  %\global\c@page \@ne
+  \gdef\thepage{\csname @#1\endcsname
+   \c@page}}
 
 %%% Knuth style algorithms
 \newcommand{\slug}{$\qedsymbol$}%\hbox{\kern1.5pt\vrule width2.5pt height6pt depth1.5pt\kern1.5pt}}
@@ -136,6 +157,11 @@
 
 
 \def\define#1{\textbf{``#1''}}
-
+\def\bigO{\mathcal{O}}
+\def\machEps{\varepsilon_{\text{mach}}}
+\def\flLt{\prec}
+\def\flGt{\succ}
+\def\flApprox{\sim}
+\def\flEq{\approx}
 \endinput
 

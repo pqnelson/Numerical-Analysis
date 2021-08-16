@@ -121,6 +121,12 @@ rigorous construction of the extended real number system.
   We call $m$ the \define{Mantissa} (or \emph{Significand}), $s$ the
   \define{Sign}, and $e$ the \define{Exponent}.
 \end{defn}
+\begin{ddanger}
+  In practice, it's not uncommon to interpret the mantissa $m$ as
+  $f=m/\beta^{t}$ a fraction between $1/\beta\leq f<1$. The \ieee-754
+  standard treats floating-point numbers in this manner, as does
+  Knuth~\cite{taocp2}.
+\end{ddanger}
 \begin{rmk}
   The \ieee-754 standard specifies the following bounds for $\beta=2$:
   \begin{center}
@@ -358,6 +364,21 @@ We will summarize the rules and heuristics for floating-point arithmetic
 operators. The exact implementation details depend on the choice of
 hardware.
 
+\begin{danger}
+  Although we call the following sketches ``algorithms'', they are not
+  sufficient for hardware implementers. We suppose there is a sensible
+  way to add, subtract, multiply, and divide the mantissas. The
+  algorithms produced can easily be transformed into a
+  flow-chart. Assertions and comments are placed in [square brackets].
+\end{danger}
+
+\begin{notation}
+  We write $x\gets v$ to indicate we are assigning the value $v$ to the
+  variable $x$. But for assigning multiple values to multiple variables,
+  we will write $(x_{1}, x_{2}, \dots, x_{n})\gets(v_{1},v_{2},\dots,v_{n})$
+  instead of $x_{1}\gets v_{1}$, $x_{2}\gets v_{2}$, \dots, $x_{n}\gets v_{n}$.
+\end{notation}
+
 \subsubsection{Normalization}
 
 We will routinely have a number of steps which should be abstracted away
@@ -463,3 +484,290 @@ return 0 and terminate the algorithm. Otherwise, set
 $(s_{r}, m_{r},e_{r})\gets (\XOR(s_{x},s_{y}), m_{x}m_{y}, e_{x}+e_{y})$,
 then invoke algorithm N to normalize the product. Return the normalized
 product and terminate the algorithm.\quad\slug
+
+\subsubsection{Division}
+
+\algbegin Algorithm D (Multiplication). Given a couple floating-point
+numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
+their quotient $x\oslash y$.
+
+\algstep D1. [{\it Short-circuit NaN\/}] If either $x$ or $y$ is an
+\NaN, then return \qNaN\ and terminate. If both $x$ and $y$ are zero,
+produce a \qNaN\ and terminate. If $\sgn(x)\neq\sgn(y)$ and both are
+infinite, return a \qNaN\ and terminate. Otherwise continue to step D2.
+
+\algstep D2. [{\it Short-circuit infinity\/}]
+If $\sgn(x)=\sgn(y)$ and both are infinite, return $\sgn(x)\infty$ and terminate.
+If $x$ is finite and $y$ is infinite, return 0 and terminate.
+If $x$ is infinite and $y\neq0$ is finite, return $\sgn(y)x$ and terminate.
+If $x$ is finite and $y=0$, return $\sgn(x)\infty$ and terminate.
+Otherwise, continue to step D3.
+
+\algstep D3. Compute $(s_{r},m_{r} + \delta m_{r},e_{r})\gets (\XOR(s_{x},s_{y}),m_{x}/m_{y},e_{x}-e_{y})$
+where $0<\delta m_{r}<1$ is a ``guard digit'' used in the rounding
+process. Continue to step D4.
+
+\algstep D4. [{\it Normalize\/}] Call algorithm N on
+$(s_{r}, m_{r}+\delta m_{r}, e_{r})$ and return its results, terminating
+the algorithm.\quad\slug
+
+\begin{xca}[W.M.~Kahan~\cite{kahan1973}; Knuth~\cite{taocp2}]
+  Prove that $1\oslash(1\oslash (1\oslash u))=1\oslash u$ for all
+  nonzero floating-point numbers $u\neq 0$.
+\end{xca}
+
+\begin{rmk}
+  Modern computers can perform two $n$-bit integer addition with only
+  $\bigO(\log(n))$ circuit depth, the same complexity as two $n$-bit
+  integer multiplication. This \emph{does not} translate to the same
+  number of CPU cycles! But they are of the same \emph{order of magnitude}.
+  Empirically, it seems that the CPU cost for adding two 64-bit
+  double-precision floating point numbers is half the cost of multiplying two
+  double-precision floating point numbers.
+
+  There have been a number of improvements in performance, e.g., with
+  SSE scalar operations.
+\end{rmk}
+\subsubsection{Costs of Floating-Point Operations}
+\begin{heuristic}
+  The CPU cycles for each floating-point operation should be estimated
+  roughly as follows:
+  \begin{center}
+  \begin{tabular}{c|c}
+    Operation & Run-time\\\hline
+    Addition & $A$ \\
+    Subtraction & $A$ \\
+    Multiplication & $2A$ \\
+    Division & $16A$
+  \end{tabular}
+  \end{center}
+  These heuristics are useful when examining and comparing the
+  performance of alternative numerical schemes.
+\end{heuristic}
+\begin{ex}
+  Empirically, the latency seems to be bounded by the following CPU
+  cycles for Intel/AMD x86 architectures:
+  \begin{center}
+  \begin{tabular}{c|c}
+    Operation & Run-time [CPU Cycles]\\\hline
+    Addition & $3 \sqrt[4]{2}\approx 3.57$ \\
+    Subtraction &  $3\sqrt[4]{2}$ \\
+    Multiplication & $\sqrt[4]{125\cdot 6}\approx5.22$ \\
+    Division & $21.54$--$34.93$
+  \end{tabular}
+  \end{center}
+  We have simply taken the geometric mean of results reported in Wittman
+  and friends~\cite{DBLP:journals/corr/WittmannZHW15}. The estimates
+  from the first table are slightly more pessimistic about division and
+  multiplication.
+
+  These heuristics should be taken with a grain of salt, since
+  floating-point units tend to parallelize computations and the use of
+  SSE scalar operations speeds up calculations.
+\end{ex}
+\begin{ex}
+  Consider a hypothetical CPU which takes 4 cycles to perform
+  addition and 1 CPU cycle to load a memory cell into one of its
+  registers. What modern CPU pipelines do is run several computations in
+  parallel. For example, the CPU pipeline would evaluate $a+b+c+d+e+f+g$ as:
+  \begin{center}
+    \begin{tabular}{c|c}
+      Cycle 1  & load $a$ into FPU\\\hline
+      Cycle 2  & load $b$ into FPU\\\hline
+      Cycle 3  & compute $a+b$ (cycle $1/4$)\\\hline
+      Cycle 4  & load $c$ into FPU,\\
+               & continue $a+b$ ($2/4$)\\\hline
+      Cycle 5  & load $d$ into FPU,\\
+               & continue $a+b$ ($3/4$)\\\hline
+      Cycle 6  & compute $c+d$ (1/4),\\
+               & finish $a+b$ ($4/4$) and store in top of stack as $s$\\\hline
+      Cycle 7  & load $e$ into FPU,\\
+               & continue $c+d$ ($2/4$)\\\hline
+      Cycle 8  & compute $e+s$ ($1/4$)\\
+               & continue $c+d$ ($3/4$)\\\hline
+      Cycle 9  & load $g$ into FPU,\\
+               & continue $e+s$ ($2/4$),\\
+               & finish $c+d$ ($4/4$) and store it in top of stack as $t$\\\hline
+      Cycle 10 & start $g+t$ ($1/4$)\\
+               & Continue $e+s$ ($3/4$)\\\hline
+      Cycle 11 & Continue $g+t$ ($2/4$)\\
+               & Finish $e+s$ ($4/4$) and store in top of stack as $u$\\\hline
+      Cycle 12 & Continue $g+t$ ($3/4$)\\\hline
+      Cycle 13 & Finish $g+t$ ($4/4$) and store it in top of stack as $v$\\\hline
+      Cycle 14 & Start $u+v$ ($1/4$)
+    \end{tabular}
+  \end{center}
+  The CPU will finish after 3 more cycles, giving us a grand total of 17
+  cycles. But if we just na\"{\i}vely count the 6 addition operations
+  and 7 memory loads, then we'd get $6\times4 + 7=31$ CPU cycles.
+\end{ex}
+
+\subsubsection{Identities of Floating-Point Arithmetic}
+
+From the algorithms we have thus described, we have a number of useful
+identities. This discussion stems from reading Knuth~\cite{taocp2}.
+
+\begin{thm}
+  We have the following identities for any floating-point numbers
+  $u,v\in\mathbb{F}$:
+  \begin{subequations}
+    \begin{gather}
+      u\oplus v = v\oplus u;\\
+      u\ominus v = u \oplus -v;\\
+      -(u\oplus v) = -u \oplus -v;\\
+      u\oplus v=0\quad\mbox{if and only if}\quad v=-u;\\
+      u\oplus 0=u.
+    \end{gather}
+    If further $u\oplus v=u+v$ is exact, then
+    \begin{equation}
+      (u\oplus v)\ominus v=u.
+    \end{equation}
+  \end{subequations}
+\end{thm}
+\begin{thm}
+  If $u\leq v$ are arbitrary floating-point numbers, then for any
+  floating-point number $w$ we have
+  \begin{equation}
+    u\oplus w\leq v\oplus w.
+  \end{equation}
+\end{thm}
+
+\begin{thm}
+  For any floats $u$ and $v$, we have
+  \begin{subequations}
+    \begin{gather}
+      u\otimes v = v\otimes u,\\
+      (-u)\otimes v = u\otimes(-v) =  -(u\otimes v)\\
+      1\otimes v = v\otimes 1 = v\\
+      u\otimes v = 0\quad\mbox{if and only if}\quad u=0\mbox{ or }v=0.
+    \end{gather}
+  \end{subequations}
+\end{thm}
+\begin{thm}[Monotony law for multiplication]
+  If $u\leq v$ are floating-point numbers and $w>0$ is a floating-point
+  number, then $u\otimes w\leq v\otimes w$.
+\end{thm}
+\begin{thm}
+  For any floating-point numbers $u$ and $v$, we have
+  \begin{subequations}
+    \begin{gather}
+      (-u)\oslash v = u\oslash(-v)=-(u\oslash v);\\
+      0\oslash v = 0,\\
+      u\oslash 1 = u,\\
+      u\oslash u = 1.
+    \end{gather}
+    Further, if $u\otimes v=u\times v\neq0$ is exact and nonzero, then
+    \begin{equation}
+      (u\otimes v)\oslash v=u.
+    \end{equation}
+  \end{subequations}
+\end{thm}
+\begin{thm}[Monotony laws of division]
+  For any floating point numbers $u\leq v$ and $w>0$, then
+  \begin{subequations}
+    \begin{equation}
+      u\oslash w\leq v\oslash w
+    \end{equation}
+    and further, when $0 < u \leq v$, we have
+    \begin{equation}
+      w\oslash u\geq w\oslash v
+    \end{equation}
+  \end{subequations}
+\end{thm}
+\begin{prop}[Failure of Cauchy's law]
+Let $x_{1},\dots,x_{n},y_{1},\dots,y_{n}$ be floating-point
+numbers. Then, in general, Cauchy's law fails to hold:
+\begin{equation}
+  (x_{1}^{2}\oplus\dots\oplus x_{n}^{2})\otimes(y_{1}^{2}\oplus\dots\oplus y_{n}^{2})\not\geq
+  (x_{1}\otimes y_{1})\oplus(\dots)\oplus(x_{n}\otimes y_{n}).
+\end{equation}
+Here $x_{j}^{2}=(x_{j}\otimes x_{j})$ and similarly for $y_{j}$, for $j=1,\dots,n$.
+\end{prop}
+
+\subsection{Relational Operators}
+
+We seldom have ``exact equality'' of floating-point numbers, instead
+resorting to ``approximate equality'' parametrized by some tolerance
+$\varepsilon_{\text{tol}}$. The concepts discussed here may be found in Knuth~\cite{taocp2}.
+
+\begin{defn}
+  Given some $\varepsilon_{\text{tol}}>0$,
+  the relational operators comparing two floating-point numbers
+  $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y},m_{y},e_{y})$ are:
+  \begin{enumerate}
+  \item \define{Definitely less than} $u\flLt v$ if and only if
+    $v-u > \varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Approximately equal to} $u\flApprox v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Definitely greater than} $u\flGt v$ if and only if
+    $u-v > \varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Essentially equal to} $u\flEq v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\min(\beta^{e_{x}},\beta^{e_{y}})$
+  \end{enumerate}
+\end{defn}
+\begin{notation}
+  We may write the tolerance subscripted to these relational operators,
+  e.g., $u\flLt_{\varepsilon}v$; or we may write to the right in
+  parentheses $u\flLt v~(\varepsilon)$.
+\end{notation}
+\begin{rmk}
+  Observe $u\flLt v$ is the same as $v\flGt u$. Further, observe that
+  $u\flEq v$ is a stronger condition than $u\flApprox v$.
+\end{rmk}
+\begin{rmk}
+  The {\tt fcmp} library\footnote{\url{http://fcmp.sourceforge.net/}} has implemented the first three relational
+  operators in a single function in \CEE/: \verb|fcmp(x,y,delta)| returns $-1$
+  if $x\flLt_{\delta} y$, 0 if $x\flApprox_{\delta} y$, and $+1$ if $x\flGt_{\delta} y$.
+\end{rmk}
+\begin{thm}
+  For any floating-point numbers $u$, $v$, and $\varepsilon>0$, we have
+  the following identities:
+  \begin{gather}
+    u\flLt_{\varepsilon} v\quad\implies\quad v\flGt_{\varepsilon} u\\
+    u\flEq_{\varepsilon} v\quad\implies\quad u\flApprox_{\varepsilon}v\\
+    u\flEq_{\varepsilon} u\\
+    u\flLt_{\varepsilon} v\implies u < v\\
+    u\flLt_{\varepsilon_{1}}v\quad\mbox{and}\quad \varepsilon_{1}<\varepsilon_{2}\quad\implies\quad
+    u\flLt_{\varepsilon_{2}}v
+  \end{gather}
+\end{thm}
+\begin{thm}[Transitivity law for float inequality]
+  For any $u\flLt_{\varepsilon_{1}}v$ and $v\flLt_{\varepsilon_{2}}w$,
+  we have $u\flLt_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\min(\varepsilon_{1},\varepsilon_{2})$.
+\end{thm}
+\begin{thm}[Transitivity for essential equality]
+  For any $u\flEq_{\varepsilon_{1}}v$ and $v\flEq_{\varepsilon_{2}}w$,
+  we have $u\flApprox_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\varepsilon_{1}+\varepsilon_{2}$.
+\end{thm}
+\begin{thm}
+  For any floating-point numbers $x$, $y$, if $|x-y|\leq\varepsilon|x|$
+  \emph{and} $|x-y|\leq\varepsilon|y|$, then we have $x\flEq_{\varepsilon}y$.
+\end{thm}
+\begin{thm}
+  For any floating-point numbers $x$, $y$, if $|x-y|\leq\varepsilon|x|$
+  \emph{or} $|x-y|\leq\varepsilon|y|$, then we have $x\flApprox_{\varepsilon}y$.
+\end{thm}
+
+
+\begin{thm}[Essential associativity]
+  For any floating-point numbers $x$, $y$, $z$, and any
+  $\varepsilon\geq 2\machEps/(1 - \machEps/2)^{2}$, we have
+  \begin{equation}
+    (x\otimes y)\otimes z\flEq_{\varepsilon}x\otimes(y\otimes z).
+  \end{equation}
+\end{thm}
+
+\begin{xca}
+  Prove or find a counter example: for any floating-point numbers $x$,
+  $y$, and $z$, there is a $\varepsilon_{0}>0$ such that for any
+  $\varepsilon>\varepsilon_{0}$ we have $(x\oplus y)\oplus z\flEq_{\varepsilon}x\oplus(y\oplus z)$.
+\end{xca}
+
+\begin{xca}[{H.~Bj\"ork; Kahan~\cite[{(item 5, pg 0-2)}]{kahan1973}; Knuth~\cite[(\S4.2.2,ex.15)]{taocp2}}]
+  Does the computed midpoint of an interval always lie between the
+  endpoints? That is, for floating-point numbers $x$ and $y$, does
+  $x\leq y$ imply $x\leq (x\oplus y)\oslash 2\leq y$? [Hint: consider
+    $\beta=2$ as well as other bases $\beta>2$.]
+\end{xca}
+
+% William Kahan, Implementation of Algorithms, part I, lecture notes, 1973

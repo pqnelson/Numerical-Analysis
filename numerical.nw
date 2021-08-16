@@ -1,15 +1,22 @@
-\documentclass{report}
+\documentclass[oneside]{book}
 \usepackage{nummac}
 
 \title{Notes on Numerical Analysis}
 \author{Alex Nelson\thanks{\compiledTimestamp}}
 \date{August 11, 2021}
 \begin{document}
-\maketitle
+
+\frontmatter
+\maketitle\setcounter{page}{2}
 \tableofcontents
+
+\mainmatter
 
 \input{tex/float}
 
+\backmatter
+
+\nocite{*}
 \bibliographystyle{siam}
 \bibliography{numerical}
 \end{document}
