@@ -76,7 +76,18 @@ which has its ``decoding map'' be
   $x = (-1)^{s}(m/\beta^{t})\beta^{e}$ for some $s\in\{0,1\}$,
   $\beta/2\leq m<\beta$, and $e\in\ZZ$, and if $|\delta x| < \beta^{e-t}$,
   then we need to determine how to encode $x + \delta x$.
+
+  We will write $R(x+\delta x)$ for some rounding scheme $R(-)$ encoding
+  a real number $x+\delta x$ to its nearest floating-point number.
 \end{rmk}
+\begin{notation}
+  We may abuse notation, writing $R(s,m+k,e)$ for rounding the rational
+  number $(-1)^{s}((m+k)/\beta^{t})\beta^{e}$ to its nearest
+  floating-point number. If this seems silly, consider the case when
+  $m=\beta^{t}-1$ and $k=2$: $(s,m+k,e)$ is not a valid floating-point
+  number. But $R(s,m+k,e)$ would produce a correct floating-point
+  number, rounded as needed.
+\end{notation}
 
 \begin{defn}
   \define{Truncation} (or ``rounding towards zero'') is a rounding
@@ -111,6 +122,15 @@ which has its ``decoding map'' be
   and $\delta x$ has $e'=e-t$ (which encodes $\delta m\geq1/2$) or
   $e'<e-t$ (encoding $\delta m<1/2$).
 \end{defn}
+\begin{rmk}
+  For $\beta=2$, we can treat $m+\delta m$ as a $t+1$ bit number
+  (truncating $\delta m$ to the leading bit). If the last two bits of
+  $m+\delta m$ (as a truncated $t+1$ bit number) are
+  $(11)_{2}$ in base-2, then $\RN_{\text{even}}(s,m+\delta m,e)=(s,m+1,e)$.
+  Otherwise $\RN_{\text{even}}(s,m+\delta m,e)=(s,m,e)$. Since this
+  scheme requires only one extra bit, it is easier to implement in
+  hardware compared to other schemes.
+\end{rmk}
 \begin{defn}
   The familiar rule for rounding taught to elementary school students is
   called \define{Round to Nearest, Ties Away From Zero}, denoted $\RN_{\text{away}}(x)$. If the number falls
@@ -120,6 +140,11 @@ which has its ``decoding map'' be
   and $\RN_{\text{away}}(x+\delta x)=\fl_{\beta,t}(x)$ when $\delta m<1/2$.
   This matches intuition when working with $\beta=10$.
 \end{defn}
+
+\begin{notation}
+  We write $\RN(x)$ for either $\RN_{\text{even}}(x)$ or $\RN_{\text{away}}(x)$,
+  when it doesn't matter which one we use.
+\end{notation}
 
 \begin{thm}
   For any $x\in\RR$, we have $\RN(-x)=-\RN(x)$.
@@ -134,9 +159,16 @@ floating-point number corresponding to the sum of $x$ and $y$ when
 treated as real numbers \emph{in some rounding scheme}.
 \end{notation}
 
+\begin{convention}
+  We will follow \ieee-754 convention throughout this book, and
+  typically work with $\beta=2$ and $\RN_{\text{even}}(-)$ rounding scheme.
+  Hence $\fl_{2,t}\colon\RR\to\FF_{2,t}$ generically maps $x\in\RR$ to
+  $\RN_{\text{even}}(x)$.
+\end{convention}
+
 \begin{thm}
 Encoding real numbers as floating-point numbers is not bijective, but it
-is surjective.
+is surjective for any rounding-scheme.
 \end{thm}
 \begin{proof}
 To prove $\fl_{\beta,t}$ is surjective, we see that for any $(s,m,e)\in\FF_{\beta,t}$,
@@ -148,8 +180,8 @@ for each $s\in\{0,1\}$, $m\in\{\beta/2,\dots,\beta-1\}$, and $e\in\ZZ$.
 
 Now, to prove it's not bijective, we just need to prove it's not
 injective. Take $x = (-1)^{s}(m/\beta^{t})\beta^{e}\in\QQ$. Then for
-any real number $0\leq \delta m<\beta^{t-1}$ as the mantissa of $\delta x$,
-we see
+any real number $\delta x$ with its mantissa $\delta m$ satisfying
+$0\leq \delta m<\beta^{t-1}/2$, we see
 \begin{equation}
   \fl_{\beta,t}(x + \delta x) = \fl_{\beta,t}(x).
 \end{equation}
@@ -236,7 +268,7 @@ Can we measure ``how good'' (or ``how bad'') $\fl_{\beta,t}(x)$
 approximates $x$?
 \end{puzzle}
 
-\begin{defn}
+\begin{defn}\label{defn:absolute-error}\label{defn:relative-error}
   Let $\widehat{x}\in\RR$ be an approximation to $x\in\RR$. Its
   \define{Absolute Error} is
   \begin{equation}
@@ -256,7 +288,7 @@ What is the relative and absolute error of $2^{10}$ and $3^{19/3}$ as an
 approximation to $10^{3}$?
 \end{xca}
 
-\begin{defn}
+\begin{defn}\label{defn:round-off-error}
 Let $\FF_{\beta,t}$ be idealized floating point numbers with base
 $\beta$ and precision $t$, let $x\in\RR$ be some real number. The
 \define{Absolute Round-Off Error} encoding $x$ as a floating point number is

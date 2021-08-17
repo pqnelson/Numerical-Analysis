@@ -10,12 +10,18 @@
 \maketitle\setcounter{page}{2}
 \tableofcontents
 
-\mainmatter
+\include{tex/preface}
 
-\input{tex/float}
+\mainmatter
+\part{Fundamentals}
+\include{tex/float}
+
+\part{Linear Algebra}
+
+\part{Differential Equations}
 
 \backmatter
-
+\part{Appendices}
 \nocite{*}
 \bibliographystyle{siam}
 \bibliography{numerical}

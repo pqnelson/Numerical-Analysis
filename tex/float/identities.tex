@@ -1,0 +1,396 @@
+\subsubsection{Identities of Floating-Point Arithmetic}
+
+From the algorithms we have thus described, we have a number of useful
+identities. This discussion stems from reading Knuth~\cite{taocp2}.
+
+\begin{defn}
+  We define a strict order relation $<$ on normal and subnormal
+  floating-point numbers $u$ and $v$ by demanding $u < v$ if the
+  corresponding rational numbers are thus ordered 
+  $\fl^{-1}(u)<\fl^{-1}(v)$.
+
+  Similarly, we define a strict equality $=$ on normal and subnormal
+  floating-point numbers by demanding the corresponding rational numbers
+  are equal. (Together, these define a partial order $\leq$ on normal
+  and subnormal floating-point numbers.)
+\end{defn}
+
+\begin{lemma}[$\fl(-)$ preserves sign]\label{lemma:fl-preserves-sign}
+  Let $a\in\RR$ be representable by a floating-point number. Then $a\geq 0$ 
+  implies $\fl(a)\geq 0$, and $a\leq 0$ implies $\fl(a)\leq 0$.
+\end{lemma}
+\begin{proof}
+  We have $u=\fl(a)$, then necessarily $\fl^{-1}(u) = a(1 + \varepsilon)$
+  where $|\varepsilon| < \machEps$. So the sign of $u$ is the same as
+  $a$, since $1 + \varepsilon > 1 - \machEps > 0$.
+\end{proof}
+
+\begin{lemma}[$\fl(-)$ preserves partial ordering]
+  If $a,b\in\RR$ are representable by floating-point numbers, then
+  $a\leq b$ implies $\fl(a)\leq\fl(b)$.
+\end{lemma}
+\begin{proof}
+  If $a\leq 0\leq b$, then the result is immediate by Lemma \ref{lemma:fl-preserves-sign}.
+
+  Without loss of generality, we suppose $0\leq a\leq b$. (The other
+  case would be $a\leq b\leq 0$.)
+
+  Let $u=\fl(a)$ and $v=\fl(b)$.
+
+  We see that $u\geq0$ and $v\geq 0$. We also see that $w=\fl(b-a)\geq0$
+  by Lemma \ref{lemma:fl-preserves-sign} and hypothesis $b\geq a$.
+  The claim is that $v\ominus u=w$ by the fundamental axiom of
+  floating-point arithmetic. Hence $v\ominus u\geq0$ implies $v\geq u$,
+  or equivalently $\fl(b)\geq\fl(a)$.
+\end{proof}
+\begin{thm}
+  We have the following identities for any floating-point numbers
+  $u,v\in\mathbb{F}$:
+  \begin{equation*}
+    u\oplus v = v\oplus u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  We see from \hyperref[alg:float-addition]{Algorithm A} that the first
+  step reorders the arguments so the left summand is always greater than
+  the right summand. This would mean the order of summands supplied to
+  floating-point addition is irrelevant.
+\end{proof}
+
+\begin{thm}
+  We have the following identities for any floating-point numbers
+  $u,v\in\mathbb{F}$:
+  \begin{equation*}
+    u\ominus v = u \oplus -v.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+This was how we defined floating-point subtraction in
+\hyperref[alg:float-subtraction]{Algorithm S}.
+\end{proof}
+
+\begin{thm}
+  We have the following identities for any floating-point numbers
+  $u,v\in\mathbb{F}$:
+  \begin{subequations}
+    \begin{gather}
+      %% u\oplus v = v\oplus u;\\
+      %% u\ominus v = u \oplus -v;\\
+      -(u\oplus v) = -u \oplus -v;\\
+      u\oplus v=0\quad\mbox{if and only if}\quad v=-u;\\
+      u\oplus 0=u.
+    \end{gather}
+    If further $u\oplus v=u+v$ is exact, then
+    \begin{equation}
+      (u\oplus v)\ominus v=u.
+    \end{equation}
+  \end{subequations}
+\end{thm}
+\begin{proof}
+  The trick is to consider $x=\fl^{-1}(u)$ and $y=\fl^{-1}(v)$ the rational
+  numbers corresponding to the given floating-point encodings. Then the
+  claims boil down to invoking the fundamental axiom of floating-point:
+  $-(u\oplus y)=\fl(-(x+x))=\fl((-x)+(-x))=(-u)\oplus(-v)$.
+
+  Similarly, $u\oplus v=\fl(x+y)=0$ implies $x=\epsilon-y$ for any
+  $|\epsilon|<\beta^{e_{\text{min}}-t}$ which is encoded as $\fl(x)=-\fl(y)$,
+  as desired.
+  
+  And $u\oplus0=u$ follows from $\fl(x+\epsilon)=\fl(x)$ for any $|\epsilon|<\machEps|x|$.
+
+  The claim $(u\oplus v)\ominus v=u$ can be encoded as
+  $\fl(\fl^{-1}(u\oplus v)-v)$ but since $u\oplus v$ is exact,
+  $\fl^{-1}(u\oplus v) = x + y$. Hence we have $\fl((x+y)-y)=\fl(x)$
+  identically. 
+\end{proof}
+
+\begin{thm}
+  If $u\leq v$ are arbitrary floating-point numbers, then for any
+  floating-point number $w$ we have
+  \begin{equation}
+    u\oplus w\leq v\oplus w.
+  \end{equation}
+\end{thm}
+\begin{proof}
+  The trick is to realize that there are real numbers $x$ and $y$ such
+  that $\fl(x)\leq\fl(y)$, then $\fl(x)\oplus\fl(z)\leq\fl(y)\oplus\fl(z)$
+  for any representable real $z$. We recall $\fl(x)\oplus\fl(z) = \fl(x+z)$
+  and $\fl(y)\oplus\fl(z)=\fl(y+z)$ by the fundamental axiom of
+  floating-point. Hence $\fl(x+z)\leq \fl(y+z)$.
+\end{proof}
+
+\begin{xca}[{Knuth~\cite[(4.2.2, ex 1)]{taocp2}}]
+  Prove for any floating-point numbers $u$ and $v$ that
+  $u\ominus v=-(v\ominus u)$.
+\end{xca}
+
+\begin{thm}[Floating-point multiplication is commutative]
+  For any floating-point numbers $u$ and $v$, we have
+  \begin{equation*}
+    u\otimes v=v\otimes u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  This follows from \hyperref[alg:float-multiplication]{Algorithm M}
+  where we'd have to prove each possible case ($u$ normal, $v$ normal;
+  $u$ a \NaN, $v$ a normal, etc.). The only interesting cases are when $u$
+  and $v$ are normal or subnormal. We see from the algorithm that the
+  components of the ``unnormalized'' product are commutative
+  $\XOR(s_{x},s_{y})=\XOR(s_{y},s_{x})$, $m_x m_y = m_y m_x$,
+  $e_x + e_y = e_y + e_x$. Hence the same ``unnormalized''
+  floating-point number is fed to algorithm N, which produces the same
+  results.
+\end{proof}
+
+\begin{thm}
+  For any floats $u$ and $v$, we have
+  \begin{equation*}
+    (-u)\otimes v = u\otimes(-v) =  -(u\otimes v).
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$, $y=\fl^{-1}(v)$ be the rational numbers
+  corresponding to the floating-point numbers. We see then that
+  $\fl((-x)\times y) = \fl(x\times(-y)) = -\fl(x\times y)$.
+\end{proof}
+
+\begin{thm}
+  For any floating-point number $u$, we have
+  \begin{equation*}
+    1\otimes u = u\otimes 1 = u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  We have $1=\fl^{-1}(1)$ and $x=\fl^{-1}(u)$ be the rational numbers
+  corresponding to the floating-point numbers given. Then we see
+  $\fl(1\times x)=\fl(x\times 1)=\fl(x)$.
+\end{proof}
+
+\begin{thm}
+  For any floats $u$ and $v$, we have
+  \begin{equation*}
+    u=0\mbox{ or }v=0\quad\mbox{implies}\quad u\otimes v=0.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  We see $\fl(0\times y)=\fl(0)=0$ and $\fl(x\times0)=\fl(0)=0$.
+  Alternatively, look at step M3 in \hyperref[alg:float-multiplication]{Algorithm M}.
+\end{proof}
+
+\begin{rmk}
+  The other direction does not hold in general. That is to say, we could
+  have $u\otimes v=0$ but $u\neq0$ and $v\neq0$. How? Well, if
+  $u=\beta^{e_{\text{min}}+1}$ and $v=\beta^{e_{\text{min}}+1}$, then $u\otimes v=\beta^{2e_{\text{min}}+2}<\beta^{e_{\text{min}}}$
+  for $e_{\min}<-1$. Hence normalization would round $u\otimes v$ to zero.
+  That is to say, when $u\otimes v$ underflows, we'd have the situation
+  where $u\neq0$ and $v\neq0$ and $u\otimes v=0$.
+\end{rmk}
+
+\begin{thm}[Monotony law for multiplication]
+  If $u\leq v$ are floating-point numbers and $w>0$ is a floating-point
+  number, then $u\otimes w\leq v\otimes w$.
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$ and $y=\fl^{-1}(v)$. Then $x\leq y$ by hypothesis.
+  Let $z=\fl^{-1}(w)>0$.
+  Then $xz\leq yz$, and preservation of partial ordering gives the result
+  $\fl(x\times z)\leq \fl(y\times z)$.
+\end{proof}
+
+\begin{thm}
+  For any floating-point numbers $u$ and $v$, we have
+  \begin{equation*}
+    (-u)\oslash v = u\oslash(-v)=-(u\oslash v).
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$ and $y=\fl^{-1}(v)$ be the rational numbers
+  represented by the floats. Then we find
+  $\fl((-x)/y)=\fl(x/(-y))=\fl(-(x/y)) = -(u\oslash v)$.
+\end{proof}
+
+\begin{thm}
+  For any floating-point number $v$, we have
+  \begin{equation*}
+    0\oslash v = 0.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $y=\fl^{-1}(v)$ be the rational number
+  represented by the float. Then we find
+  $0\oslash v = \fl(0/y) = \fl(0) = 0$.
+\end{proof}
+
+\begin{thm}
+  For any floating-point number $u$, we have
+  \begin{equation*}
+    u\oslash 1 = u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$ be the rational number
+  represented by the float. Then we find
+  $u\oslash 1 = \fl(x/1) = \fl(x) = u$.
+\end{proof}
+
+
+\begin{thm}
+  For any floating-point number $u$, we have
+  \begin{equation*}
+    u\oslash u = 1.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$ be the rational number
+  represented by the float. Then we find
+  $u\oslash u = \fl(x/x) = \fl(1) = 1$.
+\end{proof}
+
+\begin{thm}
+  For any floating-point numbers $u$ and $v$, if $u\otimes v=u\times
+  v\neq0$ is exact and nonzero, then
+  \begin{equation*}
+      (u\otimes v)\oslash v=u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$ and $\fl^{-1}(v)=y$.
+  We have $\fl(x\times y)=u\otimes v$ by hypothesis that $u\otimes v$ is
+  exact.
+  Let $z=x\times y = \fl^{-1}(u\otimes v)$.
+  Then $\fl(z)\oslash v = \fl(z/y)$ by the fundamental axiom of
+  floating-point arithmetic, and $\fl(z/y) = \fl((x\times y)/y)$ by
+  hypothesis of exactness. Then we have $\fl((x\times y)/y) = \fl(x)$.
+  Hence the result.
+\end{proof}
+
+\begin{thm}[Monotony laws of division]
+  For any floating point numbers $u\leq v$ and $w>0$, then
+  \begin{subequations}
+    \begin{equation}
+      u\oslash w\leq v\oslash w
+    \end{equation}
+    and further, when $0 < u \leq v$, we have
+    \begin{equation}
+      w\oslash u\geq w\oslash v
+    \end{equation}
+  \end{subequations}
+\end{thm}
+\begin{proof}
+  Let $x=\fl^{-1}(u)$, $y=\fl^{-1}(v)$, $z=\fl^{-1}(w)>0$ be the
+  rational numbers corresponding to the given floats. We have $x\leq y$
+  by hypothesis.
+  
+  (1) We find that $x/z\leq y/z$, hence $\fl(x/z)\leq\fl(y/z)$.
+
+  (2) When $0<x\leq y$, we have $z/x\geq z/y$. Hence $\fl(z/x)\geq\fl(z/y)$.
+\end{proof}
+
+\begin{prop}[Failure of Cauchy's law]
+Let $x_{1},\dots,x_{n},y_{1},\dots,y_{n}$ be floating-point
+numbers. Then, in general, Cauchy's law fails to hold:
+\begin{equation}
+  (x_{1}^{2}\oplus\dots\oplus x_{n}^{2})\otimes(y_{1}^{2}\oplus\dots\oplus y_{n}^{2})\not\geq
+  (x_{1}\otimes y_{1})\oplus(\dots)\oplus(x_{n}\otimes y_{n}).
+\end{equation}
+Here $x_{j}^{2}=(x_{j}\otimes x_{j})$ and similarly for $y_{j}$, for $j=1,\dots,n$.
+\end{prop}
+\begin{proof}
+  We just need to find a single counter-example.
+  Take $n=2$, $x_{1}=x_{2}=1$, $y_{1}=1$, $y_{2} = 1 - \machEps/2$. Then
+  $y_{1}\oplus y_{2}=2y_{1}$
+  and $y_{1}^{2}\oplus y_{2}^{2} = 2\ominus\machEps$.
+  Hence $(y_{1} \oplus y_{2})^{2} = 4$. Then Cauchy's inequality should
+  give us $2(y_{1}^{2}\oplus y_{2}^{2})\geq(y_{1} + y_{2})^{2}$ but
+  instead we find $2(2\ominus\machEps)\not\geq 4$. For single-precision
+  arithmetic, we find we get $3.99999976\not\geq 4.0$, violating Cauchy.
+\end{proof}
+
+
+\subsection{Relational Operators}
+
+We seldom have ``exact equality'' of floating-point numbers, instead
+resorting to ``approximate equality'' parametrized by some tolerance
+$\varepsilon_{\text{tol}}$. The concepts discussed here may be found in Knuth~\cite{taocp2}.
+
+\begin{defn}
+  Given some $\varepsilon_{\text{tol}}>0$,
+  the relational operators comparing two floating-point numbers
+  $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y},m_{y},e_{y})$ are:
+  \begin{enumerate}
+  \item \define{Definitely less than} $u\flLt v$ if and only if
+    $v-u > \varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Approximately equal to} $u\flApprox v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Definitely greater than} $u\flGt v$ if and only if
+    $u-v > \varepsilon_{\text{tol}}\max(\beta^{e_{x}},\beta^{e_{y}})$
+  \item \define{Essentially equal to} $u\flEq v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\min(\beta^{e_{x}},\beta^{e_{y}})$
+  \end{enumerate}
+\end{defn}
+\begin{notation}
+  We may write the tolerance subscripted to these relational operators,
+  e.g., $u\flLt_{\varepsilon}v$; or we may write to the right in
+  parentheses $u\flLt v~(\varepsilon)$.
+\end{notation}
+\begin{rmk}
+  Observe $u\flLt v$ is the same as $v\flGt u$. Further, observe that
+  $u\flEq v$ is a stronger condition than $u\flApprox v$.
+\end{rmk}
+\begin{rmk}
+  The {\tt fcmp} library\footnote{\url{http://fcmp.sourceforge.net/}} has implemented the first three relational
+  operators in a single function in \CEE/: \verb|fcmp(x,y,delta)| returns $-1$
+  if $x\flLt_{\delta} y$, 0 if $x\flApprox_{\delta} y$, and $+1$ if $x\flGt_{\delta} y$.
+\end{rmk}
+\begin{thm}
+  For any floating-point numbers $u$, $v$, and $\varepsilon>0$, we have
+  the following identities:
+  \begin{gather}
+    u\flLt_{\varepsilon} v\quad\implies\quad v\flGt_{\varepsilon} u\\
+    u\flEq_{\varepsilon} v\quad\implies\quad u\flApprox_{\varepsilon}v\\
+    u\flEq_{\varepsilon} u\\
+    u\flLt_{\varepsilon} v\implies u < v\\
+    u\flLt_{\varepsilon_{1}}v\quad\mbox{and}\quad \varepsilon_{1}<\varepsilon_{2}\quad\implies\quad
+    u\flLt_{\varepsilon_{2}}v
+  \end{gather}
+\end{thm}
+\begin{thm}[Transitivity law for float inequality]
+  For any $u\flLt_{\varepsilon_{1}}v$ and $v\flLt_{\varepsilon_{2}}w$,
+  we have $u\flLt_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\min(\varepsilon_{1},\varepsilon_{2})$.
+\end{thm}
+\begin{thm}[Transitivity for essential equality]
+  For any $u\flEq_{\varepsilon_{1}}v$ and $v\flEq_{\varepsilon_{2}}w$,
+  we have $u\flApprox_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\varepsilon_{1}+\varepsilon_{2}$.
+\end{thm}
+\begin{thm}
+  For any floating-point numbers $x$, $y$, if $|x-y|\leq\varepsilon|x|$
+  \emph{and} $|x-y|\leq\varepsilon|y|$, then we have $x\flEq_{\varepsilon}y$.
+\end{thm}
+\begin{thm}
+  For any floating-point numbers $x$, $y$, if $|x-y|\leq\varepsilon|x|$
+  \emph{or} $|x-y|\leq\varepsilon|y|$, then we have $x\flApprox_{\varepsilon}y$.
+\end{thm}
+
+
+\begin{thm}[Essential associativity]
+  For any floating-point numbers $x$, $y$, $z$, and any
+  $\varepsilon\geq 2\machEps/(1 - \machEps/2)^{2}$, we have
+  \begin{equation}
+    (x\otimes y)\otimes z\flEq_{\varepsilon}x\otimes(y\otimes z).
+  \end{equation}
+\end{thm}
+
+\begin{xca}
+  Prove or find a counter example: for any floating-point numbers $x$,
+  $y$, and $z$, there is a $\varepsilon_{0}>0$ such that for any
+  $\varepsilon>\varepsilon_{0}$ we have $(x\oplus y)\oplus z\flEq_{\varepsilon}x\oplus(y\oplus z)$.
+\end{xca}
+
+\begin{xca}[{H.~Bj\"ork; Kahan~\cite[{(item 5, pg 0-2)}]{kahan1973}; Knuth~\cite[(\S4.2.2,ex.15)]{taocp2}}]
+  Does the computed midpoint of an interval always lie between the
+  endpoints? That is, for floating-point numbers $x$ and $y$, does
+  $x\leq y$ imply $x\leq (x\oplus y)\oslash 2\leq y$? [Hint: consider
+    $\beta=2$ as well as other bases $\beta>2$.]
+\end{xca}
+
+% William Kahan, Implementation of Algorithms, part I, lecture notes, 1973

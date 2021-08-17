@@ -1,8 +1,10 @@
 \ProvidesPackage{nummac}[2021/06/05 Numerical Macros Package]
+\RequirePackage{longtable}
 \RequirePackage{datetime2}
 \RequirePackage{titlesec}
 \RequirePackage{fancyvrb}
 \RequirePackage{graphicx}
+\RequirePackage{lmodern}
 %\RequirePackage{epigraph}
 \RequirePackage{marginnote}
 %\RequirePackage{siunitx}
@@ -13,6 +15,7 @@
 \RequirePackage{bm}
 \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
+\RequirePackage{manfnt} % for dangerous bend
 
 \setcounter{secnumdepth}{5}
 
@@ -52,9 +55,10 @@
 \newtheorem*{fundamentalAxiomFloat}{Fundamental Axiom of Floating Point}
 
 \theoremstyle{definition}
+\newtheorem{convention}[thm]{Convention}
 \newtheorem{defn}[thm]{Definition}
 \newtheorem{ex}[thm]{Example}
-\newtheorem{xca}[thm]{Exercise}
+\newtheorem{xca}[thm]{\noindent\llap{\mantriangleright\kern.15em}Exercise}
 \newtheorem{puzzle}[thm]{Puzzle}
 
 \theoremstyle{remark}
@@ -63,7 +67,6 @@
 \newtheorem{notation}[rmk]{Notation}
 
 % Bourbaki's dangerous bend environment
-\RequirePackage{manfnt}
 
 
 % Danger, Will Robinson!
@@ -80,9 +83,11 @@
 
 % adjust whitespace between code chunks
 % https://www.cs.tufts.edu/~nr/noweb/FAQ.html
-\def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
+\def\@end@code@rule{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}}
+\renewcommand\nwendcode{\endtrivlist\endgroup\vfil\penalty10\vfilneg}
 \let\nwdocspar=\smallbreak
 
+% links to arXiv
 \def\arXiv{\@ifnextchar[{\@arXivWith}{\@arXivWithout}}
 \def\@arXivWith[#1]#2{\texttt{\href{http://arxiv.org/abs/#2}{arXiv:#2} [#1]}}
 \def\@arXivWithout#1{\texttt{\href{http://arxiv.org/abs/#1}{arXiv:#1}}}
@@ -110,12 +115,13 @@
   \hbox to\algindent{\bf\hfil #1.\kern.25em}%
   \hangindent=\algindent\hangafter=1\ignorespaces}
 
-
-
 %%% Notation and logos
 % programming languages
 \def\CEE/{\textsf{C}}
 \def\FORTRAN/{\textsc{Fortran}}
+\def\PASCAL/{\textsc{Pascal}}
+
+\def\ieee{\textsc{ieee}}
 
 % notation
 \let\oldvec\vec
@@ -124,13 +130,32 @@
 \def\E{\mathrm{e}} % \E \approx 2.7182...
 \def\I{\mathrm{i}} % \I^2 = -1
 \def\materialD{\mathrm{D}}
+\def\CC{\mathbb{C}}
 \def\NN{\mathbb{N}}
 \def\QQ{\mathbb{Q}}
 \def\RR{\mathbb{R}}
 \def\extendedRR{\overline{\RR}}
 \def\ZZ{\mathbb{Z}}
 \def\FF{\mathbf{F}}
-\def\ieee{\textsc{ieee}}
+
+\let\propersubset\subset
+\let\propersupset\supset
+\let\oldsubset\subset
+\let\oldsupset\supset
+\let\subset\subseteq
+\let\supset\supseteq
+
+\newcommand\grad{\vec{\nabla}}
+\newcommand\curl{\vec{\nabla}\times}
+
+\newcommand\into{\hookrightarrow}
+\newcommand\onto{\twoheadrightarrow}
+\newcommand\iso{\cong}
+
+\def\define#1{\textbf{``#1''}}
+\def\bigO{\mathcal{O}}
+
+% floating-point related notation
 \DeclareMathOperator{\fl}{\mathtt{fl}}
 \DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\RN}{RN}
@@ -142,26 +167,16 @@
 \newcommand\qNaN{\mbox{\textup{\texttt{qNaN}}}}
 \newcommand\sNaN{\mbox{\textup{\texttt{sNaN}}}}
 
-\newcommand\grad{\vec{\nabla}}
-\newcommand\curl{\vec{\nabla}\times}
-
-\newcommand\into{\hookrightarrow}
-\newcommand\onto{\twoheadrightarrow}
-
 \newcommand\roundError{\varepsilon}
 
-
-\def\@end@code@rule{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}}
-\renewcommand\nwendcode{\endtrivlist\endgroup}
-\let\nwdocspar=\smallbreak
-
-
-\def\define#1{\textbf{``#1''}}
-\def\bigO{\mathcal{O}}
 \def\machEps{\varepsilon_{\text{mach}}}
 \def\flLt{\prec}
 \def\flGt{\succ}
 \def\flApprox{\sim}
 \def\flEq{\approx}
+
+
+
+
 \endinput
 
