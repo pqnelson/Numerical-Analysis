@@ -1,0 +1,135 @@
+\chapter{Preface}
+
+This is a collated collection of my notes on numerical analysis. 
+The goal is to get the computer to numerically solve problems
+encountered in ``continuous mathematics''.
+
+I don't know if this replaces, e.g., Burden and Faires' book. My goal
+was to have a coherent, self-contained explanation of the various
+algorithms and code snippets.
+
+\section*{Assumptions on the Reader}
+
+I'm assuming the reader has familiarity with mathematical analysis (at
+least: real analysis, complex analysis, and hopefully Fourier analysis)
+and linear algebra. I suppose I could just assert the reader should read
+Rudin, and return when finished, but then I'd never see you again!
+
+I hope the reader has an understanding of real analysis at the level of
+Abbott's \emph{Understanding Analysis}, and higher-dimensional real
+analysis at the level of the first couple chapters of Munkres's
+\emph{Analysis on Manifolds}.
+
+If the reader has read through Axler's \emph{Linear Algebra Done Right},
+that's wonderful and about the level I'm expecting.
+
+\subsection*{Notation}
+
+Further, the following notation should be familiar and understood:
+
+\begin{itemize}
+\item $f\colon A\into B$ indicates $f$ is an injection of $A$ into $B$;
+\item $f\colon A\onto B$ indicates $f$ is a surjection of $A$ onto $B$;
+\item $f\colon A\iso B$ is unorthodox notation indicating $f$ is an
+  isomorphism or bijection of $A$ to $B$;
+\item $A\subset B$ indicates $A$ is a subset of $B$, possibly $A=B$;
+  and $B\supset A$ is a synonym for $A\subset B$;
+\item $A\propersubset B$ indicates $A$ is a proper subset of $B$ (i.e.,
+  $A\subset B$ and $A\neq B$), and $B\propersupset A$ is a synonym for
+  $A\propersubset B$;
+\item $\NN\propersubset\NN_{0}\propersubset\ZZ\propersubset\QQ\propersubset\RR\propersubset\CC$
+  relates the number systems, where $\NN = \{1,2,\dots\}$ and $\NN_{0}=\{0\}\cup\NN$;
+\item $\E\approx 2.71\dots$ is the base of the natural logarithm;
+\item $\I=\sqrt{-1}$.
+\end{itemize}
+
+\section*{Programming Language \textit{de Rigeur}}
+
+The programming language of choice for numerical analysis remains
+\FORTRAN/, despite what Julia fanatics claim. Consequently, I write
+modern \FORTRAN/-90 code implementing the algorithms discussed. This is
+done using literate programming (thanks to Norman Ramsey's {\tt noweb}
+toolkit).
+
+I'm leaning on Knuth's literate programs written in WEB as an example,
+since \FORTRAN/-90 greatly resembles \PASCAL/ in many ways. Having a
+lack of research on ``What makes a program understandable'' complicates
+things, so I'm relying on examples from authority.
+
+\section*{Mathematical Registers}
+
+I'm defaulting to the typical mathematical style where the text is
+organized into ``chunks of text'' with a label prefixing the chunk. The
+sorts of labels the reader may expect to find include classic favorites
+(``definition'', ``theorem'', ``proof'') as well as ``example'',
+``exercise'', ``lemma'', ``proposition'', ``corollary'', and many new
+ones, too.
+
+We try to be explicit with the introduction of new notation by using a
+``notation'' register.
+
+Similarly, we
+
+\section*{Exercises and Examples}
+
+Exercises are littered throughout the text. The reader is encouraged to
+do them! If I have borrowed an exercise from a text, I try to cite it
+with sufficient information. To alert the reader that something is an
+exercise, a triangle is inserted into the left-margin.
+
+Examples are worked exercises, or they illustrate a point. For example,
+in the first chapter, examples are used to demonstrate floating-point
+arithmetic oddities.
+
+\section*{Outline of Topics}
+
+The three parts to this text correspond to the sequence which I learned
+numerical analysis.
+
+The first part introduces the basics of numerical analysis. Chapter one begins
+with a thorough discussion of floating-point arithmetic, starting with
+an ``idealized floating-point'' where the number system intuitively
+is scientific notation $m\times 10^{e}$ where $1\leq m<10$ is a
+$t$-digit number, and $e\in\ZZ$ is an arbitrary integer (this is the
+``idealized'' part). Then we transition to real \ieee-754
+floating-point, with emphasis on results in base $\beta=2$. We treat it
+axiomatically as a number system with certain mathematical
+operations. But we also provide explicit algorithms describing how the
+binary arithmetic operators work.
+
+Chapter two discusses the first toy problem: evaluating a polynomial at
+a point. This toy problem demonstrates na\"{\i}ve algorithms actually
+lose precision.
+
+Chapter three discusses polynomial interpolation. Given some function
+$f(x)$ and some domain of interest, say $[a,b]$, can we find $n+1$ points
+$x_{0}$, \dots, $x_{n}$ such that we can construct a polynomial $P(x)$
+where $P(x_{j})=f(x_{j})$ and $\deg(P)\leq n$? Can we do it to minimize
+the ``error'' of such an approximation? We use the results from the
+second chapter to evaluate it efficiently.
+
+Chapter four discusses numerical differentiation. This is another
+``playground'' where we can compare the numerical schemes to exact
+answers, to measure the error. It also serves as a basis for reasoning
+in part three, when we get to numerical differential equations.
+
+Chapter five discusses quadrature (a.k.a., numerical integration).
+This is where we really take a leap of faith, because we can't always
+solve an integral in closed-form.
+
+\bigbreak
+Part two discusses numerical linear algebra. This is a beautiful
+subject, which can be used as a bridge between finite-dimensional linear
+algebra and functional analysis. There are too many wonderful texts on
+this subject already.
+
+\bigbreak
+Part three discusses numerical differential equations.
+
+\subsection*{Starred Sections}
+
+Optional or advanced sections which can be skipped I've indicated with
+an asterisk or star, e.g.,
+\S\ref{subsec:computer:extended-real-number-system} ``Extended Real
+Number System*''. This is a topic I feel is useful for the reader, but
+the reader may skip it without shame or guilt.
