@@ -38,16 +38,22 @@ $0\times(\pm\infty)=0$.
   Further
   $$\infty+\infty=\infty.$$
 \end{axiom}
+
+
 \begin{xca}
   Prove or find a counter-example: addition is commutative in the
   extended real-number system.
 \end{xca}
+
+
 \begin{axiom}[Subtraction]
   For any finite $x\in\RR$, we have
   $$x-\infty=-\infty+x=-\infty.$$
   Further, we have
   $$-\infty-\infty=-\infty.$$
 \end{axiom}
+
+
 \begin{axiom}[Multiplication]
   For any positive $x\in\RR$, $x>0$, we have
   $$x\times(\pm\infty)=(\pm\infty)\times x = \pm\infty$$
@@ -55,10 +61,14 @@ $0\times(\pm\infty)=0$.
   $$(-x)\times(\pm\infty)=(\pm\infty)\times(-x)=\mp\infty.$$
   This permits us to treat $-\infty$ as $-1\times(+\infty)$.
 \end{axiom}
+
+
 \begin{xca}
   Prove or find a counter-example: multiplication is commutative in the
   extended real-number system.
 \end{xca}
+
+
 \begin{axiom}[Division]
   If $x\in\RR$, then
   $$\frac{x}{\infty}=\frac{x}{-\infty}=0$$.
@@ -87,10 +97,13 @@ non-emptiness) are imposed on extended Dedekind cuts, and we get a
 rigorous construction of the extended real number system.
 \end{rmk}
 
+
 \begin{xca}
   Prove or find a counter-example: $\extendedRR$ is an ordered field, an
   ordered ring, or a group (using either multiplication or addition, whichever).
 \end{xca}
+
+
 \begin{xca}
   If we consider $\extendedRR^{*}=\extendedRR\cup\{u\}$ where $u$ is the
   special ``undefined'' constant, where we now have $\infty-\infty=u$,
@@ -99,11 +112,15 @@ rigorous construction of the extended real number system.
   $\star\in\{+,-,\times,/\}$ we have $u\star a = a\star u = u$;
   then does $\extendedRR^{*}$ form a field? A ring? A group?
 \end{xca}
+
+
 \begin{xca}
   When working in $\extendedRR$, what should $\tanh(\pm\infty)$ be?
   [Hint: consider what $\exp(\pm\infty)$ should be, then use the
     definition of hyperbolic tangent.]
 \end{xca}
+
+
 \begin{xca}
   In the extended reals, what should $\arctan(\pm\infty)$ be?
 \end{xca}
@@ -121,12 +138,16 @@ rigorous construction of the extended real number system.
   We call $m$ the \define{Mantissa} (or \emph{Significand}), $s$ the
   \define{Sign}, and $e$ the \define{Exponent}.
 \end{defn}
+
+
 \begin{danger}
   In practice, it's not uncommon to interpret the mantissa $m$ as
   $f=m/\beta^{t}$ a fraction between $1/\beta\leq f<1$. The \ieee-754
   standard treats floating-point numbers in this manner, as does
   Knuth~\cite{taocp2}.
 \end{danger}
+
+
 \begin{ddanger}
   We should observe that any number $x\in\RR$ such that $|x|<\beta^{e_{\text{min}}}$
   or $|x|>\beta^{e_{\text{max}}}$ cannot be represented in
@@ -136,6 +157,8 @@ rigorous construction of the extended real number system.
   we either use subnormal numbers $x=\pm m\times\beta^{e_{\text{min}}-t}$
   or for even smaller numbers\dots we just round $x$ down to zero.
 \end{ddanger}
+
+
 \begin{rmk}
   The \ieee-754 standard specifies the following bounds for $\beta=2$:
   \begin{center}
@@ -154,6 +177,8 @@ rigorous construction of the extended real number system.
   it). \emph{Double-precision should be the default} (unless speed is important
   and precision is less important, in which single-precision may be used).
 \end{rmk}
+
+
 \begin{defn}
   We call a number $r\in\RR$ \define{Representable} in
   $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$ if we can write
@@ -162,11 +187,15 @@ rigorous construction of the extended real number system.
   \end{equation}
   for some $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
 \end{defn}
+
+
 \begin{defn}
   Floating-point numbers with $\beta=2$ and $e>e_{\text{min}}$, we may
   assume the mantissa $m$ has implicitly a leading-bit of 1,
   called the \define{Implicit Leading Bit}.
 \end{defn}
+
+
 \begin{rmk}
   \ieee-754 specifies $\beta=2$ or $\beta=10$. Numerous studies~\cite{DBLP:journals/corr/abs-1004-3374,10.1145/363235.363240,5009112,10.1145/362003.362013,4039164}
 have found $\beta=2$ with an implicit leading bit has better worst-case
@@ -174,6 +203,8 @@ and average-case accuracy than other choices of $\beta$. Although, there
 is a theoretical case to be made for $\beta=\E\approx2.71828\dots$ as a
 choice of radix, its implementation seems impossible.
 \end{rmk}
+
+
 \begin{defn}\label{def:computer-float:normal-subnormal-denormal}
 We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
 \begin{itemize}
@@ -182,6 +213,8 @@ We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{
 \item All others are \define{Denormalized}.
 \end{itemize}
 \end{defn}
+
+
 \begin{thm}
   Every representable number in $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
   is either normal or subnormal, but not both.
@@ -212,6 +245,7 @@ We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{
   $k\geq1$), then $(s,m\beta^{\ell},e-\ell)$ where $\ell=\min\{k,e-e_{\text{min}}\}$
   is either normal (when $\ell=k$) or subnormal (when $\ell<k$).
 \end{proof}
+
 \begin{defn}
 Let $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
 have $0<m<\beta^{t-1}$. Then we define the transformation
@@ -221,10 +255,13 @@ have $0<m<\beta^{t-1}$. Then we define the transformation
 where $\ell$ is the number of leading zeroes of the mantissa, the
 transformation is defined as \define{Normalization}.
 \end{defn}
+
 \begin{rmk}
 In other words, any denormalized floating-point number can be normalized
 into a subnormal or normal.
 \end{rmk}
+
+
 \begin{thm}
 The normal and subnormal floating-point representations are unique.
 \end{thm}
@@ -252,6 +289,8 @@ $m_{1}=m_{2}$.
 Hence any $x\in\RR$ representable as a floating-point number, has a unique
 representation $y\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
 \end{proof}
+
+
 \begin{defn}
   The largest finite floating-point number in $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
   is denoted
@@ -263,6 +302,116 @@ representation $y\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
     \alpha := \beta^{e_{\text{min}}-t+1}. 
   \end{equation}
 \end{defn}
+
+\subsubsection{Bounds on Precision and Accuracy}
+
+\begin{defn}
+  In the floating-point system $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+  with rounding-scheme $R\colon\RR\to\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$,
+  we define the \define{Machine Precision} as the real number
+  $\machinePrec\in\RR$
+  which is the bound on rounding-error.
+\end{defn}
+
+
+\begin{ex}
+For truncation $RZ(-)$, the machine precision is
+\begin{equation}
+  \machinePrecision = \beta^{1-t}
+\end{equation}
+by Lemma~\ref{lemma:idealized:truncation-round-off-error}.
+\end{ex}
+
+
+\begin{ex}
+For round-to-nearest $RN$, the machine precision is
+\begin{equation}
+  \machinePrecision = \frac{\beta^{1-t}}{2}
+\end{equation}
+by Lemma~\ref{lemma:idealized:rn-round-off-error}. Since this is the
+default rounding scheme for \ieee-754, this should be the quantity we
+remember. We also observe this corresponds with our
+Definition~\ref{defn:idealized:machine-epsilon} of machine epsilon,
+carried over to \ieee-754 floating-point.
+\end{ex}
+
+
+\begin{defn}[{{\it Handbook\/}~\cite[(Def.2.6)]{10.5555/3235984}}]
+  If $x\in\RR$ is representable by a finite floating-point number
+  $u=\fl(x)$ such that $|u|\neq\Omega$ (so there is a next consecutive
+  floating-point number and a preceding floating-point number),
+  if $\beta^{n}\leq |u| < \beta^{n+1}$
+  we define the \define{Unit in Last Place} of $x$ to be the real-number
+  $\ulp(x) = \beta^{n-(t-1)}$.
+\end{defn}
+
+\begin{rmk}
+I should have some discussion about the definition of $\ulp(-)$, which
+is another muddled concept. See, e.g., Muller~\cite{muller2005ulp} for a
+discussion of the various definitions. Knuth~\cite[pp.232--233]{taocp2}
+defines $\beta^{1-t}$ as an ulp, but this seems to be antiquated terminology.
+Harrison~\cite{harrison-hol99} seems to be the first to formalize the
+notion in a theorem prover.
+\end{rmk}
+
+\begin{defn}
+  If $u=\fl(x)$, we define $\ULP(u)=\ulp(x)$.
+\end{defn}
+
+
+\begin{ex}
+  This $\ulp(-)$ function depends on the rounding scheme.
+  We see that $\ulp(\RN(1)) = 2\machinePrec$ and $\ulp(\RZ(1))=\machinePrec$.
+\end{ex}
+
+
+\begin{thm}
+  If $\fl(x)=(s,m,e)$, then $\ulp(x) = \beta^{\max(e,e_{\text{min}})-(t-1)}$.
+\end{thm}
+
+
+\begin{thm}
+  In base $\beta=2$, we have for any $x\in\RR$ and float $u$,
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ulp(x)\implies u = \fl(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u:=\fl(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ulp(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u:=\fl(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ULP(u).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u=\RD(x)$ or $u=\RU(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x|\leq\ulp(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u=\RD(x)$ or $u=\RU(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x|\leq\ULP(u).
+  \end{equation*}
+\end{thm}
 
 \subsubsection{Representing Infinities}
 
@@ -497,6 +646,9 @@ is negative (so $s_{z}=1$ and $x>0>-x>y$), it is negated and $s_{r}\gets 1$.
 to normalize the sum, and whatever its results are, we return that and
 terminate the algorithm.\quad\slug
 
+
+\subsubsection{Subtraction}
+
 \begin{rmk}[Subtraction]
   Floating-point subtraction $x\ominus y$ is just $x\oplus y'$ where
   $y' = (\XOR(1,s_{y}),m_{y},e_{y})$ is the negated floating-point
@@ -581,6 +733,48 @@ the algorithm.\quad\slug
   There have been a number of improvements in performance, e.g., with
   SSE scalar operations.
 \end{rmk}
+
+
+\subsubsection{Standard Model of Floating-Point}
+
+The fundamental axiom of floating-point arithmetic discussed in the
+idealized floating-point system carries over to ``real'' \ieee-754
+floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
+``standard model of floating-point arithmetic'':
+
+\begin{axiom}[Standard model]
+  For any floating-point numbers $u$ and $v$ with machine precision
+  $\machinePrec$, we have
+  \begin{subequations}
+    \begin{equation}
+      \fl^{-1}(u~\fl(\mbox{op})~v) = (\fl^{-1}(u)~\mbox{op}~\fl^{-1}(v))(1 + \delta), \quad
+      |\delta|\leq\machinePrec
+    \end{equation}
+    where $\mbox{op}\in\{+,-,\times,/\}$.
+  \end{subequations}
+\end{axiom}
+
+\begin{rmk}
+  In practice, people often include the square root operation as obeying
+  the standard model of floating-point arithmetic.
+\end{rmk}
+\begin{rmk}
+  If $x,y\in\RR$ are representable by floating-point numbers $u:=\fl(x)$
+  and $v:=\fl(y)$, then we'd have $\fl^{-1}(u)=x(1 + \delta_{x})$ and
+  $\fl^{-1}(v)=y(1+\delta_{y})$ where $|\delta_{j}|\leq\machinePrecision$.
+  The standard-model of floating-point arithmetic tells us
+  \begin{equation}
+    \fl^{-1}(u~\mbox{flop}~v) = (x(1+\delta_{x})~\mbox{op}~y(1+\delta_{y}))(1+\delta)
+  \end{equation}
+  for $|\delta|\leq\machinePrecision$ and $\fl(\mbox{op})=\mbox{flop}$.
+\end{rmk}
+
+\marginpar{TODO: write up proof here}
+\begin{thm}[Fundamental theorem of floating-point arithmetic]
+  The \ieee-754 floating-point arithmetic satisfies the standard model
+  of floating-point operations.
+\end{thm}
+
 \subsubsection{Costs of Floating-Point Operations}
 \begin{heuristic}
   The CPU cycles for each floating-point operation should be estimated

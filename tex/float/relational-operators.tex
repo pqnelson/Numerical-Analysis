@@ -1,0 +1,331 @@
+\subsection{Relational Operators}
+
+We seldom have ``exact equality'' of floating-point numbers, instead
+resorting to ``approximate equality'' parametrized by some tolerance
+$\varepsilon_{\text{tol}}$. The concepts discussed here may be found in Knuth~\cite{taocp2}.
+
+\begin{defn}
+  Given some $\varepsilon_{\text{tol}}>0$ (usually $\varepsilon_{\text{tol}}<1$),
+  the relational operators comparing two floating-point numbers
+  $u=(s_{u},m_{u},e_{u})$ and $v=(s_{v},m_{v},e_{v})$ are:
+  \begin{enumerate}
+  \item \define{Definitely less than} $u\flLt v$ if and only if
+    $v-u > \varepsilon_{\text{tol}}\max(\beta^{e_{u}},\beta^{e_{v}})$
+  \item \define{Approximately equal to} $u\flApprox v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\max(\beta^{e_{u}},\beta^{e_{v}})$
+  \item \define{Definitely greater than} $u\flGt v$ if and only if
+    $u-v > \varepsilon_{\text{tol}}\max(\beta^{e_{u}},\beta^{e_{v}})$
+  \item \define{Essentially equal to} $u\flEq v$ if and only if
+    $|v-u|\leq\varepsilon_{\text{tol}}\min(\beta^{e_{u}},\beta^{e_{v}})$
+  \end{enumerate}
+\end{defn}
+\begin{notation}
+  We may write the tolerance subscripted to these relational operators,
+  e.g., $u\flLt_{\varepsilon}v$; or we may write to the right in
+  parentheses $u\flLt v~(\varepsilon)$.
+\end{notation}
+
+\begin{rmk}
+  The {\tt fcmp} library\footnote{\url{http://fcmp.sourceforge.net/}} has implemented the first three relational
+  operators in a single function in \CEE/: \verb|fcmp(x,y,delta)| returns $-1$
+  if $x\flLt_{\delta} y$, 0 if $x\flApprox_{\delta} y$, and $+1$ if $x\flGt_{\delta} y$.
+\end{rmk}
+
+
+\begin{thm}
+  For any floating-point numbers $u$, $v$, and $\varepsilon>0$, we have
+  \begin{equation*}
+      u\flLt_{\varepsilon} v\quad\iff\quad v\flGt_{\varepsilon} u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  By definition $u\flLt_{\varepsilon} v$ is equivalent to the condition
+  \begin{equation}
+    v - u >\varepsilon\max(\beta^{e_{u}},\beta^{e_{v}}).
+  \end{equation}
+  And similarly, $v\flGt_{\varepsilon} u$ is by definition the condition
+  \begin{equation}
+    v - u >\varepsilon\max(\beta^{e_{u}},\beta^{e_{v}}).
+  \end{equation}
+  But these are identical conditions, which proves the claim.
+\end{proof}
+
+
+\begin{thm}[Essential equality implies approximate equality]
+  For any floating-point numbers $u$, $v$, and $\varepsilon>0$, we have
+  \begin{equation*}
+    u\flEq_{\varepsilon} v\quad\implies\quad u\flApprox_{\varepsilon}v.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Given $u=(s_{u}, m_{u}, e_{u})$ and $v=(s_{v}, m_{v}, e_{v})$ and some
+  $0 < \varepsilon\ll 1$, assume
+  $u\flEq_{\varepsilon} v$. Then we necessarily have by definition
+  \begin{equation}
+    |v - u| \leq \varepsilon\min(\beta^{e_{u}}, \beta^{e_{v}}).
+  \end{equation}
+  But
+  \begin{equation}
+    \min(\beta^{e_{u}}, \beta^{e_{v}})\leq\max(\beta^{e_{u}}, \beta^{e_{v}}).
+  \end{equation}
+  Hence
+  \begin{equation}
+    |v - u| \leq \varepsilon\min(\beta^{e_{u}}, \beta^{e_{v}})\leq\varepsilon\max(\beta^{e_{u}}, \beta^{e_{v}}).
+  \end{equation}
+  This implies $u\flApprox_{\varepsilon}v$, as asserted.
+\end{proof}
+
+
+\begin{thm}[Reflexivity of $\flEq_{\varepsilon}$]
+  For any floating-point numbers $u$ and $\varepsilon>0$, we have
+  \begin{equation*}
+    u\flEq_{\varepsilon}u.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Given $u$ and $\varepsilon>0$, we have for any $e_{u}\in\ZZ$:
+  \begin{equation}
+    |u-u|=0\leq \varepsilon\beta^{e_{u}}
+  \end{equation}
+  since the right-hand side is strictly positive. This gives the result.
+\end{proof}
+
+
+\begin{thm}[Definite inequality implies strict inequality]
+  For any floating-point numbers $u$, $v$, and $\varepsilon>0$, we have
+  \begin{equation*}
+    u\flLt_{\varepsilon} v\implies u < v.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Given some floating-point numbers $\varepsilon>0$, $u$, $v$.
+  Assume $u\flLt_{\varepsilon} v$.
+  Then by definition,
+  \begin{equation}
+    v - u > \varepsilon\max(\beta^{e_{u}},\beta^{e_{v}}).
+  \end{equation}
+  But the right-hand side is positive. Hence we have
+  \begin{equation}
+    v > u + \varepsilon\max(\beta^{e_{u}},\beta^{e_{v}})\geq u.
+  \end{equation}
+  This gives us the result.
+\end{proof}
+
+
+\begin{thm}
+  For any floating-point numbers $u$, $v$, and $\varepsilon_{j}>0$ ($j=1,2$),
+  we have the following identities:
+  \begin{equation*}
+    u\flLt_{\varepsilon_{1}}v
+        \quad\mbox{and}\quad
+        \varepsilon_{1}\geq\varepsilon_{2}
+    \quad\implies\quad
+    u\flLt_{\varepsilon_{2}}v.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  Unfolding definitions, we have
+  \begin{equation}
+    v - u > \varepsilon_{1}\max(\beta^{e_{u}},\beta^{e_{v}}).
+  \end{equation}
+  By hypothesis, $\varepsilon_{1}\geq\varepsilon_{2}$, hence
+  \begin{equation}
+    v - u > \varepsilon_{2}\max(\beta^{e_{u}},\beta^{e_{v}}).
+  \end{equation}
+  This is by definition $u\flLt_{\varepsilon_{2}}v$.
+\end{proof}
+
+
+\begin{thm}[Transitivity law for float inequality]
+  For any $u\flLt_{\varepsilon_{1}}v$ and $v\flLt_{\varepsilon_{2}}w$,
+  we have $u\flLt_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\min(\varepsilon_{1},\varepsilon_{2})$.
+\end{thm}
+\begin{proof}
+  Unfolding the definitions, we stipulate
+  \begin{equation}
+    v - u > \varepsilon_{1}\max(\beta^{e_{u}},\beta^{e_{v}})
+  \end{equation}
+  and
+  \begin{equation}
+    w - v > \varepsilon_{2}\max(\beta^{e_{v}},\beta^{e_{w}}).
+  \end{equation}
+  Then necessarily
+  \begin{equation}
+    u + \varepsilon_{1}\beta^{e_{u}} < v
+    \quad\mbox{and}\quad
+    u < v - \varepsilon_{1}\beta^{e_{v}} 
+  \end{equation}
+  and
+  \begin{equation}
+    v + \varepsilon_{2}\beta^{e_{v}} < w
+    \quad\mbox{and}\quad
+    v < w - \varepsilon_{2}\beta^{e_{w}}.
+  \end{equation}
+  Then necessarily
+  \begin{equation}
+    u + \varepsilon_{1}\beta^{e_{u}} < v < w
+    \quad\mbox{and}\quad
+    u < v < w - \varepsilon_{2}\beta^{e_{w}}.
+  \end{equation}
+  Taking $\varepsilon_{3}=\min(\varepsilon_{1},\varepsilon_{2})$, we
+  find
+  \begin{subequations}
+  \begin{equation}
+    u + \varepsilon_{3}\beta^{e_{u}} \leq 
+    u + \varepsilon_{1}\beta^{e_{u}} < v < w
+  \end{equation}
+  and
+  \begin{equation}
+    u < v < w - \varepsilon_{2}\beta^{e_{w}}
+    \leq w - \varepsilon_{3}\beta^{e_{w}}.
+  \end{equation}
+  \end{subequations}
+  This implies
+  \begin{equation}
+    u + \varepsilon_{3}\beta^{e_{u}} < w
+    \quad\mbox{and}\quad
+    u < w - \varepsilon_{3}\beta^{e_{w}}.
+  \end{equation}
+  Together, this implies
+  \begin{equation}
+    u + \varepsilon_{3}\max(\beta^{e_{u}}, \beta^{e_{w}}) < w
+  \end{equation}
+  which implies the result.
+\end{proof}
+
+
+\begin{thm}[Transitivity for essential equality]
+  For any $u\flEq_{\varepsilon_{1}}v$ and $v\flEq_{\varepsilon_{2}}w$,
+  we have $u\flApprox_{\varepsilon_{3}}w$ where $\varepsilon_{3}=\varepsilon_{1}+\varepsilon_{2}$.
+\end{thm}
+\begin{proof}
+  Given floating-point numbers $u$, $v$, $w$ and $\varepsilon_{j}>0$ ($j=1,2$)
+  such that $u\flEq_{\varepsilon_{1}}v$ and $v\flEq_{\varepsilon_{2}}w$,
+  we find by definition
+  \begin{subequations}
+  \begin{equation}
+    |v-u|\leq\varepsilon_{1}\min(\beta^{e_{u}},\beta^{e_{v}})
+  \end{equation}
+  and
+  \begin{equation}
+    |w-v|\leq\varepsilon_{2}\min(\beta^{e_{v}},\beta^{e_{w}}).
+  \end{equation}
+  \end{subequations}
+  This next step is the ``analysis'' unintuitive step, where we take
+  advantage of these inequalities to find new ones. We find:
+  \begin{subequations}
+  \begin{equation}
+    |v-u|\leq\varepsilon_{1}\max(\beta^{e_{u}},\beta^{e_{w}})
+  \end{equation}
+  and
+  \begin{equation}
+    |w-v|\leq\varepsilon_{2}\max(\beta^{e_{u}},\beta^{e_{w}}).
+  \end{equation}
+  \end{subequations}
+  (The reason for this is because $\min(\beta^{e_{u}},\beta^{e_{v}})\leq\beta^{e_{u}}\leq\max(\beta^{e_{u}},\beta^{e_{w}})$
+  and similarly for the other inequality.)
+  Then by the triangle inequality, we have
+  \begin{equation}
+    |w-u|\leq|w-v| + |v-u|.
+  \end{equation}
+  Combining this with the previous equation, we find
+  \begin{equation}
+    |w-u|\leq(\varepsilon_{1}+\varepsilon_{2})\max(\beta^{e_{u}},\beta^{e_{w}})
+  \end{equation}
+  which implies $w\flApprox_{\varepsilon_{1}+\varepsilon_{2}}u$ as claimed.  
+\end{proof}
+
+\begin{thm}
+  For any floating-point numbers $u$, $v$, if $|u-v|\leq\varepsilon|u|$
+  \emph{and} $|u-v|\leq\varepsilon|v|$, then we have $u\flEq_{\varepsilon}v$.
+\end{thm}
+\begin{proof}
+  We begin with the observation
+  \begin{subequations}
+    \begin{equation}
+      |u|\leq \beta^{e_{u}}
+    \end{equation}
+    and
+    \begin{equation}
+      |v|\leq\beta^{e_{v}}.
+    \end{equation}
+  \end{subequations}
+  This is because the mantissa, as a fraction, satisfies $1/\beta\leq f<1$.
+  Multiplying both sides by $\beta^{e}$ gives the absolute value of the
+  floating-point number.
+
+  Now, we find these imply the result. From the hypothesis $|u-v|\leq\varepsilon|u|$
+  we obtain
+  \begin{equation}
+    |u-v|\leq\varepsilon\beta^{e_{u}}.
+  \end{equation}
+  The hypothesis $|u-v|\leq\varepsilon|v|$ yields
+  \begin{equation}
+    |u-v|\leq\varepsilon\beta^{e_{v}}.
+  \end{equation}
+  Taken together, that \emph{both} conditions hold, we find
+  \begin{equation}
+    |u-v|\leq\varepsilon\min(\beta^{e_{u}},\beta^{e_{v}})
+  \end{equation}
+  which proves the result.
+\end{proof}
+
+
+\begin{thm}
+  For any floating-point numbers $u$, $v$, if $|u-v|\leq\varepsilon|u|$
+  \emph{or} $|u-v|\leq\varepsilon|v|$, then we have $u\flApprox_{\varepsilon}v$.
+\end{thm}
+\begin{proof}
+  We begin with the observation
+  \begin{subequations}
+    \begin{equation}
+      |u|\leq \beta^{e_{u}}
+    \end{equation}
+    and
+    \begin{equation}
+      |v|\leq\beta^{e_{v}}.
+    \end{equation}
+  \end{subequations}
+  Again, the justification is as before.
+
+  Now, we find these imply the result. From the hypothesis $|u-v|\leq\varepsilon|u|$
+  we obtain
+  \begin{equation}
+    |u-v|\leq\varepsilon\beta^{e_{u}}.
+  \end{equation}
+  The hypothesis $|u-v|\leq\varepsilon|v|$ yields
+  \begin{equation}
+    |u-v|\leq\varepsilon\beta^{e_{v}}.
+  \end{equation}
+  Taken separately, that \emph{either} one \emph{or} the other (or both)
+  of these conditions hold, we find
+  \begin{equation}
+    |u-v|\leq\varepsilon\max(\beta^{e_{u}},\beta^{e_{v}})
+  \end{equation}
+  which proves the result.
+\end{proof}
+
+
+
+\begin{thm}[Essential associativity]
+  For any floating-point numbers $x$, $y$, $z$, and any
+  $\varepsilon\geq 2\machEps/(1 - \machEps/2)^{2}$, we have
+  \begin{equation}
+    (x\otimes y)\otimes z\flEq_{\varepsilon}x\otimes(y\otimes z).
+  \end{equation}
+\end{thm}
+
+\begin{xca}
+  Prove or find a counter example: for any floating-point numbers $x$,
+  $y$, and $z$, there is a $\varepsilon_{0}>0$ such that for any
+  $\varepsilon>\varepsilon_{0}$ we have $(x\oplus y)\oplus z\flEq_{\varepsilon}x\oplus(y\oplus z)$.
+\end{xca}
+
+\begin{xca}[{H.~Bj\"ork; Kahan~\cite[{(item 5, pg 0-2)}]{kahan1973}; Knuth~\cite[(\S4.2.2,ex.15)]{taocp2}}]
+  Does the computed midpoint of an interval always lie between the
+  endpoints? That is, for floating-point numbers $x$ and $y$, does
+  $x\leq y$ imply $x\leq (x\oplus y)\oslash 2\leq y$? [Hint: consider
+    $\beta=2$ as well as other bases $\beta>2$.]
+\end{xca}
+
+% William Kahan, Implementation of Algorithms, part I, lecture notes, 1973

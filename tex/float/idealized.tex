@@ -338,7 +338,7 @@ The reason for $10^{e}/2$ is because $x$ is \emph{half-way} between
 $x_{0}$ and $x_{1}$.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}\label{lemma:idealized:truncation-round-off-error}
 In $\FF_{\beta,t}$, the round-off error for truncation rounding is
 bounded by $\beta^{1-t}$
 \end{lemma}
@@ -378,7 +378,7 @@ where the denominator has $\beta^{t-1}\leq m$ give us the bound
 precisely as asserted.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}\label{lemma:idealized:rn-round-off-error}
 In $\FF_{\beta,t}$, the round-off error for round-to-nearest rounding is
 bounded by $\beta^{1-t}/2$
 \end{lemma}
@@ -409,7 +409,7 @@ Then using the lower-bound $\beta^{t-1}< m+\delta m$ gives us
 
 \subsection{Machine Epsilon}
 
-\begin{defn}
+\begin{defn}\label{defn:idealized:machine-epsilon}
 Let $\FF_{\beta,t}$ be idealized floating point numbers. We define
 \define{Machine Epsilon} to be the number
 $\varepsilon_{\text{mach}}\in\FF_{\beta,t}$ such that
@@ -417,6 +417,18 @@ $\varepsilon_{\text{mach}}\in\FF_{\beta,t}$ such that
 \varepsilon_{\text{mach}} := \frac{\min\{x\in\FF_{\beta,t}\mid x>1\}-1}{2}.
 \end{equation}
 \end{defn}
+
+\begin{ddanger}
+  Different texts have different definitions of machine epsilon. Some
+  texts take it to be the difference between the smallest floating-point
+  number greater than one and 1 (i.e., twice what we have taken as the
+  definition of machine epsilon). Other texts take it to be our
+  definition. Notably, the \ieee-754 standard (2008 revision, at least)
+  \emph{makes no mention of machine epsilon}. What's worse is that 
+  revered authorities like Higham and Demmel \emph{disagree} on which
+  definition to use. Consequently, ``machine epsilon'' is a horribly
+  ambiguous term.
+\end{ddanger}
 
 \begin{thm}
   We explicitly have
