@@ -15,7 +15,14 @@
 \RequirePackage{bm}
 \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
+\RequirePackage{algorithm}
+\RequirePackage{fancyvrb}
+\usepackage{fixltx2e}
+\RequirePackage{algpseudocode}
 \RequirePackage{manfnt} % for dangerous bend
+
+% https://tex.stackexchange.com/a/16060
+\MakeRobust{\Call}
 
 \setcounter{secnumdepth}{5}
 
@@ -53,6 +60,7 @@
 \newtheorem{axiom}[thm]{Axiom}
 \newtheorem{heuristic}[thm]{Heuristic}
 \newtheorem*{fundamentalAxiomFloat}{Fundamental Axiom of Floating Point}
+\newtheorem{problem}{Problem}[chapter]
 
 \theoremstyle{definition}
 \newtheorem{convention}[thm]{Convention}
@@ -138,6 +146,8 @@
 \def\ZZ{\mathbb{Z}}
 \def\FF{\mathbf{F}}
 
+\DeclareMathOperator{\id}{id}
+
 \let\propersubset\subset
 \let\propersupset\supset
 \let\oldsubset\subset
@@ -180,6 +190,9 @@
 \def\flEq{\approx}
 \DeclareMathOperator{\ulp}{ulp}
 \DeclareMathOperator{\ULP}{ULP}
+
+
+
 
 \endinput
 

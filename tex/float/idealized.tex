@@ -56,18 +56,29 @@ We will often write floating point numbers ``as if'' they were a subset
 of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
 \end{rmk}
 
+\begin{convention}
+  We will use the variables $u$, $v$, $w$ for floating-point numbers. 
+  We will let $x$, $y$, $z$ range over ``actual numbers'' (either $\RR$
+  or $\QQ$).
+\end{convention}
+
 \begin{defn}
 Let $\FF_{\beta,t}$ be idealized floating point numbers with base
-$\beta$ and precision $t$. The \define{Encoding Map} is the surjective
+$\beta$ and precision $t$. The \define{Encoding Map} is a surjective
 function
 \begin{equation}
   \fl_{\beta,t}\colon\RR\onto\FF_{\beta,t}
 \end{equation}
-which has its ``decoding map'' be
+such that it is ``exact'' on encodable rational numbers $\pm(m/\beta^{t})\beta^{e}\in\QQ$
+is mapped to $(s,m,e)$; further, its ``decoding map'' is
 \begin{equation}
   \fl_{\beta,t}^{-1}(s,m,e) = (-1)^{s}(m/\beta^{t})\beta^{e}.
 \end{equation}
 \end{defn}
+
+\begin{thm}
+  We see that $\fl\circ\fl^{-1}=\id$.
+\end{thm}
 
 \subsection{Rounding Schemes}
 
@@ -122,6 +133,7 @@ which has its ``decoding map'' be
   and $\delta x$ has $e'=e-t$ (which encodes $\delta m\geq1/2$) or
   $e'<e-t$ (encoding $\delta m<1/2$).
 \end{defn}
+
 \begin{rmk}
   For $\beta=2$, we can treat $m+\delta m$ as a $t+1$ bit number
   (truncating $\delta m$ to the leading bit). If the last two bits of
@@ -329,7 +341,8 @@ $x_{0},x_{1}\in\fl_{10,1}^{-1}(\FF_{10,1})$.
 \end{lemma}
 \begin{proof}
 Regardless of rounding, we see that $\fl_{10,1}(x)$ will be either
-$x_{0}$ or $x_{1}$. But $x_{1}-x_{0}=10^{e}$ where $\fl_{10,1}=(s,m,e)$.
+$\fl_{10,1}(x_{0})$ or $\fl_{10,1}(x_{1})$. But $x_{1}-x_{0}=10^{e}$
+where $\fl_{10,1}*x(=(s,m,e)$.
 The relative round-off error would then be
 \begin{equation}
   \roundError_{10,1;\text{rel}}(x) = \frac{10^{e}/2}{|x|} = \frac{10}{2}.
@@ -388,9 +401,9 @@ Let $x=((m+\delta m)/\beta^{t})\beta^{e}$ for some integer $\beta^{t-1}\leq m<\b
 and real $0<\delta m<\beta^{t-1}$, and $e\in\ZZ$. We are assuming $x>0$
 for simplicity (the proof for $x<0$ is the same). 
 
-Observe that $(x - \fl_{\beta,t}(x))\beta^{t-e}\leq \frac{1}{2}\beta$.
+Observe that $(x - \fl^{-1}_{\beta,t}(\fl_{\beta,t}(x)))\beta^{t-e}\leq \frac{1}{2}\beta$.
 That is to say, in base $\beta$, the expansion $x = (d_{0}.d_{1}\dots d_{t-1}d_{t}d_{t+1}\dots)\beta^{e}$
-has $\fl_{\beta,t}(x) - x\leq (\beta -d_{t})\beta^{-t-1}\beta^{e}$. Hence
+has $(\fl^{-1}\circ\fl_{\beta,t})(x) - x\leq (\beta -d_{t})\beta^{-t-1}\beta^{e}$. Hence
 \begin{equation}
   \roundError_{\beta,t;\text{abs}}(x)\leq
   \frac{(\beta/2)\beta^{-t-1}\beta^{e}}{((m+\delta m)/\beta^{t})\beta^{e}}
@@ -456,7 +469,7 @@ Machine epsilon is unique by construction.
 For any $x\in\RR$, the relative error of the encoding $\fl_{\beta,t}(x)$
 is bounded by machine epsilon:
 \begin{equation}
-  \fl_{\beta,t}(x) = x(1 + \varepsilon)
+  \fl^{-1}(\fl_{\beta,t}(x)) = x(1 + \varepsilon)
 \end{equation}
 for some $|\varepsilon|<\varepsilon_{\text{mach}}$.
 \end{prop}
@@ -464,17 +477,17 @@ for some $|\varepsilon|<\varepsilon_{\text{mach}}$.
 \begin{fundamentalAxiomFloat}[{Trefethen and Bau~\cite{trefethen1997numerical}}]
 For any arithmetic operator of real numbers $\cdot\in\{+,-,\times,/\}$ there
 is a corresponding operator of floating point numbers $\odot\in\{\oplus,\ominus,\otimes,\oslash\}$
-which satisfies the property: for all $x,y\in\FF_{\beta,t}$ there is an
+which satisfies the property: for all $u,v\in\FF_{\beta,t}$ there is an
 $\varepsilon\in\RR$ such that $|\varepsilon|\leq\varepsilon_{\text{mach}}$ and
 \begin{equation}
-  \fl^{-1}(x\odot y) = (\fl^{-1}(x)\cdot\fl^{-1}(y))(1 + \varepsilon).
+  \fl^{-1}(u\odot v) = (\fl^{-1}(u)\cdot\fl^{-1}(v))(1 + \varepsilon).
 \end{equation}
 \end{fundamentalAxiomFloat}
 \begin{rmk}
   \begin{enumerate}
   \item This is a statement about \emph{relative errors}.
   \item This can be taken as a definition of floating point operations
-    $x\odot y := \fl(\fl^{-1}(x)\cdot\fl^{-1}(y))$: just translate the
+    $u\odot v := \fl(\fl^{-1}(u)\cdot\fl^{-1}(v))$: just translate the
     operands back to real numbers, perform the operation, then translate
     the result to floating-point numbers. The error in this case would
     be, for any $\rho,\sigma\in\RR$,
@@ -638,46 +651,49 @@ which can be arbitrarily large if $x$ is arbitrarily close to $y$.
 
 \subsection{Properties of Floating-Point Arithmetic}
 \begin{thm}
-  Let $x,y\in\FF_{\beta,t}$ be floating-point numbers and
+  Let $u,v\in\FF_{\beta,t}$ be floating-point numbers and
   $\odot\in\{\oplus,\otimes\}$ be either floating-point addition or
   multiplication. Then when correctly rounded, it is commutative:
   \begin{equation}
-    x\odot y = y\odot x.
+    u\odot v = v\odot u.
   \end{equation}
 \end{thm}
+
 \begin{rmk}
 For real hardware with fused multiplication and addition, the
 \emph{ordering} of operations can produce drastically different results.
 \end{rmk}
+
 \begin{thm}
   Floating-point addition is not associative;
-  for all $x,y,z\in\FF_{\beta,t}$, we have
-  $$x\oplus(y\oplus z) \neq (x\oplus y)\oplus z$$
+  for all $u,v,w\in\FF_{\beta,t}$, we have
+  $$u\oplus(v\oplus w) \neq (u\oplus v)\oplus w$$
   in general.
 \end{thm}
 \begin{proof}
-  Take $x=\beta^{t}$, $y=-\beta^{t}$, and $z=1$. Then $(x\oplus y)\oplus z=1$
-  but $x\oplus(y\oplus z)=x\oplus y=0$.
+  Take $u=\beta^{t}$, $v=-\beta^{t}$, and $w=1$. Then $(u\oplus v)\oplus w=1$
+  but $u\oplus(v\oplus w)=u\oplus v=0$.
 \end{proof}
+
 \begin{thm}
   Floating-point multiplication is not associative:
-  for all $x,y,z\in\FF_{\beta,t}$, we have
-  $$x\otimes(y\otimes z) \neq (x\otimes y)\otimes z$$
+  for all $u,v,w\in\FF_{\beta,t}$, we have
+  $$u\otimes(v\otimes w) \neq (u\otimes v)\otimes w$$
   in general.
 \end{thm}
 \begin{proof}
-  Using round-to-nearest conventions, let $a,b,c\in\RR$ be such that
-  $\fl(a)=x$ and $\fl(b)=y$ and $\fl(c)=z$. We see
+  Using round-to-nearest conventions, let $x,y,z\in\RR$ be such that
+  $\fl(x)=u$ and $\fl(y)=v$ and $\fl(z)=w$. We see
   \begin{equation}
-    \fl(ab) = ab(1 + \varepsilon_{1})
+    \fl(xy) = xy(1 + \varepsilon_{1})
   \end{equation}
   so
   \begin{equation}
-    P_{1}=\fl^{-1}(\fl(\fl(ab)c)) = abc(1+\varepsilon_{1})(1 + \varepsilon_{2}).
+    P_{1}=\fl^{-1}(\fl(\fl(xy)z)) = xyz(1+\varepsilon_{1})(1 + \varepsilon_{2}).
   \end{equation}
   But we see
   \begin{equation}
-    P_{2}=\fl^{-1}(\fl(a\fl(bc))) = abc(1+\varepsilon_{3})(1 + \varepsilon_{4}).
+    P_{2}=\fl^{-1}(\fl(x\fl(yz))) = xyz(1+\varepsilon_{3})(1 + \varepsilon_{4}).
   \end{equation}
   Hence the ratio of the products
   \begin{equation}

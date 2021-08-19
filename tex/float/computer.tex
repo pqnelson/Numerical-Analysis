@@ -425,29 +425,35 @@ $\infty + x = x + \infty = \infty$ for any finite floating-point $x$.
     (-\infty)\otimes(-\infty) = \infty\otimes\infty = +\infty.
   \end{equation*}
 \end{axiom}
+
 \begin{axiom}
   We have $\infty\ominus(-\infty)=\infty\oplus\infty=\infty$.
 \end{axiom}
+
 \begin{axiom}
   We have $(-\infty)\oplus(-\infty)=(-\infty)\ominus(+\infty)=-\infty$.
 \end{axiom}
+
 \begin{axiom}
   We have $\sqrt{+\infty}=+\infty$.
 \end{axiom}
+
 \begin{axiom}
-  If $x>0$ is a finite floating-point number, then
+  If $u>0$ is a finite floating-point number, then
   \begin{equation*}
-    \frac{\pm x}{0} = \pm\infty.
+    \frac{\pm u}{0} = \pm\infty.
   \end{equation*}
 \end{axiom}
+
 \begin{axiom}
-  If $x$ is a finite floating-point number, then
+  If $u$ is a finite floating-point number, then
   \begin{equation*}
-    \frac{x}{\pm\infty}=0.
+    \frac{u}{\pm\infty}=0.
   \end{equation*}
 \end{axiom}
+
 \begin{axiom}
- In floating-point arithmetic, we have $\log(0)=-\infty$ and $\log(+\infty)=+\infty$.
+In floating-point arithmetic, we have $\log(0)=-\infty$ and $\log(+\infty)=+\infty$.
 \end{axiom}
 
 \subsubsection{Encoding NaN}
@@ -514,8 +520,8 @@ intended to be exhaustive!
 \end{axiom}
 
 \begin{axiom}
-If $x$ and $y$ are floating-point numbers and at least one of them is a \NaN,
-then $x\oplus y$, $x\ominus y$, $x\otimes y$, $x\oslash y$ all produce \NaN.
+If $u$ and $v$ are floating-point numbers and at least one of them is a \NaN,
+then $u\oplus v$, $u\ominus v$, $u\otimes v$, $u\oslash v$ all produce \NaN.
 \end{axiom}
 
 \begin{axiom}
@@ -526,9 +532,11 @@ then $x\oplus y$, $x\ominus y$, $x\otimes y$, $x\oslash y$ all produce \NaN.
 \begin{defn}
   We denote the \define{Quiet NaN} as \qNaN.
 \end{defn}
+
 \begin{defn}
   We denote the \define{Signaling NaN} as \sNaN.
 \end{defn}
+
 \begin{defn}
   \ieee-754 defines the predicates for any floating-point number $x$,
   \begin{itemize}
@@ -536,6 +544,7 @@ then $x\oplus y$, $x\ominus y$, $x\otimes y$, $x\oslash y$ all produce \NaN.
   \item $\isSignaling(x)$ return ``true'' if and only if $x=\sNaN$.
   \end{itemize}
 \end{defn}
+
 \begin{rmk}
   \FORTRAN/-1998 has the \verb|ieee_arithmetic| module\footnote{See,
   e.g., \url{http://fortranwiki.org/fortran/show/ieee_arithmetic}}

@@ -15,6 +15,7 @@
 \mainmatter
 \part{Fundamentals}
 \include{tex/float}
+\include{tex/polynomial-evaluation}
 
 \part{Linear Algebra}
 
