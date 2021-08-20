@@ -1,0 +1,204 @@
+\section{Horner Evaluation}
+
+We can generalize Example~\ref{ex:polynomial-evaluation:motivation-horner}
+by evaluating
+\begin{equation}
+  p(z) = p_{n}z^{n} + \dots + p_{1}z + p_{0}
+\end{equation}
+by factoring
+\begin{equation}
+  p(z) = \bigl(((p_{n}z + p_{n-1})z + \dots)z + p_{1}\bigr)z + p_{0}.
+\end{equation}
+The naive evaluation had $p_{k}z^{k}$ require $k+1$ multiplication
+operations, so there are a total of
+\begin{equation}
+  \sum^{n}_{k=1}k+1 = \frac{n(n+1)}{2}
+\end{equation}
+multiplication operations for naive evaluation. This clever
+factorization scheme requires $n$ multiplication operations.
+Let's explicitly describe this in Algorithm~\ref{alg:horner-polynomial-evaluation}.
+
+\begin{algorithm}\label{alg:horner-polynomial-evaluation}
+  \caption{Horner polynomial evaluation.}
+  \begin{algorithmic}[1]
+    \Function{HornerEval}{$p$,$x_{0}$} \Comment{$p$ is an array}
+      \State$n\gets\Call{PolynomialOrder}{p}$
+      \State$r\gets p_{n}$
+      \For{$j=1,n$}
+        \State\label{step:horner-polynomial-evaluation:loop-body}$r\gets (r\otimes x_{0}) \oplus p_{n-j}$
+      \EndFor
+      \State \Return $r$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{thm}
+  Let $p(z) = p_{n}z^{n} + \dots + p_{1}z + p_{0}$ be a polynomial of
+  degree $n$. Then Horner evaluation of $p$ at $x_{0}$ requires $n$
+  multiplications, $n$ additions, and $n+1$ memory load operations.
+\end{thm}
+\begin{proof}
+Observe in the loop, each iteration has 1 multiplication operation and 1
+addition operation. There are $n$ iterations to the loop, giving us a
+total of $n$ addition operations and $n$ multiplication operations.
+Like na\"{\i}ve polynomial evaluation, there are $n+1$ memory load
+operations.
+\end{proof}
+\begin{rmk}
+  If the computer has fused multiplication--addition operations, then
+  step~\ref{step:horner-polynomial-evaluation:loop-body} can be done in
+  a single floating-point operation (improving accuracy quite a bit).
+\end{rmk}
+\begin{ex}[Wilkinson stress-test revisited]
+We can apply our new algorithm to $w_{20}(x)$ to see what our results
+look like.
+\begin{center}
+  \begin{longtable}{r|r|r}
+$x$  & Naive Evaluation      & Horner Evaluation\\\hline
+$1$  & $160.00000000000000$  & 0\\
+$2$  & $-6144.0000000000000$ & $-8192.0000000000000$\\
+$3$  & $-138622.00000000000$ & $-18432.000000000000$\\
+$4$  & $-524288.00000000000$ & $-622592.00000000000$\\
+$5$  & $51735.000000000000$  & $-2048000.0000000000$\\
+$6$  & $-14942208.000000000$ & $-10838016.000000000$\\
+$7$  & $-23677216.000000000$ & $-23181312.000000000$\\
+$8$  & 0                     & $-58982400.000000000$\\
+$9$  & $-409311232.00000000$ & $-131383296.00000000$\\
+$10$ & $293601280.00000000$  & $-99328000.000000000$\\
+$10.000999999999999$ & $-1239859200.0000000$ & $198683136.00000000$ \\
+$11$ & $-2502688768.0000000$ & $-561532928.00000000$\\
+$12$ & $-12884901888.000000$ & $-875003904.00000000$\\
+$13$ & $11492392960.000000$  & $-1385832448.0000000$\\
+$14$ & $-12113149952.000000$ & $-1975328768.0000000$\\
+$15$ & $30333206528.000000$  & $-3808512000.0000000$\\
+$16$ & 0                     & $-6029312000.0000000$\\
+$17$ & $370440929280.00000$  & $-9619103744.0000000$\\
+$18$ & $-2806761127936.0000$ & $-23619133440.000000$\\
+$19$ & $1979979923456.0000$  & $-16210505728.000000$\\
+$20$ & $3848290697216.0000$  & $-27193344000.000000$\\\hline
+$x$  & Naive Evaluation & Horner Evaluation
+ \end{longtable}
+\end{center}
+This doesn't seem to fulfill the promises made earlier concerning
+improved results.
+\end{ex}
+
+We can improve the situation by using Horner's algorithm
+\emph{with base-points}. We want to rewrite the polynomial to look like
+\begin{equation}
+  p(z) = c_{0} + (z - b_{0})[c_{1} + (z - b_{1})[c_{2} + \dots (c_{n-1}
+      + (z - b_{n-1})c_{n})]].
+\end{equation}
+At first glance, this seems to make the situation worse. But if we know
+the roots of the polynomial, or if we're given the polynomial in this
+format\footnote{As will happen with divided differences in polynomial
+interpolation.}, then we're in business. If we know the roots, then we
+take $c_{n}=1$ and $c_{n-1}=\dots=c_{0}=0$ and the base-points are set
+to the roots $b_{k}=r_{k}$.
+
+\begin{algorithm}\label{alg:horner-base-evaluation}
+  \caption{Horner polynomial evaluation, with base points $b$}
+  \begin{algorithmic}[1]
+    \Function{HornerBasePointEval}{$p$,$b$,$x_{0}$} \Comment{$p$ and $b$ are arrays}
+      \State$n\gets\Call{PolynomialOrder}{p}$
+      \State$r\gets p_{n}$
+      \For{$j=1,n$}
+        \State $r\gets (r\otimes (x_{0} \ominus b_{n-j})) \oplus p_{n-j}$
+      \EndFor
+      \State \Return $r$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{lesson}
+  We see, in Algorithm~\ref{alg:horner-base-evaluation}, that the length
+  of the array $b$ is one less than the length of the array $p$. We
+  should begin with an assertion that this is true, if our language
+  supports it. In a language like Lisp or \CEE/, which doesn't support
+  sophisticated assertion functionality, it suffices to have a macro or
+  function which checks if a condition is false (i.e., the assertion
+  ``failed''). In which case, some logging message is printed, and the
+  program terminates. There should be a short-circuit to ``turn off''
+  assertions in production.
+\end{lesson}
+
+\begin{ex}
+  Continuing with the Wilkinson polynomial, we can now observe that the
+  coefficients $c_{0}=c_{1}=\dots=c_{20}=0$ and the base-points
+  $b_{1}=1$, $b_{2}=2$, \dots, $b_{20}=20$. When we use Algorithm~\ref{alg:horner-base-evaluation}
+  with these parameters, we have the following result:
+  \begin{center}
+\begin{longtable}{r|l|l|l}
+$x$ & Naive Evaluation & Horner Evaluation & Horner with Base \\\hline
+$1$ &$160.00000000000000$ &$0.0000000000000000$ &$0.0000000000000000$ \\
+$2$ &$-6144.0000000000000$ &$-8192.0000000000000$ &$0.0000000000000000$ \\
+$3$ &$-138622.00000000000$ &$-18432.000000000000$ &$0.0000000000000000$ \\
+$4$ &$-524288.00000000000$ &$-622592.00000000000$ &$0.0000000000000000$ \\
+$5$ &$51735.000000000000$ &$-2048000.0000000000$ &$0.0000000000000000$ \\
+$6$ &$-14942208.000000000$ &$-10838016.000000000$ &$0.0000000000000000$ \\
+$7$ &$-23677216.000000000$ &$-23181312.000000000$ &$0.0000000000000000$ \\
+$8$ &$0.0000000000000000$ &$-58982400.000000000$ &$0.0000000000000000$ \\
+$9$ &$-409311232.00000000$ &$-131383296.00000000$ &$0.0000000000000000$ \\
+$10$ &$293601280.00000000$ &$-99328000.000000000$ &$0.0000000000000000$ \\
+$10.000999999999999$ &$-1239859200.0000000$ &$198683136.00000000$ &$\mathbf{1316685234.713}1605$\\
+$11$ &$-2502688768.0000000$ &$-561532928.00000000$ &$0.0000000000000000$ \\
+$12$ &$-12884901888.000000$ &$-875003904.00000000$ &$0.0000000000000000$ \\
+$13$ &$11492392960.000000$ &$-1385832448.0000000$ &$0.0000000000000000$ \\
+$14$ &$-12113149952.000000$ &$-1975328768.0000000$ &$0.0000000000000000$ \\
+$15$ &$30333206528.000000$ &$-3808512000.0000000$ &$0.0000000000000000$ \\
+$16$ &$0.0000000000000000$ &$-6029312000.0000000$ &$0.0000000000000000$ \\
+$17$ &$370440929280.00000$ &$-9619103744.0000000$ &$0.0000000000000000$ \\
+$18$ &$-2806761127936.0000$ &$-23619133440.000000$ &$0.0000000000000000$ \\
+$19$ &$1979979923456.0000$ &$-16210505728.000000$ &$0.0000000000000000$ \\
+$20$ &$3848290697216.0000$ &$-27193344000.000000$ &$0.0000000000000000$ \\
+ \hline
+$x$ & Naive Evaluation & Horner Evaluation & Horner with Base
+ \end{longtable}
+  \end{center}
+This is no typo in the right column: Horner's method with offsets
+computes Wilkinson's polynomial quite accurately. In fact, the exact
+answer for $w_{20}(10.001)$ is
+\begin{align}
+  w_{20}(10.001) &= \frac{1316685234713890342385967043256460767330153372700300572948849714990001}
+    {10^{60}}\nonumber\\
+    &\approx 1316685234.713890342.
+\end{align}
+  Our approximation aggrees with the exact answer to 13 digits. We may
+  be more precise, and compute by hand $w_{*}=w_{20}(x_{0})$, where
+  $x_{0}$ is
+  \begin{equation}
+    \begin{split}
+      x_{0}&:= \fl^{-1}(\fl(10.001))\\
+      &=\frac{5630062484166541}{562949953421312}.
+    \end{split}
+  \end{equation}
+  We find
+  \begin{equation}
+    w_{*} = \frac{n}{d}
+  \end{equation}
+  where
+  \medbreak
+  \begingroup
+\noindent $n =$ \numprint{13454814548017714270834216765250216272127916488458850895062713092145332371299140852707717077336009753023344177629367925563370707643051703422563451846237105787217147159277944095178850212832025003254893112118372451753978464576605631316434229821111051065036081775579670822271521963775223088547930326974940625}
+\endgroup
+\medbreak
+\noindent and
+\medbreak
+  \begingroup
+\noindent $d =$ \numprint{10218702384817765435680628290748613458265350453429542612493041881278524886369096016818984783322294789577433327842265575649138882500575199542984559607218336872038429045509558663769793133795138494375185186532064890845853749530218856391110938974453986086436459043203870933208875495579361330830770176}
+  \endgroup
+  \medbreak\noindent%
+Or, as a more manageable expression,
+  \begin{equation}
+    w_{*} \approx \numprint{1316685234.7131606799}.
+  \end{equation}
+  Our approximation to this value has an absolute error of approximately
+  $1.367\times10^{-7}$ which is nearly as good as it gets (an absolute
+  error of $10^{-7}$ in a number $10^{9}$ means we have 16 good digits,
+  which exhausts double precision), and a relative error of about
+  $1.36657\times10^{-16}$. We could look at the binary form of $w_{*}$
+  and what Horner's method produces, which gives us an even better bound
+  on error\footnote{The absolute error is about $1.48315\times 10^{-8}$ and
+  relative error about $1.12643\times10^{-17}$.}, but the moral should be understood: Horner's method with
+  base points produces optimal results.
+\end{ex}

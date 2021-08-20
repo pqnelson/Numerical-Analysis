@@ -1,4 +1,6 @@
 \ProvidesPackage{nummac}[2021/06/05 Numerical Macros Package]
+
+\RequirePackage{assembly}
 \RequirePackage{longtable}
 \RequirePackage{datetime2}
 \RequirePackage{titlesec}
@@ -15,7 +17,7 @@
 \RequirePackage{bm}
 \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
-\RequirePackage{algorithm}
+\RequirePackage[chapter]{algorithm}
 \RequirePackage{fancyvrb}
 \usepackage{fixltx2e}
 \RequirePackage{algpseudocode}
@@ -65,9 +67,21 @@
 \theoremstyle{definition}
 \newtheorem{convention}[thm]{Convention}
 \newtheorem{defn}[thm]{Definition}
-\newtheorem{ex}[thm]{Example}
+%\newtheorem{ex}[thm]{Example}
 \newtheorem{xca}[thm]{\noindent\llap{\mantriangleright\kern.15em}Exercise}
 \newtheorem{puzzle}[thm]{Puzzle}
+\newtheorem{XxmpX}[thm]{Example} % \newtheorem establishes the object heading
+\newtheorem{XlessonX}[thm]{Lesson}
+
+\newenvironment{lesson}    % this is the environment name for the input
+  {\renewcommand{\qedsymbol}{$\lozenge$}%
+   \pushQED{\qed}\begin{XlessonX}}
+  {\popQED\end{XlessonX}}
+
+\newenvironment{ex}    % this is the environment name for the input
+  {\renewcommand{\qedsymbol}{$\lozenge$}%
+   \pushQED{\qed}\begin{XxmpX}}
+  {\popQED\end{XxmpX}}
 
 \theoremstyle{remark}
 \newtheorem{rmk}{Remark}[thm]
@@ -122,6 +136,16 @@
   \hskip-\parindent\fi
   \hbox to\algindent{\bf\hfil #1.\kern.25em}%
   \hangindent=\algindent\hangafter=1\ignorespaces}
+
+
+%%% Syntax highlighting
+\RequirePackage{color}
+
+\lstset{basicstyle=\ttfamily,
+  % keywordstyle=[1]\bfseries,          % keyword style
+  % commentstyle=\color{dkgreen},       % comment style
+  % stringstyle=\color{mauve}         % string literal style
+}
 
 %%% Notation and logos
 % programming languages

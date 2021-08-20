@@ -1,5 +1,9 @@
 \documentclass[oneside]{book}
+\usepackage{numprint}
+\usepackage{assembly}
 \usepackage{nummac}
+\npstyleenglish
+\npthousandsep{\ensuremath\;\allowbreak}
 
 \title{Notes on Numerical Analysis}
 \author{Alex Nelson\thanks{\compiledTimestamp}}

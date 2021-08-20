@@ -1,0 +1,224 @@
+\section{Naive Polynomial Evaluation}
+
+The first attempt at a solution is to just ``do the obvious thing'':
+loop over the coefficients, multiply them by $x^{k}$, then sum them all
+up. This is summarized in Algorithm~\ref{alg:naive-polynomial-evaluation}.
+The first question we should ask:
+\emph{How many operations does this algorithm use?}
+
+\begin{algorithm}\label{alg:naive-polynomial-evaluation}
+  \caption{Naive polynomial evaluation.}
+  \begin{algorithmic}[1]
+    \Function{NaiveEval}{$p$, $x_{0}$} \Comment{$p$ is an array}
+      \State\label{alg-step:naive-polynomial-evaluation:initial-load} $r\gets p_{0}$
+      \State $n\gets\Call{PolynomialOrder}{p}$
+      \State $x\gets 1$
+      \For{$j=1,n$}
+        \State $x\gets x\otimes x_{0}$
+        \State\label{alg-step:naive-polynomial-evaluation:fma} $r\gets r\oplus p_{j}\otimes x$
+      \EndFor
+      \State \Return $r$  
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{thm}
+  Let $p(z) = p_{n}z^{n} + \dots + p_{1}z + p_{0}$ be a polynomial of
+  degree $n$. Na\"{\i}ve polynomial evaluation requires $n$ addition
+  operations, $2n$ multiplication operations, and $n+1$ memory load
+  operations.
+\end{thm}
+\begin{proof}
+Each iteration of the loop has 1 addition operation, and 2
+multiplication operations. This gives us a total of $n$ addition
+operations and $2n$ multiplication operations.
+\end{proof}
+
+\begin{rmk}
+If the computer has a fused multiplication--addition operation, then
+step~\ref{alg-step:naive-polynomial-evaluation:fma} may be done in one
+operation. This reduces the number of operations to $n$ additions, and
+$n$ FMA operations.
+\end{rmk}
+
+
+\begin{ex}[Wilkinson Polynomial]
+  A stress-test we may consider is the Wilkinson polynomial of degree
+  20:
+  \begin{equation}
+    w_{20}(x) = \prod^{20}_{k=1}(x-k)
+  \end{equation}
+  We compute the coefficients by hand:
+  \begin{equation}
+    \begin{split}
+      &w_{20}(x)\\
+      &= x^{20}-210 x^{19}+20615 x^{18}-1256850 x^{17}+53327946 x^{16}-1672280820x^{15}\\
+    &+40171771630 x^{14}-756111184500 x^{13}+11310276995381 x^{12}\\
+      & -135585182899530 x^{11}+1307535010540395 x^{10}-10142299865511450 x^9\\
+      &+63030812099294896 x^8-311333643161390640 x^7+1206647803780373360 x^6\\
+      &-3599979517947607200 x^5+8037811822645051776 x^4-12870931245150988800 x^3\\
+      & +13803759753640704000 x^2-8752948036761600000 x+2432902008176640000
+    \end{split}
+  \end{equation}
+  Using the na\"{\i}ve polynomial evaluation, and double-precision
+  arithmetic, we have the following values:
+  \begin{center}
+    \begin{tabular}{c|l}
+      $x$ & naive($x$)\\ \hline
+      1 &   $160.00000000000000$      \\
+      2 &  $-6144.0000000000000$      \\
+      3 &  $-138622.00000000000$      \\
+      4 &  $-524288.00000000000$      \\
+      5 &   $51735.000000000000$      \\
+      6 &  $-14942208.000000000$      \\
+      7 &  $-23677216.000000000$      \\
+      \textbf{8} & \textbf{0.0000000000000000}      \\
+      9 &  $-409311232.00000000$      \\
+      10 &   $293601280.00000000$      \\
+      $10.000999999999999$      &  $-1239859200.0000000$      \\
+      11 &  $-2502688768.0000000$      \\
+      12 &  $-12884901888.000000$      \\
+      13 &   $11492392960.000000$      \\
+      14 &  $-12113149952.000000$      \\
+      15 &   $30333206528.000000$      \\
+      \textbf{16} & \textbf{0.0000000000000000}      \\
+      17 &   $370440929280.00000$      \\
+      18 &  $-2806761127936.0000$      \\
+      19 &   $1979979923456.0000$      \\
+      20 &   $3848290697216.0000$      \\
+    \end{tabular}
+  \end{center}
+  Observe the only values which correspond with the mathematical
+  function are in bold (8, and 16). This is horrible, how can we do better?
+\end{ex}
+
+\begin{ex}\label{ex:polynomial-evaluation:motivation-horner}
+  Consider a cubic $f(x)=2+3x+4x^{2}+5x^{3}$. Evaluate it at, say,
+  $x=7$.
+
+  Naive evaluation would do this simply by
+  \begin{equation}
+    \begin{split}
+      f(7) &= 2 + 3\cdot7 + 4\cdot 7^{2} + 5\cdot 7^{3}\\
+      &=2 + 3\cdot7 + 4\cdot7\cdot7 + 5\cdot7\cdot7\cdot7.
+    \end{split}
+  \end{equation}
+  Observe, we can factor this by
+  \begin{equation}
+    f(7) = 2 + 7\cdot(3 + 4\cdot7 + 5\cdot 7\cdot7).
+  \end{equation}
+  Does this change anything? Well, naive evaluation had 6
+  multiplications, now we have 4 multiplications. That's faster. We can
+  iterate this scheme:
+  \begin{equation}
+    f(7) = 2 + 7(3 + 7(4 + 5\cdot7)).
+  \end{equation}
+  This has 3 multiplication operations, quite a bit better.
+\end{ex}
+\begin{lesson}
+  Using a simple polynomial like this can test the software
+  implementation of Algorithm~\ref{alg:naive-polynomial-evaluation}
+  for obvious bugs. Although this doesn't prove the program correct, it
+  catches simple errors before they can cause problems.
+\end{lesson}
+
+\subsection{*Cost of Memory Load Operations}
+
+We could also note, when we write $p_{j}$, we really mean, ``Load the
+contents of memory cell associated with $p_{j}$ into a CPU register.''
+If we wanted to track this as well, we would note there is an initial
+load operation in
+step~\ref{alg-step:naive-polynomial-evaluation:initial-load}, and in
+each iteration (in step~\ref{alg-step:naive-polynomial-evaluation:fma})
+there is a load operation. Hence we have $n+1$ load operations. These
+are not necessarily negligible!
+
+On x86 architectures, {\tt gfortran}\footnote{Using GNU Fortran (Ubuntu
+9.3.0-17ubuntu1-20.04) 9.3.0; the flags supplied are ``\texttt{-c -S
+  -fverbose-asm -O0 -c}''. On x86, the additional flags
+``\texttt{-march=native -masm=intel}'' are given.} without optimization,
+when compiled for Haswell architecture, it translates $p_{j}$ lookup to
+a \texttt{MOV R,R} instruction, a \texttt{CDQE} instruction,
+a \texttt{MOV R,R} instruction, and a \texttt{VMOVSD} instruction.
+The \texttt{VMOVSD} costs 6
+cycles\footnote{\url{https://uops.info/html-instr/VMOVSD_XMM_M64.html}},
+the \texttt{MOV R,R} costs 1 cycle each, and the \texttt{CDQE} costs 1
+cycle. Hence together they cost 9 cycles, comparable to 3 \texttt{FADD} operations.
+
+When cross-compiling for \textsc{Sparc64}, looking up $p_{j}$
+compiles\footnote{If we had a \texttt{get\_elt(p,j) = p[j]} function, this
+would require an additional {\tt ldx} operation. The
+difference would cost us not just 3 cycles, but also the overhead of a
+function call. The point being: on \textsc{Sparc64}, accessing an array
+seems to be comparable to a floating-point addition operation in CPU cycles.}
+to one {\tt ldd} operation, an {\tt ld} operation, an {\tt ldx}
+operation, an {\tt sra} operation, and a {\tt sllx} operation. Appendix
+B3 for the UltraSPARC T1 supplement\footnote{\url{https://www.oracle.com/technetwork/systems/opensparc/t1-09-ust1-uasuppl-draft-hp-ext-1537737.html}}
+gives the following latencies for these instructions: {\tt ld} and {\tt ldd}
+take 9 cycles, {\tt ldx} takes 3 cycles, {\tt sra} takes 1 cycle, and
+{\tt sllx} takes 1 cycle. This sums to 23 cycles, comparable to a
+floating-point addition 26 cycle latency.
+% fmuld - 29, faddd - 26, fdivd 83, 
+
+An \textsc{Arm} Cortex-A9 (with hard-float support) is more explicit
+taking $p_{j}$ as two \texttt{LDR} operations, followed by an
+\texttt{LSLS}, an integer \texttt{ADD} of $p$ and $j$, then a
+\texttt{VLDR} operation to load that memory cell as a double-precision
+floating-point. These instructions may be tallied as follows:\footnote{\url{https://developer.arm.com/documentation/ddi0388/i/cycle-timings-and-interlock-behavior/load-and-store-instructions}}
+3 cycles for \texttt{LDR}, 1 cycle for \texttt{ADD}, 1 cycle for \texttt{VLDR},
+1 cycle for \texttt{LSLS}. Altogether, accessing the array element costs
+9 cycles. This is identical to the total time it takes for \texttt{VADD}
+to add two floating-point numbers and write it back to the register
+file.
+
+For x64, Haswell architecture, using Intel syntax, it compiles to:
+\begin{lstlisting}[language={[x86]Assembler}]
+    mov     eax, DWORD PTR -20[rbp]     # tmp112, j
+    cdqe
+    mov     rdx, QWORD PTR -72[rbp]     # tmp113, p
+    vmovsd  xmm0, QWORD PTR [rdx+rax*8] # _7, *p_20(D)
+\end{lstlisting}
+For \textsc{Sparc64}:
+\begin{lstlisting}[language={[sparc64]Assembler}]
+    ld   [%fp+2043], %g1 ! j, tmp143
+    sra  %g1, 0, %g1     ! tmp143, _6
+    ldx  [%fp+2175], %g2 ! p, tmp144
+    sllx %g1, 3, %g1     ! _6,, tmp145
+    ldd  [%g2+%g1], %f10 ! *p_20(D), _7
+\end{lstlisting}
+For ARM:
+\begin{lstlisting}[language={[ARM]Assembler}]
+    ldr     r2, [r7, #12]    @ tmp140, p
+    ldr     r3, [r7, #52]    @ tmp141, j
+    lsls    r3, r3, #3       @ tmp142, tmp141,
+    add     r3, r3, r2       @ tmp143, tmp140
+    vldr.64 d6, [r3]         @ _5, *p_18(D)
+\end{lstlisting}
+\textsc{Risc-v} compiles it to:
+\begin{lstlisting}[language={[RISC-V]Assembler}]
+    lw    a5,-20(s0)  # _6, j
+    ld    a4,-72(s0)  # tmp106, p
+    slli  a5,a5,3     #, tmp107, _6
+    add   a5,a4,a5    # tmp107, tmp108, tmp106
+    fld   fa4,0(a5)   # _7, *p_20(D)
+\end{lstlisting}
+MIPS compiles it to:
+\begin{lstlisting}[language={[mips]Assembler},
+  keywordstyle={[3]\color{red!50!black}}]
+    lw    $3,64($fp)   # tmp225, p
+    lw    $2,8($fp)    # tmp226, j
+    sll   $2,$2,3      # tmp227, tmp226,
+    addu  $2,$3,$2     # tmp228, tmp225, tmp227
+    ldc1  $f2,0($2)    # _5, *p_18(D)
+\end{lstlisting}
+For MIPS I-7200\footnote{Ch. 15 of \url{https://s3-eu-west-1.amazonaws.com/downloads-mips/I7200/I7200+product+launch/MIPS_I7200_Programmers_Guide_01_20_MD01232.pdf}},
+these are 2 load operations (\texttt{lw}), 2 arithmetic operations
+(\texttt{sll} and \texttt{addu}), and an ``\verb#ldc1#'' operation. Load
+operations cost between 2 and 3 cycles, arithmetic operations cost
+between 1 and 2 cycles. Altogether, this costs between 8 to 13 cycles,
+or between 2 and 3 floating-point addition operations\footnote{See,
+e.g., \url{https://lauri.võsandi.com/tub/computer-architecture/mips-pipeline.html}}.
+
+These three examples show looking up $p_{j}$ can cost anywhere between 1
+and 3 floating-point addition operations.
+
