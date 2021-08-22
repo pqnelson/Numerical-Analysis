@@ -29,15 +29,18 @@ as a function.
   for $t$, we have the following table of possible values:
 \begin{table}[h!]
   \centering
+  \bgroup
+  \def\arraystretch{1.125}
   \begin{tabular}{ |c|c|c| }
     \hline
  Name              & $\beta=2$ & $\beta=10$ \\ \hline
- Single Precision  & 24  & 7 \\  
+ Single Precision  & 24  & 7 \\
  Double Precision  & 53  & 16\\
  Quad Presision    & 113 & 34\\
  Octuple Precision & 237 & 71(?)\\
  \hline
 \end{tabular}
+  \egroup
 \caption{Table of precision in various bases; note: there is no
   \ieee\ standard for $\beta=10$ Octuple precision.}
 \end{table}
@@ -57,7 +60,7 @@ of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
 \end{rmk}
 
 \begin{convention}
-  We will use the variables $u$, $v$, $w$ for floating-point numbers. 
+  We will use the variables $u$, $v$, $w$ for floating-point numbers.
   We will let $x$, $y$, $z$ range over ``actual numbers'' (either $\RR$
   or $\QQ$).
 \end{convention}
@@ -105,6 +108,18 @@ is mapped to $(s,m,e)$; further, its ``decoding map'' is
   scheme which literally throws away
   $\delta x$, so
   $\RZ(x+\delta x)=\fl_{\beta,t}(x)$ for $0\leq\delta x<\beta^{e-t-1}$.
+\end{defn}
+
+\begin{defn}
+  \define{Round-Up} is a rounding scheme such that, for any $x\in\RR$,
+  $u=\RU(x)$ is the least floating-point number such that
+  $\fl^{-1}(u)\geq x$.
+\end{defn}
+
+\begin{defn}
+  \define{Round-Down} is a rounding scheme such that, for any $x\in\RR$,
+  $u=\RD(x)$ is the greatest floating-point number such that
+  $\fl^{-1}(u)\leq x$.
 \end{defn}
 
 
@@ -363,7 +378,7 @@ bounded by $\beta^{1-t}$
       \roundError_{\beta,t;\text{rel}}(x) &=
       \left|\frac{(d_{t}.d_{t+1}\dots)\times\beta^{e-t}}{d_{0}.d_{1}\dots d_{t-1}\times\beta^{e}}\right| \\
       &=
-      \frac{(d_{t}.d_{t+1}\dots)}{d_{0}.d_{1}\dots d_{t-1}}\times\beta^{-t} 
+      \frac{(d_{t}.d_{t+1}\dots)}{d_{0}.d_{1}\dots d_{t-1}}\times\beta^{-t}
     \end{split}
   \end{equation}
   The denominator is greater than 1, the numerator is bounded by
@@ -372,7 +387,7 @@ bounded by $\beta^{1-t}$
     \roundError_{\beta,t;\text{rel}}(x) \leq\beta^{1-t}
   \end{equation}
   as claimed.
-\end{proof}  
+\end{proof}
 \begin{proof}[Alternate Proof]
 Let $x = (-1)^{s}((m + \delta m)/\beta^{t})\beta^{e}\in\QQ$ where
 $0 < \delta m < \beta^{t-1}$, $\beta^{t-1}\leq m<\beta^{t}$, $s\in\{0,1\}$,
@@ -399,7 +414,7 @@ bounded by $\beta^{1-t}/2$
 \begin{proof}
 Let $x=((m+\delta m)/\beta^{t})\beta^{e}$ for some integer $\beta^{t-1}\leq m<\beta^{t}$
 and real $0<\delta m<\beta^{t-1}$, and $e\in\ZZ$. We are assuming $x>0$
-for simplicity (the proof for $x<0$ is the same). 
+for simplicity (the proof for $x<0$ is the same).
 
 Observe that $(x - \fl^{-1}_{\beta,t}(\fl_{\beta,t}(x)))\beta^{t-e}\leq \frac{1}{2}\beta$.
 That is to say, in base $\beta$, the expansion $x = (d_{0}.d_{1}\dots d_{t-1}d_{t}d_{t+1}\dots)\beta^{e}$
@@ -437,7 +452,7 @@ $\varepsilon_{\text{mach}}\in\FF_{\beta,t}$ such that
   number greater than one and 1 (i.e., twice what we have taken as the
   definition of machine epsilon). Other texts take it to be our
   definition. Notably, the \ieee-754 standard (2008 revision, at least)
-  \emph{makes no mention of machine epsilon}. What's worse is that 
+  \emph{makes no mention of machine epsilon}. What's worse is that
   revered authorities like Higham and Demmel \emph{disagree} on which
   definition to use. Consequently, ``machine epsilon'' is a horribly
   ambiguous term.
@@ -563,7 +578,7 @@ which can be arbitrarily large if $x$ is arbitrarily close to $y$.
     \beta^{e_{x}-e_{y}-1} < \frac{x}{y} < \beta^{e_{x}-e_{y}+1}
   \end{equation}
   The assumption $y/2\leq x\leq 2y$ is the same as $1/2\leq x/y\leq 2$,
-  and taken together with $\beta>1$ 
+  and taken together with $\beta>1$
   implies $e_{x}-e_{y}\in\{-1,0,1\}$. Let $\delta_{y}=e_{y}-e_{x}$, so
   $y = ((m_{y}\beta^{\delta_{y}})/\beta^{t})\beta^{e_{x}}$. Then we want
   to show
@@ -644,7 +659,7 @@ which can be arbitrarily large if $x$ is arbitrarily close to $y$.
 % Sternbenz lemma
 % If (y/2) \leq x \leq 2y, then x-y may be computed exactly in floating
 % point arithmetic.
-% 
+%
 % thm 3.4.2 of https://people.eecs.berkeley.edu/~fateman/264/papers/hauser.pdf
 % lemma 2.3 of https://hal-ens-lyon.archives-ouvertes.fr/ensl-01310023v2/document
 % lemma 2 of https://cs.nyu.edu/yap/bks/egc/09/2numer.pdf

@@ -162,6 +162,8 @@ rigorous construction of the extended real number system.
 \begin{rmk}
   The \ieee-754 standard specifies the following bounds for $\beta=2$:
   \begin{center}
+    \bgroup
+    \def\arraystretch{1.125}
     \begin{tabular}{|c|c|c|c|}
       Name   & $e_{\text{min}}$ & $e_{\text{max}}$ & $t$ \\\hline
       Single & $-126$         & $127$          & $24$\\
@@ -169,6 +171,7 @@ rigorous construction of the extended real number system.
       Quad   & $-16382$       & $16383$        & $113$\\
       Octuple & $-262142$     & $262143$       & $237$
     \end{tabular}
+    \egroup
   \end{center}
   Most contemporary hardware (as of 2021) supports single and
   double-precision floating-point, and have begun to support
@@ -235,7 +238,7 @@ We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{
   which can be encoded as $(0,\beta^{t-1}, e-(t-1))$ which is normal for
   $e_{\text{min}}<e-(t-1)<e_{\text{max}}$ and rounds to zero or infinity
   otherwise.
-  
+
   \textsc{Case 2:} If $m\neq0$, then $m<\beta^{t-1}$, so it's ``leading
   digit'' is 0. If we write the base-$\beta$ expansion
   \begin{equation}
@@ -299,7 +302,7 @@ representation $y\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
   \end{equation}
   The smallest positive subnormal number is denoted
   \begin{equation}
-    \alpha := \beta^{e_{\text{min}}-t+1}. 
+    \alpha := \beta^{e_{\text{min}}-t+1}.
   \end{equation}
 \end{defn}
 
@@ -540,7 +543,7 @@ then $u\oplus v$, $u\ominus v$, $u\otimes v$, $u\oslash v$ all produce \NaN.
 \begin{defn}
   \ieee-754 defines the predicates for any floating-point number $x$,
   \begin{itemize}
-  \item $\isNaN(x)$ return ``true'' if and only if $x=\NaN$. 
+  \item $\isNaN(x)$ return ``true'' if and only if $x=\NaN$.
   \item $\isSignaling(x)$ return ``true'' if and only if $x=\sNaN$.
   \end{itemize}
 \end{defn}
@@ -673,7 +676,7 @@ continue to S2.
 
 \algstep S2. Sum the two numbers using algorithm A, and return the result.\quad\slug.
 
-\subsubsection{Multiplication} 
+\subsubsection{Multiplication}
 
 
 \algbegin Algorithm M (Multiplication). \label{alg:float-multiplication}Given a couple floating-point
@@ -789,6 +792,8 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
   The CPU cycles for each floating-point operation should be estimated
   roughly as follows:
   \begin{center}
+    \bgroup
+    \def\arraystretch{1.125}
   \begin{tabular}{c|c}
     Operation & Run-time\\\hline
     Addition & $A$ \\
@@ -796,6 +801,7 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
     Multiplication & $2A$ \\
     Division & $10A$
   \end{tabular}
+  \egroup
   \end{center}
   These heuristics are useful when examining and comparing the
   performance of alternative numerical schemes.
@@ -803,7 +809,7 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
 \begin{xca}[Research problem]
   Improve on this heuristic. This is a rather ambiguous exercise and
   could be done in several ways.
-  
+
   One possibility: devise lower bounds on the circuit-complexity for
   these operations, and then determine the worst-case, best-case, and
   average-case complexity of each operation.
@@ -812,6 +818,8 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
   Empirically, the latency seems to be bounded by the following CPU
   cycles for Intel/AMD x86 architectures:
   \begin{center}
+  \bgroup
+  \def\arraystretch{1.125}
   \begin{tabular}{c|c}
     Operation & Run-time [CPU Cycles]\\\hline
     Addition & $3 \sqrt[4]{2}\approx 3.57$ \\
@@ -819,6 +827,7 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
     Multiplication & $\sqrt[4]{125\cdot 6}\approx5.22$ \\
     Division & $21.54$--$34.93$
   \end{tabular}
+  \egroup
   \end{center}
   We have simply taken the geometric mean of results reported in Wittman
   and friends~\cite{DBLP:journals/corr/WittmannZHW15}. The estimates
