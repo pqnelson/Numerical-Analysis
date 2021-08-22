@@ -1,5 +1,14 @@
 refs/
+*~
+*#
+# latex output
 *.aux
 *.log
 *.out
-*~
+*.toc
+numerical.tex
+numerical.pdf
+
+# bibtex output
+*.blg
+*.bbl
