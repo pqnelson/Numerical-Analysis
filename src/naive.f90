@@ -5,14 +5,18 @@
 ! gfortran -march=native -masm=intel -S -fverbose-asm -O0 -c naive.f90 -o naive.s
 ! gfortran -g -c -S -fverbose-asm -O0 naive.f90 -o naive-x64.s
 
-! sudo apt-get install gfortran-sparc*-linux-gnueabihf
+! sudo apt-get install gfortran-riscv64-linux-gnu
+! sudo apt-get install gfortran-arm-linux-gnueabihf gfortran-aarch64-linux-gnu
+! sudo apt-get install gfortran-sparc64-linux-gnu
+! sudo apt-get install gfortran-mips-linux-gnu
+! sudo apt-get install gfortran-powerpc64-linux-gnu gfortran-alpha-linux-gnu
 program test
   use ISO_FORTRAN_ENV
   implicit none
   if (.not.coherence_test()) then
      write(*,*) "ERROR: coherence test failed!"
   end if
-  
+
   call wilkinson_test ()
 contains
   ! a simple polynomial should agree with both methods
@@ -73,7 +77,7 @@ contains
     "$ & $",horner_base(zeros,base,10.001_real64,20), "$ \\"
     call binary_print(horner_base(zeros,base,10.001_real64,20))
   end subroutine wilkinson_test
-  
+
   function get_elt(p, j, n)
     use ISO_FORTRAN_ENV
     implicit none
@@ -90,14 +94,14 @@ contains
     real(real64), intent(in) :: x0, p(0:n), b(0:n-1)
     real(real64) :: horner_base, r
     integer :: j
-    
+
     r = p(n)
     do j=1,n
        r = r*(x0 - b(n-j)) + p(n-j)
     end do
     horner_base = r
   end function horner_base
-  
+
   function horner(p, x0, n)
     use ISO_FORTRAN_ENV
     implicit none
@@ -112,7 +116,7 @@ contains
     end do
     horner = r
   end function horner
-  
+
   function naive(p, x0, n)
     use ISO_FORTRAN_ENV
     implicit none
@@ -134,7 +138,7 @@ contains
     implicit none
     real(real64) :: x
     character(len=64) :: bin
-    
+
     write(bin, '(B64.64)') x
 
     print *, 'Sign Exponent     Mantissa '

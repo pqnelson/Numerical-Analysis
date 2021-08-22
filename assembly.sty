@@ -639,13 +639,54 @@
 
 \lstdefinelanguage[sparc64]{Assembler}{%
   % so listings can detect directives and register names
-  alsoletter={.\%},
+  alsoletter={.\%_},
   % strings, characters, and comments
   morestring=[b]",
   morestring=[b]',
   morecomment=[l]{!},
-  morekeywords=[1]{ld,sra,ldx,sllx,ldd},
-  morekeywords=[3]{\%fp,\%g1,\%g2,,\%f10},
+  % https://docs.oracle.com/cd/E19120-01/open.solaris/816-1681/6m83631lm/index.html
+  morekeywords=[1]{add,addcc,addx,addxcc,and,andcc,andn,andncc,
+    ba,bcs,bcc,be,bn,bne,bg,bge,bgeu,bl,ble,blu,bleu,bneg,
+    bpa,bpe,bpg,bple,bpn,bpos,bvc,bvs,
+    call,clr,cmp,clrh,clrb,
+    dec,deccc,
+    fcmp,fcmpe,fmovd,
+    inc,inccc,
+    jmp,jmpl,
+    ld,ldd,ldx,ldsb,ldsh,ldub,
+    mov,mulcc,
+    nop,
+    or,orcc,orn,orncc,
+    rdy,restore,ret,retl,rett,return,
+    save,sethi,sll,sllx,sra,srl,st,stb,std,sth,subcc,subx,subxcc,swap,
+    tst,tsubcc,tsubcctv,taddcc,taddcctv,
+    wry,
+    xor,xorcc,xnor,xnorcc},
+  morekeywords=[2]{.align,.asciz,.byte,
+    .cfi_def_cfa_register, .cfi_endproc, .cfi_register,
+    .cfi_window_save,
+    .file,.fregisters,.global,.ident,
+    .loc,.locals,
+    .proc,.register,.registers,
+    .section,.size,.type,
+    .uahalf,.uaword,.uaxword,.uleb128,
+    .window},
+  morekeywords=[3]{% https://icps.u-strasbg.fr/people/loechner/public_html/enseignement/SPARC/sparcstack.html
+    % %f0 through %f31 are floating-point registers
+    \%f0,\%f1,\%f2,\%f3,\%f4,\%f5,\%f6,\%f7,\%f8,\%f9,\%f10,
+    \%f10,\%f11,\%f12,\%f13,\%f14,\%f15,\%f16,\%f17,\%f18,\%f19,\%f20,
+    \%f20,\%f21,\%f22,\%f23,\%f24,\%f25,\%f26,\%f27,\%f28,\%f29,\%f30,
+    \%f31,
+    % global registers
+    \%g1,\%g2,\%g3,\%g4,\%g5,\%g6,\%g7,
+    % input registers
+    \%i1,\%i2,\%i3,\%i4,\%i5,\%i6,\%i7,
+    % local registers
+    \%l1,\%l2,\%l3,\%l4,\%l5,\%l6,\%l7,
+    % output registers
+    \%o1,\%o2,\%o3,\%o4,\%o5,\%o6,\%o7,
+    % special registers
+    \%fp,\%npc,\%pc,\%sp,\%y},
   keywordstyle={[1]\sparcInstructionStyle},
   keywordstyle={[2]\sparcDirectiveStyle},
   keywordstyle={[3]\sparcRegisterStyle},
