@@ -66,6 +66,25 @@ of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
 \end{convention}
 
 \begin{defn}
+  We have a \define{Strict Order of Floats} $<$ on idealized floating-point numbers defined
+  by
+  \begin{enumerate}
+    \item For any $m,m',e,e'$ (not all zero), $(1,m,e) < (0,m',e')$
+    \item For any nonzero $m$ and $m'$, and $e,e'\in\ZZ$, we have $e<e'$
+      implies $(0,m,e) < (0,m',e')$ and $(1,m,e) > (1,m',e')$.
+    \item For any nonzreo $m$, $m'$ and any $e\in\ZZ$, we have $m<m'$
+      implies $(0,m,e) < (0,m',e)$ and $(1,m,e) > (1,m',e)$.
+  \end{enumerate}
+  Further, we have an \define{Equality of Floats}
+  $(s,m,e)=(s',m',e')$ if and only if $s=s'$ and $m=m'$ and $e=e'$.
+\end{defn}
+
+\begin{rmk}
+  We have a partial order of idealized floats $u\leq v$ if and only if
+  $u<v$ or $u=v$.
+\end{rmk}
+
+\begin{defn}
 Let $\FF_{\beta,t}$ be idealized floating point numbers with base
 $\beta$ and precision $t$. The \define{Encoding Map} is a surjective
 function
@@ -73,15 +92,34 @@ function
   \fl_{\beta,t}\colon\RR\onto\FF_{\beta,t}
 \end{equation}
 such that it is ``exact'' on encodable rational numbers $\pm(m/\beta^{t})\beta^{e}\in\QQ$
-is mapped to $(s,m,e)$; further, its ``decoding map'' is
+is mapped to $(s,m,e)$; further, its ``decoding map'' is the injective
+function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 \begin{equation}
   \fl_{\beta,t}^{-1}(s,m,e) = (-1)^{s}(m/\beta^{t})\beta^{e}.
 \end{equation}
 \end{defn}
 
+\begin{lemma}\label{lemma:idealized:exactly-representable-numbers}
+  Let $\beta>1$, $t\in\NN$ be integers, $\FF_{\beta,t}$ be the set of
+  idealized floating-point numbers.
+  If $q\in\QQ$ is such that there are integers $\beta^{t-1}\leq m<\beta^{t}$
+  and $e\in\ZZ$ such that $q=\pm (m/\beta^{t})\beta^{e}$, then
+  \begin{equation*}
+    \fl_{\beta,t}(q) = (s,m,e)
+  \end{equation*}
+  where $s=1$ if $q<0$, and $s=0$ otherwise.
+\end{lemma}
+
 \begin{thm}
   We see that $\fl\circ\fl^{-1}=\id$.
 \end{thm}
+\begin{proof}
+  We see that $\fl^{-1}(s,m,e)=(-1)^{s}(m/\beta^{t})\beta^{e}=q\in\QQ$. Then by
+  Lemma~\ref{lemma:idealized:exactly-representable-numbers}, we see
+  $\fl(q)$ is exactly representable as $\fl(q)=(s,m,e)$. Hence we get
+  the result $(\fl\circ\fl^{-1})(s,m,e)=(s,m,e)$ for every
+  $(s,m,e)\in\FF_{\beta,t}$.
+\end{proof}
 
 \subsection{Rounding Schemes}
 
@@ -110,11 +148,21 @@ is mapped to $(s,m,e)$; further, its ``decoding map'' is
   $\RZ(x+\delta x)=\fl_{\beta,t}(x)$ for $0\leq\delta x<\beta^{e-t-1}$.
 \end{defn}
 
+\begin{ex}
+  For illustration, consider $t=1$ and $\beta=10$.
+  We see that $\RZ(-3.9)=-3$ and $\RZ(3.9)=3$.
+\end{ex}
+
 \begin{defn}
   \define{Round-Up} is a rounding scheme such that, for any $x\in\RR$,
   $u=\RU(x)$ is the least floating-point number such that
   $\fl^{-1}(u)\geq x$.
 \end{defn}
+
+\begin{ex}
+  For illustration, consider $t=1$ and $\beta=10$.
+  We see that $\RU(-3.9)=-3$ and $\RU(3.9)=4$.
+\end{ex}
 
 \begin{defn}
   \define{Round-Down} is a rounding scheme such that, for any $x\in\RR$,
@@ -122,6 +170,24 @@ is mapped to $(s,m,e)$; further, its ``decoding map'' is
   $\fl^{-1}(u)\leq x$.
 \end{defn}
 
+\begin{ex}
+  For illustration, consider $t=1$ and $\beta=10$.
+  We see that $\RD(-3.9)=-4$ and $\RU(3.9)=3$.
+\end{ex}
+
+\begin{thm}[{\emph{Handbook}~\cite[(\S2.2.2)]{10.5555/3235984}}]
+  For any real numbers $x,y\in\RR$, we have
+  \begin{equation*}
+    \RU(x+y)=-\RD(-x-y).
+  \end{equation*}
+\end{thm}
+
+\begin{thm}[{\emph{Handbook}~\cite[(\S2.2.2)]{10.5555/3235984}}]
+  For any real numbers $x,y\in\RR$, we have
+  \begin{equation*}
+    \RU(x\times y)=-\RD((-x)\times y).
+  \end{equation*}
+\end{thm}
 
 \begin{defn}
   The default for \ieee-754 arithmetic is
@@ -175,6 +241,12 @@ is mapped to $(s,m,e)$; further, its ``decoding map'' is
 
 \begin{thm}
   For any $x\in\RR$, we have $\RN(-x)=-\RN(x)$.
+\end{thm}
+
+\begin{thm}[{Rounding is a non-decreasing function, \emph{Handbook}~\cite[(\S2.2.2)]{10.5555/3235984}}]
+  For any rounding scheme $R(-)$, if $x,y\in\RR$ are such that $x\leq
+  y$,
+  then $R(x)\leq R(y)$.
 \end{thm}
 
 \begin{notation}
@@ -367,7 +439,7 @@ $x_{0}$ and $x_{1}$.
 \end{proof}
 
 \begin{lemma}\label{lemma:idealized:truncation-round-off-error}
-In $\FF_{\beta,t}$, the round-off error for truncation rounding is
+In $\FF_{\beta,t}$, the round-off error for truncation rounding $\RZ(-)$ is
 bounded by $\beta^{1-t}$
 \end{lemma}
 \begin{proof}
@@ -406,11 +478,35 @@ where the denominator has $\beta^{t-1}\leq m$ give us the bound
 precisely as asserted.
 \end{proof}
 
+\begin{lemma}\label{lemma:idealized:directed-round-off-error}
+In $\FF_{\beta,t}$, the round-off error for directed rounding $\RD(-)$
+or $\RU(-)$ is bounded by $\beta^{1-t}$
+\end{lemma}
+\begin{proof}
+  Let $x\in\RR$ be such that there is an $e\in\ZZ$ satisfying
+  \begin{equation}
+    \beta^{e}\leq|x|<\beta^{e+1}.
+  \end{equation}
+  If $|x|=\beta^{e}$, then $\RD(x)=\RU(x)=(s,\beta^{t-1},e+1-t)$ is
+  exactly representable.
+
+  Suppose that $|x|>\beta^{e}$. Without loss of generality suppose
+  $x>\beta^{e}$ (the reasoning is nearly identical for $x<-\beta^{e}$).
+  The distance between two consecutive floating-point numbers in the
+  range of $[\beta^{e},\beta^{e+1}]$ is exactly $\beta^{e-(t-1)}$, so
+  the absolute error due to rounding satisfies
+  \begin{equation}
+    |x - R(x)|\leq\beta^{e-(t-1)}
+  \end{equation}
+  for $R(x)=\RD(x)$ or $R(x)=\RU(x)$. Divide through by $|x|$ gives the
+  relative error bounds.
+\end{proof}
+
+
 \begin{lemma}\label{lemma:idealized:rn-round-off-error}
-In $\FF_{\beta,t}$, the round-off error for round-to-nearest rounding is
+In $\FF_{\beta,t}$, the relative round-off error for round-to-nearest rounding is
 bounded by $\beta^{1-t}/2$
 \end{lemma}
-
 \begin{proof}
 Let $x=((m+\delta m)/\beta^{t})\beta^{e}$ for some integer $\beta^{t-1}\leq m<\beta^{t}$
 and real $0<\delta m<\beta^{t-1}$, and $e\in\ZZ$. We are assuming $x>0$
@@ -420,30 +516,37 @@ Observe that $(x - \fl^{-1}_{\beta,t}(\fl_{\beta,t}(x)))\beta^{t-e}\leq \frac{1}
 That is to say, in base $\beta$, the expansion $x = (d_{0}.d_{1}\dots d_{t-1}d_{t}d_{t+1}\dots)\beta^{e}$
 has $(\fl^{-1}\circ\fl_{\beta,t})(x) - x\leq (\beta -d_{t})\beta^{-t-1}\beta^{e}$. Hence
 \begin{equation}
-  \roundError_{\beta,t;\text{abs}}(x)\leq
+  \roundError_{\beta,t;\text{rel}}(x)\leq
   \frac{(\beta/2)\beta^{-t-1}\beta^{e}}{((m+\delta m)/\beta^{t})\beta^{e}}
 \end{equation}
 Then using the lower-bound $\beta^{t-1}< m+\delta m$ gives us
 \begin{equation*}
-  \roundError_{\beta,t;\text{abs}}(x) < \frac{1}{2}\beta^{1-t}.\qedhere
+  \roundError_{\beta,t;\text{rel}}(x) < \frac{1}{2}\beta^{1-t}.\qedhere
 \end{equation*}
 \end{proof}
 
 
-\begin{thm}
+\begin{thm}[Round-off error bounds]\label{thm:idealized:round-off-error-bounds}
   In $\FF_{\beta,t}$, the relative round-off error is bounded by either
   $\beta^{1-t}$ or $\beta^{1-t}/2$ depending on choice of rounding scheme.
 \end{thm}
+\begin{proof}
+  The proof is by cases, and relegated to lemmas:
+
+  For $\RZ(-)$, this is Lemma~\ref{lemma:idealized:truncation-round-off-error}.
+  
+  For $\RU(-)$ and $\RD(-)$, this follows from Lemma~\ref{lemma:idealized:directed-round-off-error}.
+
+  For $\RN(-)$, this is Lemma~\ref{lemma:idealized:rn-round-off-error}.
+\end{proof}
 
 \subsection{Machine Epsilon}
 
 \begin{defn}\label{defn:idealized:machine-epsilon}
 Let $\FF_{\beta,t}$ be idealized floating point numbers. We define
-\define{Machine Epsilon} to be the number
-$\varepsilon_{\text{mach}}\in\FF_{\beta,t}$ such that
-\begin{equation}
-\varepsilon_{\text{mach}} := \frac{\min\{x\in\FF_{\beta,t}\mid x>1\}-1}{2}.
-\end{equation}
+\define{Machine Epsilon} to be the least upper bound of relative-error from
+rounding a real number to a floating-point number,
+the positive real number denoted $\machEps\in\RR$.
 \end{defn}
 
 \begin{ddanger}
@@ -455,23 +558,23 @@ $\varepsilon_{\text{mach}}\in\FF_{\beta,t}$ such that
   \emph{makes no mention of machine epsilon}. What's worse is that
   revered authorities like Higham and Demmel \emph{disagree} on which
   definition to use. Consequently, ``machine epsilon'' is a horribly
-  ambiguous term.
+  ambiguous term. The definition I've opted to use may be found in
+  ``What Every Computer Scientist Should Know About Floating-Point
+  Arithmetic'', by David Goldberg.
 \end{ddanger}
 
 \begin{thm}
-  We explicitly have
-  \begin{equation}
-    \varepsilon_{\text{mach}} = \frac{1}{2}\beta^{1-t}.
-  \end{equation}
+  We explicitly have, for $\RN(-)$,  
+  \begin{equation*}
+    \varepsilon_{\text{mach}} = \frac{1}{2}\beta^{1-t}\quad\mbox{for $\RN(-)$};
+  \end{equation*}
+  and
+  \begin{equation*}
+    \varepsilon_{\text{mach}} = \beta^{1-t}\quad\mbox{for $\RD(-)$, $\RU(-)$, $\RZ(-)$}.
+  \end{equation*}
 \end{thm}
 \begin{proof}
-  We have $\fl_{\beta,t}(1) = (0,\beta^{t-1},1-t)$, so the smallest
-  floating point number greater than 1 would be $(0,\beta^{t-1}+1,1-t)$.
-  The difference between these two numbers would be
-  \begin{equation}
-  (0,1,1-t)=\fl_{\beta,t}(\beta^{1-t}).
-  \end{equation}
-  Half this quantity is, by definition, machine epsilon.
+  This follows from Theorem~\ref{thm:idealized:round-off-error-bounds}.
 \end{proof}
 
 \begin{rmk}

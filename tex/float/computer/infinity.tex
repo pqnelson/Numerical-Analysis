@@ -1,0 +1,42 @@
+\subsubsection{Representing Infinities}
+
+In $\beta=2$, an infinity is represented by $(s,0,e_{\text{max}})=(-1)^{s}\infty$.
+Floating-point infinities enjoy all the properties we may expect, e.g.,
+$\infty + x = x + \infty = \infty$ for any finite floating-point $x$.
+
+\begin{axiom}
+  We have
+  \begin{equation*}
+    (-\infty)\otimes(-\infty) = \infty\otimes\infty = +\infty.
+  \end{equation*}
+\end{axiom}
+
+\begin{axiom}
+  We have $\infty\ominus(-\infty)=\infty\oplus\infty=\infty$.
+\end{axiom}
+
+\begin{axiom}
+  We have $(-\infty)\oplus(-\infty)=(-\infty)\ominus(+\infty)=-\infty$.
+\end{axiom}
+
+\begin{axiom}
+  We have $\sqrt{+\infty}=+\infty$.
+\end{axiom}
+
+\begin{axiom}
+  If $u>0$ is a finite floating-point number, then
+  \begin{equation*}
+    \frac{\pm u}{0} = \pm\infty.
+  \end{equation*}
+\end{axiom}
+
+\begin{axiom}
+  If $u$ is a finite floating-point number, then
+  \begin{equation*}
+    \frac{u}{\pm\infty}=0.
+  \end{equation*}
+\end{axiom}
+
+\begin{axiom}
+In floating-point arithmetic, we have $\log(0)=-\infty$ and $\log(+\infty)=+\infty$.
+\end{axiom}

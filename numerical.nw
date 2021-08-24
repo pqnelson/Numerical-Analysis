@@ -1,6 +1,6 @@
 \documentclass[oneside]{book}
 \usepackage{numprint}
-\usepackage{assembly}
+\usepackage{assembly,fortran}
 \usepackage{nummac}
 \npstyleenglish
 \npthousandsep{\ensuremath\;\allowbreak}

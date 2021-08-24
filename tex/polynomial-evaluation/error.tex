@@ -1,0 +1,77 @@
+\section{Error Analysis}
+
+From
+Example~\ref{ex:polynomial-evaluation:horner:horner-with-base-points-wilkinson},
+we saw there was error when encoding $x_{0}=10.001$ into a floating-point
+number, and an error when computing $w_{20}(x_{0})$ using floating-point
+numbers (i.e., even if we had $x_{0}$ exactly representable, there would
+still be error with $w_{20}(x_{0})$ due to floating-point). We see
+round-off error gives us
+\begin{equation}
+  x_{0} + \Delta x_{\text{round}} = \frac{5630062484166541}{562949953421312}
+\end{equation}
+where
+\begin{equation}
+  \begin{split}
+    \Delta x_{\text{round}} &= \frac{39}{70368744177664000}\\
+    &\approx5.5422333389287814497947692871094 \times10^{-16}.
+  \end{split}
+\end{equation}
+At the same time, we have error computing $w_{20}(x_{0})$ using some
+algorithm, ${\rm alg}(x_{0})$, which gives us:
+\begin{equation}
+  y_{0}^{*} := {\rm alg}(x_{0}) = w_{20}(x_{0}) + \Delta y.
+\end{equation}
+Here $\Delta y$ is the difference between \emph{the result} $y_{0}^{*}$
+and \emph{the answer} $y_{0}$. Horner's method computes Wilkinson's
+polynomial at $10.001$ as
+\begin{equation}
+  \begin{split}
+  y_{0}^{*} &:= \frac{1380644536674587}{1048576}\\
+  &\approx 1316685234.7131605148315429687500\dots
+  \end{split}
+\end{equation}
+We find $x_{0}^{*}$ to be the real number closest to $x_{0}$ such that
+$w_{20}(x_{0}^{*})=y_{0}^{*}$. Empirically, we find
+\begin{equation}
+  x_{0}^{*} = x_{0} + \Delta x \approx 10.000999999999999445651260815157\dots
+\end{equation}
+giving us
+\begin{equation}
+  \Delta x \approx 5.5434873918484323026856673893040\times 10^{-16}.
+\end{equation}
+In some sense, this $x_{0}^{*}$ tells us the argument which the result
+is the solution for. Let's introduce some terms for describing these
+quantities.
+\begin{defn}
+Let $\mathrm{alg}(x)$ be an algorithm approximating $f(x)$, let
+$y^{*}=\mathrm{alg}(x)$ be the (real number) result, and $y=f(x)$ be the
+answer. Let $x^{*}$ be the real number closest to $x$ such that
+$y^{*}=f(x^{*})$.
+
+We define the \define{(Absolute) Backwards Error} to be the quantity
+\begin{equation}
+  \Delta x := x^{*} - x
+\end{equation}
+and the \define{(Absolute) Forward Error} to be the quantity
+\begin{equation}
+  \Delta y := y^{*} - y.
+\end{equation}
+Graphically, we can picture this as:
+\begin{center}
+  \includegraphics{img/img-1.mps}
+\end{center}
+\end{defn}
+\begin{rmk}[Non-Uniqueness]
+  There's no reason for $\Delta x$ to be unique. We could have many
+  possible $x^{*}$ such that $f(x^{*})=y^{*}$ which are equally close to
+  $x$.
+\end{rmk}
+\begin{rmk}[History]
+  James Hardy Wilkinson, the mathematician who invented the Wilkinson
+  polynomial as a stress-test for numerical analysis, also developed the
+  idea of backward error analysis between 1957 and 1962. See, e.g.,
+  chapter 4 of
+  \emph{Algebraic Eigenvalue Problem}~\cite{wilkinson1965}, or
+  \cite[(\S6~\textit{et seq}.)]{wilkinson1963}.
+\end{rmk}

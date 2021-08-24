@@ -1,0 +1,341 @@
+\subsection{Arithmetic Operations}
+
+We will summarize the rules and heuristics for floating-point arithmetic
+operators. The exact implementation details depend on the choice of
+hardware.
+
+\begin{danger}
+  Although we call the following sketches ``algorithms'', they are not
+  sufficient for hardware implementers. We suppose there is a sensible
+  way to add, subtract, multiply, and divide the mantissas. The
+  algorithms produced can easily be transformed into a
+  flow-chart. Assertions and comments are placed in [square brackets].
+\end{danger}
+
+\begin{notation}\marginpar{Notation: $x\gets v$}
+  We write $x\gets v$ to indicate we are assigning the value $v$ to the
+  variable $x$. But for assigning multiple values to multiple variables,
+  we will write $(x_{1}, x_{2}, \dots, x_{n})\gets(v_{1},v_{2},\dots,v_{n})$
+  instead of $x_{1}\gets v_{1}$, $x_{2}\gets v_{2}$, \dots, $x_{n}\gets v_{n}$.
+\end{notation}
+
+\begin{notation}
+  We write $\XOR(-,-)$ for the binary exclusive-or
+  function. Specifically, we have $\XOR(1,0)=\XOR(0,1)=1$ and
+  $\XOR(1,1)=\XOR(0,0)=0$.
+\end{notation}
+
+\subsubsection{Normalization}
+
+We will routinely have a number of steps which should be abstracted away
+to a ``normalization'' algorithm.
+
+\algbegin Algorithm N (Normalization of Floating-Point canddiate). Given
+a rounding-mode $R$ on floating-point numbers, and
+some triple $(s_{x}, m_{x}, e_{x})$ where $m_{x}\in\NN_{0}$ and
+$e_{x}\in\ZZ$, try to produce a normalized version $(s_{r}, m_{r}, e_{r})$
+such that $\beta^{t-1}\leq m_{r}<\beta^{t}$ and there is an $\ell\in\ZZ$
+such that $e_{r}=e_{x}-\ell$ and $e_{\text{min}}\leq e_{r}\leq e_{\text{max}}$
+and $m_{r} = \beta^{\ell}m_{x}$. If $e_{x}> e_{\text{max}}$, then the
+result is $(-1)^{s_{r}}\infty$. If $e_{x} < e_{\text{min}}$, then a
+signed zero is returned.
+
+\algstep N0. [{\it Initialize\/}] Set $\ell\gets0$. Go to step N1.
+
+\algstep N1. If $\beta^{t-1}\leq m_{r}<\beta^{t}$, then go to step N4;
+otherwise go to step N2.
+
+\algstep N2. If $m_{r} < \beta^{t-1}$, then determine the number $\ell$
+of leading zeros. [We should have $\ell>0$.] Go to step N4.
+
+\algstep N3. If $m_{r} \geq \beta^{t}$, then shift to the right by
+$\ell$ places where $\ell = -\max\{k\in\NN | m_{r}\beta^{-k}<\beta^{t}\}$.
+[We should have $\ell < 0$.]
+Go to step N4.
+
+\algstep N4. Set $(s_{r},m_{r},e_{r})\gets R(s_{r},\beta^{\ell}m_{r},e_{r}-\ell)$.
+Go to step N5.
+
+\algstep N5. [{\it Handle overflow\/}] If $e_{r}>e_{\text{max}}$, then
+return $(-1)^{s_{r}}\infty$ and terminate the algorithm. Otherwise go to
+step N6.
+
+\algstep N6. [{\it Handle underflow\/}] If $e_{r}<e_{\text{min}}$, then
+return a signed zero $(-1)^{s_{r}}0$ and terminate the
+algorithm. Otherwise, return $(s_{r},m_{r},e_{r})$ and terminate the algorithm.\quad\slug
+
+\subsubsection{Addition}
+
+The algorithm for adding [finite] floating-point numbers $x$ and $y$ is
+done in the following steps:
+
+\algbegin Algorithm A (Floating-Point Addition). \label{alg:float-addition}Given two floating
+point numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y},m_{y},e_{y})$ ---
+both finite numbers --- this
+will compute their sum $x\oplus y = (s_{r}, m_{r}, e_{r})$ as a
+floating-point number.
+
+\algstep A0. [{\it Handle special cases\/}]
+If $x = 0$, return $y$ and terminate the algorithm.
+If $y=0$, then return x and terminate the algorithm.
+If $x$ is $\NaN$ or if $y$ is $\NaN$, then return a quiet $\NaN$
+and terminate the algorithm.
+If $y > x$, then swap $t\gets x$, $x\gets y$, and $y\gets t$.
+Now, unless terminated, go to step A1. [Ensures $x\geq y$]
+
+\algstep A1. [{\it Initialize\/}]
+Set $s_{r}\gets s_{x}$ the sign of the
+result to be the sign of the larger value, and assign $s_{z} \gets \XOR(s_{x},s_{y})$
+[so we need to compute $(-1)^{s_{x}}(|m_{x}| + (-1)^{s_{z}}|m_{y}|\beta^{-(e_{x}-e_{y})})$]
+Set $e_{r}\gets e_{x}$. Continue to step A2.
+
+\algstep A2. [{\it Significand alignment\/}] Compute $m_{t}\gets m_{y}\beta^{-(e_{x}-e_{y})}$
+shifting the mantissa $m_{y}$ to the right by $e_{x}-e_{y}$ digit
+positions. Continue to step A3.
+
+\algstep A3. Compute the result significand $m_{r}\gets m_{x} + (-1)^{s_{z}}m_{t}$
+where $s_{z}$ depends on the sign of $s_{y}$ and $s_{x}$. If $m_{r}$
+is negative (so $s_{z}=1$ and $x>0>-x>y$), it is negated and $s_{r}\gets 1$.
+[We have the tenative answer $(s_{r}, m_{r}, e_{r})$] Continue to step A4.
+
+\algstep A4. [{\it Normalize\/}] We call algorithm N on $(s_{r}, m_{r}, e_{r})$
+to normalize the sum, and whatever its results are, we return that and
+terminate the algorithm.\quad\slug
+
+
+\subsubsection{Subtraction}
+
+\begin{rmk}[Subtraction]
+  Floating-point subtraction $x\ominus y$ is just $x\oplus y'$ where
+  $y' = (\XOR(1,s_{y}),m_{y},e_{y})$ is the negated floating-point
+  number of $y$.
+\end{rmk}
+
+\algbegin Algorithm S (Subtraction). \label{alg:float-subtraction}Given a couple floating-point
+numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
+their difference.
+
+\algstep S1. [{\it Negate $y$\/}] Set $s_{y}\gets\XOR(s_{y},1)$. Then
+continue to S2.
+
+\algstep S2. Sum the two numbers using algorithm A, and return the result.\quad\slug.
+
+\subsubsection{Multiplication}
+
+
+\algbegin Algorithm M (Multiplication). \label{alg:float-multiplication}Given a couple floating-point
+numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
+their product.
+
+\algstep M1. [{\it Short-circuit NaN\/}] If either $x$ or $y$ is an
+\NaN, then return \qNaN\ and terminate. Otherwise continue to step M2.
+
+\algstep M2. [{\it Handle infinities\/}] If either $x$ is infinite and
+$y=0$ \emph{or} $x=0$ and $y$ is infinite, then return \qNaN\ and
+terminate the algorithm.
+If $x=(-1)^{s_{x}}\infty$ or $y=(-1)^{s_{y}}\infty$, then set
+$s_{r}\gets\XOR(s_{x},s_{y})$, return $(-1)^{s_{r}}\infty$, and
+terminate the algorithm.
+Otherwise continue to step M3.
+
+\algstep M3. [{\it Short-circuit zeroes\/}] If $x=0$ or $y=0$, then
+return 0 and terminate the algorithm.
+
+\algstep M4. [{\it Default case\/}] Otherwise, set
+$(s_{r}, m_{r},e_{r})\gets (\XOR(s_{x},s_{y}), m_{x}m_{y}, e_{x}+e_{y})$,
+then invoke algorithm N to normalize the product. Return the normalized
+product and terminate the algorithm.\quad\slug
+
+\subsubsection{Division}
+
+\algbegin Algorithm D (Division). \label{alg:float-division}Given a couple floating-point
+numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
+their quotient $x\oslash y$.
+
+\algstep D1. [{\it Short-circuit NaN\/}] If either $x$ or $y$ is an
+\NaN, then return \qNaN\ and terminate. If both $x$ and $y$ are zero,
+produce a \qNaN\ and terminate. If $\sgn(x)\neq\sgn(y)$ and both are
+infinite, return a \qNaN\ and terminate. Otherwise continue to step D2.
+
+\algstep D2. [{\it Short-circuit infinity\/}]
+If $\sgn(x)=\sgn(y)$ and both are infinite, return $\sgn(x)\infty$ and terminate.
+If $x$ is finite and $y$ is infinite, return 0 and terminate.
+If $x$ is infinite and $y\neq0$ is finite, return $\sgn(y)x$ and terminate.
+If $x$ is finite and $y=0$, return $\sgn(x)\infty$ and terminate.
+Otherwise, continue to step D3.
+
+\algstep D3. Compute $(s_{r},m_{r} + \delta m_{r},e_{r})\gets (\XOR(s_{x},s_{y}),m_{x}/m_{y},e_{x}-e_{y})$
+where $0<\delta m_{r}<1$ is a ``guard digit'' used in the rounding
+process. Continue to step D4.
+
+\algstep D4. [{\it Normalize\/}] Call algorithm N on
+$(s_{r}, m_{r}+\delta m_{r}, e_{r})$ and return its results, terminating
+the algorithm.\quad\slug
+
+\begin{xca}[W.M.~Kahan~\cite{kahan1973}; Knuth~\cite{taocp2}]
+  Prove that $1\oslash(1\oslash (1\oslash u))=1\oslash u$ for all
+  nonzero floating-point numbers $u\neq 0$.
+\end{xca}
+
+\begin{rmk}
+  Modern computers can perform two $n$-bit integer addition with only
+  $\bigO(\log(n))$ circuit depth, the same complexity as two $n$-bit
+  integer multiplication. This \emph{does not} translate to the same
+  number of CPU cycles! But they are of the same \emph{order of magnitude}.
+  Empirically, it seems that the CPU cost for adding two 64-bit
+  double-precision floating point numbers is half the cost of multiplying two
+  double-precision floating point numbers.
+
+  There have been a number of improvements in performance, e.g., with
+  SSE scalar operations.
+\end{rmk}
+
+
+\subsubsection{Standard Model of Floating-Point}
+
+The fundamental axiom of floating-point arithmetic discussed in the
+idealized floating-point system carries over to ``real'' \ieee-754
+floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
+``standard model of floating-point arithmetic'':
+
+\begin{axiom}[Standard model]
+  For any floating-point numbers $u$ and $v$ with machine precision
+  $\machinePrec$, we have
+  \begin{subequations}
+    \begin{equation}
+      \fl^{-1}(u~\fl(\mbox{op})~v) = (\fl^{-1}(u)~\mbox{op}~\fl^{-1}(v))(1 + \delta), \quad
+      |\delta|\leq\machinePrec
+    \end{equation}
+    where $\mbox{op}\in\{+,-,\times,/\}$.
+  \end{subequations}
+\end{axiom}
+
+\begin{rmk}
+  In practice, people often include the square root operation as obeying
+  the standard model of floating-point arithmetic.
+\end{rmk}
+\begin{rmk}
+  If $x,y\in\RR$ are representable by floating-point numbers $u:=\fl(x)$
+  and $v:=\fl(y)$, then we'd have $\fl^{-1}(u)=x(1 + \delta_{x})$ and
+  $\fl^{-1}(v)=y(1+\delta_{y})$ where $|\delta_{j}|\leq\machinePrecision$.
+  The standard-model of floating-point arithmetic tells us
+  \begin{equation}
+    \fl^{-1}(u~\mbox{flop}~v) = (x(1+\delta_{x})~\mbox{op}~y(1+\delta_{y}))(1+\delta)
+  \end{equation}
+  for $|\delta|\leq\machinePrecision$ and $\fl(\mbox{op})=\mbox{flop}$.
+\end{rmk}
+
+\marginpar{TODO: write up proof here}
+\begin{thm}[Fundamental theorem of floating-point arithmetic]
+  The \ieee-754 floating-point arithmetic satisfies the standard model
+  of floating-point operations.
+\end{thm}
+
+\begin{xca}[{Overton~\cite{overton2001numerical}}]
+  Prove or find a counter-example:
+  For any floating-point number $u$, $\fl(1)\otimes u=u$.
+\end{xca}
+
+\begin{xca}[{Overton~\cite{overton2001numerical}}]
+  Prove or find a counter-example:
+  For any nonzero floating-point number $u$, $u\oslash u = \fl(1)$.
+\end{xca}
+
+\begin{xca}[{Overton~\cite{overton2001numerical}}]
+  Prove or find a counter-example:
+  For any floating-point number $u$, $u\oslash\fl(2) = \fl(0.5)\otimes u$.
+\end{xca}
+
+\begin{xca}[{Overton~\cite{overton2001numerical}}]
+  Prove or find a counter-example:
+  For any floating-point numbers $u$ and $v$,
+  if $u\ominus v$ is zero, then $u=v$.
+\end{xca}
+
+\subsubsection{Costs of Floating-Point Operations}
+\begin{heuristic}
+  The CPU cycles for each floating-point operation should be estimated
+  roughly as follows:
+  \begin{center}
+    \bgroup
+    \def\arraystretch{1.125}
+  \begin{tabular}{c|c}
+    Operation & Run-time\\\hline
+    Addition & $A$ \\
+    Subtraction & $A$ \\
+    Multiplication & $2A$ \\
+    Division & $10A$
+  \end{tabular}
+  \egroup
+  \end{center}
+  These heuristics are useful when examining and comparing the
+  performance of alternative numerical schemes.
+\end{heuristic}
+\begin{xca}[Research problem]
+  Improve on this heuristic. This is a rather ambiguous exercise and
+  could be done in several ways.
+
+  One possibility: devise lower bounds on the circuit-complexity for
+  these operations, and then determine the worst-case, best-case, and
+  average-case complexity of each operation.
+\end{xca}
+\begin{ex}[x86-64 Estimates]
+  Empirically, the latency seems to be bounded by the following CPU
+  cycles for Intel/AMD x86 architectures:
+  \begin{center}
+  \bgroup
+  \def\arraystretch{1.125}
+  \begin{tabular}{c|c}
+    Operation & Run-time [CPU Cycles]\\\hline
+    Addition & $3 \sqrt[4]{2}\approx 3.57$ \\
+    Subtraction &  $3\sqrt[4]{2}$ \\
+    Multiplication & $\sqrt[4]{125\cdot 6}\approx5.22$ \\
+    Division & $21.54$--$34.93$
+  \end{tabular}
+  \egroup
+  \end{center}
+  We have simply taken the geometric mean of results reported in Wittman
+  and friends~\cite{DBLP:journals/corr/WittmannZHW15}. The estimates
+  from the first table are slightly more pessimistic about division and
+  multiplication.
+
+  These heuristics should be taken with a grain of salt, since
+  floating-point units tend to parallelize computations and the use of
+  SSE scalar operations speeds up calculations.
+\end{ex}
+\begin{ex}[Complications due to optimizations]
+  Consider a hypothetical CPU which takes 4 cycles to perform
+  addition and 1 CPU cycle to load a memory cell into one of its
+  registers. What modern CPU pipelines do is run several computations in
+  parallel. For example, the CPU pipeline would evaluate $a+b+c+d+e+f+g$ as:
+  \begin{center}
+    \begin{longtable}{r|l}
+      Cycle 1  & load $a$ into FPU\\\hline
+      Cycle 2  & load $b$ into FPU\\\hline
+      Cycle 3  & compute $a+b$ (cycle $1/4$)\\\hline
+      Cycle 4  & load $c$ into FPU,\\
+               & continue $a+b$ ($2/4$)\\\hline
+      Cycle 5  & load $d$ into FPU,\\
+               & continue $a+b$ ($3/4$)\\\hline
+      Cycle 6  & compute $c+d$ (1/4),\\
+               & finish $a+b$ ($4/4$) and store in top of stack as $s$\\\hline
+      Cycle 7  & load $e$ into FPU,\\
+               & continue $c+d$ ($2/4$)\\\hline
+      Cycle 8  & compute $e+s$ ($1/4$)\\
+               & continue $c+d$ ($3/4$)\\\hline
+      Cycle 9  & load $g$ into FPU,\\
+               & continue $e+s$ ($2/4$),\\
+               & finish $c+d$ ($4/4$) and store it in top of stack as $t$\\\hline
+      Cycle 10 & start $g+t$ ($1/4$)\\
+               & Continue $e+s$ ($3/4$)\\\hline
+      Cycle 11 & Continue $g+t$ ($2/4$)\\
+               & Finish $e+s$ ($4/4$) and store in top of stack as $u$\\\hline
+      Cycle 12 & Continue $g+t$ ($3/4$)\\\hline
+      Cycle 13 & Finish $g+t$ ($4/4$) and store it in top of stack as $v$\\\hline
+      Cycle 14 & Start $u+v$ ($1/4$)
+    \end{longtable}
+  \end{center}
+  The CPU will finish after 3 more cycles, giving us a grand total of 17
+  cycles. But if we just na\"{\i}vely count the 6 addition operations
+  and 7 memory loads, then we'd get $6\times4 + 7=31$ CPU cycles.
+\end{ex}

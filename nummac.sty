@@ -1,5 +1,6 @@
 \ProvidesPackage{nummac}[2021/06/05 Numerical Macros Package]
 
+\RequirePackage{fortran}
 \RequirePackage{assembly}
 \RequirePackage{longtable}
 \RequirePackage{datetime2}
@@ -35,7 +36,6 @@
 \def\marginpar#1{\marginnote{\footnotesize\em #1}}
 
 % based on Knuth's taocpmac.tex
-
 \titleformat{\section}
   {\large\sffamily\bfseries}
   {\thesection}
@@ -52,7 +52,8 @@
   {\large\sffamily\bfseries}
   {\thesubsubsection}
   {1em}
-  {}  
+  {}
+  
 % theorems
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}[section]
@@ -70,6 +71,7 @@
 %\newtheorem{ex}[thm]{Example}
 \newtheorem{xca}[thm]{\noindent\llap{\mantriangleright\kern.15em}Exercise}
 \newtheorem{puzzle}[thm]{Puzzle}
+\newtheorem{chunk}[thm]{Code}
 \newtheorem{XxmpX}[thm]{Example} % \newtheorem establishes the object heading
 \newtheorem{XlessonX}[thm]{Lesson}
 

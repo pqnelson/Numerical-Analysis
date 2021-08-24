@@ -1,0 +1,109 @@
+\subsubsection{Bounds on Precision and Accuracy}
+
+\begin{defn}
+  In the floating-point system $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
+  with rounding-scheme $R\colon\RR\to\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$,
+  we define the \define{Machine Precision} as the real number
+  $\machinePrec\in\RR$
+  which is the bound on rounding-error.
+\end{defn}
+
+
+\begin{ex}
+For truncation $RZ(-)$, the machine precision is
+\begin{equation}
+  \machinePrecision = \beta^{1-t}
+\end{equation}
+by Lemma~\ref{lemma:idealized:truncation-round-off-error}.
+\end{ex}
+
+
+\begin{ex}
+For round-to-nearest $RN$, the machine precision is
+\begin{equation}
+  \machinePrecision = \frac{\beta^{1-t}}{2}
+\end{equation}
+by Lemma~\ref{lemma:idealized:rn-round-off-error}. Since this is the
+default rounding scheme for \ieee-754, this should be the quantity we
+remember. We also observe this corresponds with our
+Definition~\ref{defn:idealized:machine-epsilon} of machine epsilon,
+carried over to \ieee-754 floating-point.
+\end{ex}
+
+
+\begin{defn}[{{\it Handbook\/}~\cite[(Def.2.6)]{10.5555/3235984}}]
+  If $x\in\RR$ is representable by a finite floating-point number
+  $u=\fl(x)$ such that $|u|\neq\Omega$ (so there is a next consecutive
+  floating-point number and a preceding floating-point number),
+  if $\beta^{n}\leq |u| < \beta^{n+1}$
+  we define the \define{Unit in Last Place} of $x$ to be the real-number
+  $\ulp(x) = \beta^{n-(t-1)}$.
+\end{defn}
+
+\begin{rmk}
+I should have some discussion about the definition of $\ulp(-)$, which
+is another muddled concept. See, e.g., Muller~\cite{muller2005ulp} for a
+discussion of the various definitions. Knuth~\cite[pp.232--233]{taocp2}
+defines $\beta^{1-t}$ as an ulp, but this seems to be antiquated terminology.
+Harrison~\cite{harrison-hol99} seems to be the first to formalize the
+notion in a theorem prover.
+\end{rmk}
+
+\begin{defn}
+  If $u=\fl(x)$, we define $\ULP(u)=\ulp(x)$.
+\end{defn}
+
+
+\begin{ex}
+  This $\ulp(-)$ function depends on the rounding scheme.
+  We see that $\ulp(\RN(1)) = 2\machinePrec$ and $\ulp(\RZ(1))=\machinePrec$.
+\end{ex}
+
+
+\begin{thm}
+  If $\fl(x)=(s,m,e)$, then $\ulp(x) = \beta^{\max(e,e_{\text{min}})-(t-1)}$.
+\end{thm}
+
+
+\begin{thm}
+  In base $\beta=2$, we have for any $x\in\RR$ and float $u$,
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ulp(x)\implies u = \fl(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u:=\fl(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ulp(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u:=\fl(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x| < \frac{1}{2}\ULP(u).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u=\RD(x)$ or $u=\RU(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x|\leq\ulp(x).
+  \end{equation*}
+\end{thm}
+
+
+\begin{thm}
+  For any real number $x\in\RR$ representable by a finite floating-point
+  number $u=\RD(x)$ or $u=\RU(x)$, we have
+  \begin{equation*}
+    |\fl^{-1}(u)-x|\leq\ULP(u).
+  \end{equation*}
+\end{thm}

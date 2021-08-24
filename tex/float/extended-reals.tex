@@ -1,0 +1,110 @@
+\subsection{*Extended Real Number System}\label{subsec:computer:extended-real-number-system}
+
+We should bear in mind that \ieee-754 floating-point arithmetic strives
+to emulate the \emph{extended reals}
+\begin{equation}
+  \extendedRR = \RR\cup\{-\infty,+\infty\}.
+\end{equation}
+The usual intuition holds with arithmetic operators involving
+infinities, except the following are ``indeterminate forms'' and illegal
+(left undefined):
+\begin{itemize}
+\item $\infty-\infty$
+\item $0\times(\pm\infty)$
+\item $\pm\infty/\infty$ (and $\pm\infty/(-\infty)$).
+\end{itemize}
+Though it is useful in probability and measure theory to define
+$0\times(\pm\infty)=0$.
+
+\begin{axiom}[Addition]
+  For any finite $x\in\RR$, we have
+  $$x+\infty=\infty+x=\infty.$$
+  Further
+  $$\infty+\infty=\infty.$$
+\end{axiom}
+
+
+\begin{xca}
+  Prove or find a counter-example: addition is commutative in the
+  extended real-number system.
+\end{xca}
+
+
+\begin{axiom}[Subtraction]
+  For any finite $x\in\RR$, we have
+  $$x-\infty=-\infty+x=-\infty.$$
+  Further, we have
+  $$-\infty-\infty=-\infty.$$
+\end{axiom}
+
+
+\begin{axiom}[Multiplication]
+  For any positive $x\in\RR$, $x>0$, we have
+  $$x\times(\pm\infty)=(\pm\infty)\times x = \pm\infty$$
+  and
+  $$(-x)\times(\pm\infty)=(\pm\infty)\times(-x)=\mp\infty.$$
+  This permits us to treat $-\infty$ as $-1\times(+\infty)$.
+\end{axiom}
+
+
+\begin{xca}
+  Prove or find a counter-example: multiplication is commutative in the
+  extended real-number system.
+\end{xca}
+
+
+\begin{axiom}[Division]
+  If $x\in\RR$, then
+  $$\frac{x}{\infty}=\frac{x}{-\infty}=0$$.
+\end{axiom}
+
+\begin{rmk}[Extended Reals with Dedekind Cuts]
+For real analysts (and lovers of set theoretic constructs), we could
+define $\extendedRR$ using Dedekind cuts. Recall, a Dedekind cut is a
+pair $(L,U)$ of subsets $L\subset\QQ$ and $U\subset\QQ$ such that
+\begin{itemize}
+\item $L\neq\emptyset$ and $U\neq\emptyset$
+\item if $a\in L$ and $b\in U$, then $a<b$
+\item if $a\in L$, then there is an $\ell\in L$ such that $a < \ell$
+\item if $b\in U$, then there is some $u\in U$ such that $u < b$
+\item if $a\in L$ and $b\in\QQ$ such that $b < a$, then $b\in L$
+\item if $b\in U$ and $u\in\QQ$ such that $b < u$, then $u\in U$
+\end{itemize}
+Then a real number is defined as a cut $x := (L,U)$ such that every
+$\ell\in L$ satisfies $\ell < x$, and every $u\in U$ satisfies $x < u$.
+
+We can construct the extended reals $\extendedRR$ using ``extended
+Dedekind cuts'', permitting (1) $L=\emptyset$ and $U=\QQ$, and (2)
+$L=\QQ$ and $U=\emptyset$. These model $-\infty$ and $+\infty$,
+respectively. All other conditions on Dedekind cuts (besides
+non-emptiness) are imposed on extended Dedekind cuts, and we get a
+rigorous construction of the extended real number system.
+\end{rmk}
+
+
+\begin{xca}
+  Prove or find a counter-example: $\extendedRR$ is an ordered field, an
+  ordered ring, or a group (using either multiplication or addition, whichever).
+\end{xca}
+
+
+\begin{xca}
+  If we consider $\extendedRR^{*}=\extendedRR\cup\{u\}$ where $u$ is the
+  special ``undefined'' constant, where we now have $\infty-\infty=u$,
+  $0\times(\pm\infty)=u$, $(\pm\infty)/\infty=(\pm\infty)/(-\infty)=u$,
+  and for any $a\in\extendedRR^{*}$ and any binary operation
+  $\star\in\{+,-,\times,/\}$ we have $u\star a = a\star u = u$;
+  then does $\extendedRR^{*}$ form a field? A ring? A group?
+\end{xca}
+
+
+\begin{xca}
+  When working in $\extendedRR$, what should $\tanh(\pm\infty)$ be?
+  [Hint: consider what $\exp(\pm\infty)$ should be, then use the
+    definition of hyperbolic tangent.]
+\end{xca}
+
+
+\begin{xca}
+  In the extended reals, what should $\arctan(\pm\infty)$ be?
+\end{xca}
