@@ -66,9 +66,14 @@ sorts of labels the reader may expect to find include classic favorites
 ones, too.
 
 We try to be explicit with the introduction of new notation by using a
-``notation'' register.
+``notation'' register. If we stick to a convention (e.g., working with
+double-precision by default), we'll announce it in a ``convention'' register.
 
-Similarly, we
+%% Similarly, we
+Since we expect the reader to be a mathematician, not necessarily an
+engineer, we'll also add ``lesson'' registers. These contain programming
+practices (like the use of unit tests on simple examples) which
+mathematicians may be unaware of, but programmers should know.
 
 \section*{Exercises and Examples}
 
@@ -80,6 +85,11 @@ exercise, a triangle is inserted into the left-margin.
 Examples are worked exercises, or they illustrate a point. For example,
 in the first chapter, examples are used to demonstrate floating-point
 arithmetic oddities.
+
+After the first chapter (on floating-point arithmetic), examples may be
+recurring, in the sense that: we evaluate several ``competing''
+algorithms on several examples, but we introduce each algorithm one at a
+time. 
 
 \section*{Outline of Topics}
 
@@ -130,6 +140,6 @@ Part three discusses numerical differential equations.
 
 Optional or advanced sections which can be skipped I've indicated with
 an asterisk or star, e.g.,
-\S\ref{subsec:computer:extended-real-number-system} ``Extended Real
-Number System*''. This is a topic I feel is useful for the reader, but
+\S\ref{subsec:computer:extended-real-number-system} ``*Extended Real
+Number System''. This is a topic I feel is useful for the reader, but
 the reader may skip it without shame or guilt.
