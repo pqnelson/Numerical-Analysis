@@ -23,12 +23,12 @@ example, Intel has the second most significant bit of the mantissa set
 to 1 for ``quiet \NaN\ Floating-Point Indefinite''.
 
 \begin{defn}
-  A \define{Not-a-Number} (or ``\emph{NaN}'') is a floating-point number
+  A \define{Not-a-Number}\index{NaN@\NaN|see {Not-a-Number}} (or ``\emph{NaN}'') is a floating-point number
   $(s,m,e)$ such that $e=e_{\text{max}}$ and $m>0$.
 \end{defn}
 
 \begin{defn}
-  Let $(s,m,e_{\text{max}})$ be an \NaN. Then we call $m$ the \define{Payload}.
+  Let $(s,m,e_{\text{max}})$ be an \NaN. Then we call $m$ the \define[Not-a-Number!Payload]{Payload}.
 \end{defn}
 
 Now we will list when \NaN\ will result from a computation. This is not
@@ -72,18 +72,18 @@ then $u\oplus v$, $u\ominus v$, $u\otimes v$, $u\oslash v$ all produce \NaN.
 \end{axiom}
 
 \begin{defn}
-  We denote the \define{Quiet NaN} as \qNaN.
+  We denote the \define[Not-a-Number!Quiet]{Quiet NaN}\index{qNaN@\qNaN|see {Not-a-Number, Quiet}} as \qNaN.
 \end{defn}
 
 \begin{defn}
-  We denote the \define{Signaling NaN} as \sNaN.
+  We denote the \define[Not-a-Number!Signaling]{Signaling NaN}\index{sNaN@\sNaN|see {Not-a-Number, Signaling}} as \sNaN.
 \end{defn}
 
 \begin{defn}
   \ieee-754 defines the predicates for any floating-point number $x$,
   \begin{itemize}
-  \item $\isNaN(x)$ return ``true'' if and only if $x=\NaN$.
-  \item $\isSignaling(x)$ return ``true'' if and only if $x=\sNaN$.
+  \item\index{$\isNaN(x)$} $\isNaN(x)$ return ``true'' if and only if $x=\NaN$.
+  \item\index{$\isSignaling(x)$} $\isSignaling(x)$ return ``true'' if and only if $x=\sNaN$.
   \end{itemize}
 \end{defn}
 

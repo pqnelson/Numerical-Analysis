@@ -11,11 +11,13 @@ extract_tex:
 with_bib:
 	$(TEX) numerical
 	$(BIB) numerical
+	makeindex numerical
 	$(TEX) numerical
 	$(TEX) numerical
 
 without_bib:
 	$(TEX) numerical
+	makeindex numerical
 	$(TEX) numerical
 
 doc: extract_tex with_bib

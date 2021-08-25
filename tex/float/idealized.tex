@@ -2,7 +2,7 @@ We begin by studying a ``toy model'' of floating-point numbers.
 
 \begin{defn}
   Let $\beta\in\NN$ be greater than 1, $t\in\NN$. The
-  \define{Idealized Floating Point} in base $\beta$ with precision $t$
+  \define{Idealized Floating-Point} in base $\beta$ with precision $t$
   consists of the set
   \begin{equation}
     \FF_{\beta,t} = \{\, (s,m,e)\mid s=\pm1, 0\leq m<\beta^{t},e\in\ZZ\,\}
@@ -24,7 +24,7 @@ encoding a real number as a floating point number, so we can describe it
 as a function.
 \end{rmk}
 
-\begin{rmk}[Standard values for $\beta$, $t$]
+\begin{rmk}[Standard values for $\beta$, $t$]\index{Double-Precision!Mantissa Precision}\index{IEEE-754@\ieee-754!Mantissa Precision}
   The \ieee-754 standard specifies that $\beta=2$ or $\beta=10$. Further,
   for $t$, we have the following table of possible values:
 \begin{table}[h!]
@@ -66,7 +66,7 @@ of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
 \end{convention}
 
 \begin{defn}
-  We have a \define{Strict Order of Floats} $<$ on idealized floating-point numbers defined
+  We have a \define[Idealized Floating-Point!Strict Order]{Strict Order of Floats} $<$ on idealized floating-point numbers defined
   by
   \begin{enumerate}
     \item For any $m,m',e,e'$ (not all zero), $(1,m,e) < (0,m',e')$
@@ -75,7 +75,7 @@ of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
     \item For any nonzreo $m$, $m'$ and any $e\in\ZZ$, we have $m<m'$
       implies $(0,m,e) < (0,m',e)$ and $(1,m,e) > (1,m',e)$.
   \end{enumerate}
-  Further, we have an \define{Equality of Floats}
+  Further, we have an \define[Idealized Floating-Point!Equality]{Equality of Floats}
   $(s,m,e)=(s',m',e')$ if and only if $s=s'$ and $m=m'$ and $e=e'$.
 \end{defn}
 
@@ -86,7 +86,7 @@ of $\QQ$. So instead of writing $(1,1,1)$ we'll just write $-\beta$.
 
 \begin{defn}
 Let $\FF_{\beta,t}$ be idealized floating point numbers with base
-$\beta$ and precision $t$. The \define{Encoding Map} is a surjective
+$\beta$ and precision $t$. The \define[Idealized Floating-Point!Encoding Map]{Encoding Map}\index{$\fl_{\beta,t}$!Idealized Floating-Point} is a surjective
 function
 \begin{equation}
   \fl_{\beta,t}\colon\RR\onto\FF_{\beta,t}
@@ -142,7 +142,7 @@ function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 \end{notation}
 
 \begin{defn}
-  \define{Truncation} (or ``rounding towards zero'') is a rounding
+  \define[Rounding!Truncation]{Truncation}\index{$\RZ(x)$} (or ``rounding towards zero'') is a rounding
   scheme which literally throws away
   $\delta x$, so
   $\RZ(x+\delta x)=\fl_{\beta,t}(x)$ for $0\leq\delta x<\beta^{e-t-1}$.
@@ -154,7 +154,7 @@ function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 \end{ex}
 
 \begin{defn}
-  \define{Round-Up} is a rounding scheme such that, for any $x\in\RR$,
+  \define[Rounding!Up]{Round-Up}\index{$\RU(x)$} is a rounding scheme such that, for any $x\in\RR$,
   $u=\RU(x)$ is the least floating-point number such that
   $\fl^{-1}(u)\geq x$.
 \end{defn}
@@ -165,7 +165,7 @@ function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 \end{ex}
 
 \begin{defn}
-  \define{Round-Down} is a rounding scheme such that, for any $x\in\RR$,
+  \define[Rounding!Down]{Round-Down}\index{$\RD(x)$} is a rounding scheme such that, for any $x\in\RR$,
   $u=\RD(x)$ is the greatest floating-point number such that
   $\fl^{-1}(u)\leq x$.
 \end{defn}
@@ -191,7 +191,8 @@ function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 
 \begin{defn}
   The default for \ieee-754 arithmetic is
-  \define{Round Half-to-Even},
+  \define[Rounding!Nearest, Half-to-Even]{Round
+    Half-to-Even}\index{$\RN_{\text{even}}(x)$}\index{Rounding!\ieee Default|see {Rounding, nearest, half-to-even}},
   denoted $\RN_{\text{even}}(x)$:\marginpar{Round half-to-even, default \ieee-754 scheme}
   if
   \begin{equation}
@@ -226,7 +227,7 @@ function $\fl^{-1}\colon\FF_{\beta,t}\into\QQ$ defined by:
 \end{rmk}
 \begin{defn}
   The familiar rule for rounding taught to elementary school students is
-  called \define{Round to Nearest, Ties Away From Zero}, denoted $\RN_{\text{away}}(x)$. If the number falls
+  called \define[Rounding!Nearest, Ties Away From Zero]{Round to Nearest, Ties Away From Zero}\index{$\RN_{\text{away}}(x)$}, denoted $\RN_{\text{away}}(x)$. If the number falls
   midway, it is rounded to the nearest value above (for positive
   numbers) or below (for negative numbers). This would have
   $\RN_{\text{away}}(x+\delta x)=(s,m+\sgn(x+\delta x), e)$ provided $\delta m\geq1/2$;
@@ -369,11 +370,11 @@ approximates $x$?
 
 \begin{defn}\label{defn:absolute-error}\label{defn:relative-error}
   Let $\widehat{x}\in\RR$ be an approximation to $x\in\RR$. Its
-  \define{Absolute Error} is
+  \define[Error!Absolute]{Absolute Error} is
   \begin{equation}
     \varepsilon_{\text{abs}} = |\widehat{x} - x|.
   \end{equation}
-  If $x\neq0$, then the \define{Relative Error} of the approximation is
+  If $x\neq0$, then the \define[Error!Relative]{Relative Error} of the approximation is
   \begin{equation}
     \varepsilon_{\text{rel}} = \left|\frac{\widehat{x}-x}{x}\right|.
   \end{equation}
@@ -390,11 +391,11 @@ approximation to $10^{3}$?
 \begin{defn}\label{defn:round-off-error}
 Let $\FF_{\beta,t}$ be idealized floating point numbers with base
 $\beta$ and precision $t$, let $x\in\RR$ be some real number. The
-\define{Absolute Round-Off Error} encoding $x$ as a floating point number is
+\define[Error!Round-Off!Absolute]{Absolute Round-Off Error} encoding $x$ as a floating point number is
 \begin{equation}
 \roundError_{\beta,t;\text{abs}}(x) = |x - \fl_{\beta,t}^{-1}(\fl_{\beta,t}(x))|.
 \end{equation}
-The \define{Relative Round-Off Error} encoding $x$ is
+The \define[Error!Round-Off!Relative]{Relative Round-Off Error} encoding $x$ is
 \begin{equation}
 \roundError_{\beta,t;\text{rel}}(x) = \left|\frac{x - \fl_{\beta,t}^{-1}(\fl_{\beta,t}(x))}{x}\right|,
 \end{equation}
@@ -526,7 +527,7 @@ Then using the lower-bound $\beta^{t-1}< m+\delta m$ gives us
 \end{proof}
 
 
-\begin{thm}[Round-off error bounds]\label{thm:idealized:round-off-error-bounds}
+\begin{thm}[Round-off error bounds]\label{thm:idealized:round-off-error-bounds}\index{Error!Round-Off!Bounds}
   In $\FF_{\beta,t}$, the relative round-off error is bounded by either
   $\beta^{1-t}$ or $\beta^{1-t}/2$ depending on choice of rounding scheme.
 \end{thm}
@@ -544,7 +545,7 @@ Then using the lower-bound $\beta^{t-1}< m+\delta m$ gives us
 
 \begin{defn}\label{defn:idealized:machine-epsilon}
 Let $\FF_{\beta,t}$ be idealized floating point numbers. We define
-\define{Machine Epsilon} to be the least upper bound of relative-error from
+\define{Machine Epsilon}\index{$\machEps$} to be the least upper bound of relative-error from
 rounding a real number to a floating-point number,
 the positive real number denoted $\machEps\in\RR$.
 \end{defn}
@@ -561,16 +562,20 @@ the positive real number denoted $\machEps\in\RR$.
   ambiguous term. The definition I've opted to use may be found in
   ``What Every Computer Scientist Should Know About Floating-Point
   Arithmetic'', by David Goldberg.
+  It seems to have first appeared in publication in Michael A.\ Malcom's
+  ``Algorithms to Reveal Properties of Floating-Point Arithmetic'' (1971)\footnote{\url{https://apps.dtic.mil/sti/pdfs/AD0727104.pdf}}
+  and was defined as the smallest floating-point number $u$ such that
+  $1\oplus u>1$. This coincides with $\ulp(1)$.
 \end{ddanger}
 
 \begin{thm}
   We explicitly have, for $\RN(-)$,  
   \begin{equation*}
-    \varepsilon_{\text{mach}} = \frac{1}{2}\beta^{1-t}\quad\mbox{for $\RN(-)$};
+    \machEps = \frac{1}{2}\beta^{1-t}\quad\mbox{for $\RN(-)$};
   \end{equation*}
   and
   \begin{equation*}
-    \varepsilon_{\text{mach}} = \beta^{1-t}\quad\mbox{for $\RD(-)$, $\RU(-)$, $\RZ(-)$}.
+    \machEps = \beta^{1-t}\quad\mbox{for $\RD(-)$, $\RU(-)$, $\RZ(-)$}.
   \end{equation*}
 \end{thm}
 \begin{proof}
@@ -589,14 +594,14 @@ is bounded by machine epsilon:
 \begin{equation}
   \fl^{-1}(\fl_{\beta,t}(x)) = x(1 + \varepsilon)
 \end{equation}
-for some $|\varepsilon|<\varepsilon_{\text{mach}}$.
+for some $|\varepsilon|<\machEps$.
 \end{prop}
 
-\begin{fundamentalAxiomFloat}[{Trefethen and Bau~\cite{trefethen1997numerical}}]
+\begin{fundamentalAxiomFloat}[{Trefethen and Bau~\cite{trefethen1997numerical}}]\index{Floating-Point!Fundamental Axiom}
 For any arithmetic operator of real numbers $\cdot\in\{+,-,\times,/\}$ there
-is a corresponding operator of floating point numbers $\odot\in\{\oplus,\ominus,\otimes,\oslash\}$
+is a corresponding operator of floating point numbers $\odot\in\{\oplus,\ominus,\otimes,\oslash\}$\index{$\ominus$}\index{$\oplus$}\index{$\otimes$}\index{$\oslash$}
 which satisfies the property: for all $u,v\in\FF_{\beta,t}$ there is an
-$\varepsilon\in\RR$ such that $|\varepsilon|\leq\varepsilon_{\text{mach}}$ and
+$\varepsilon\in\RR$ such that $|\varepsilon|\leq\machEps$ and
 \begin{equation}
   \fl^{-1}(u\odot v) = (\fl^{-1}(u)\cdot\fl^{-1}(v))(1 + \varepsilon).
 \end{equation}
@@ -611,14 +616,14 @@ $\varepsilon\in\RR$ such that $|\varepsilon|\leq\varepsilon_{\text{mach}}$ and
     be, for any $\rho,\sigma\in\RR$,
     $\fl^{-1}(\fl(\rho))=\rho(1+\varepsilon_{1})$,
     $\fl^{-1}(\fl(\sigma))=\sigma(1+\varepsilon_{2})$, and $\fl^{-1}(\fl(\rho)\odot\fl(\sigma))=(\rho(1+\varepsilon_{1})\cdot\sigma(1+\varepsilon_{2}))(1+\varepsilon_{3})$
-    where $|\varepsilon_{j}|<\varepsilon_{\text{mach}}$ for
-    $j=1,2,3$. The error in this case is bounded by $(1 + 2\varepsilon_{\text{mach}})$,
+    where $|\varepsilon_{j}|<\machEps$ for
+    $j=1,2,3$. The error in this case is bounded by $(1 + 2\machEps)$,
     since we could use the bound
-    $$(\rho(1+\varepsilon_{1})\cdot\sigma(1+\varepsilon_{2}))(1+\varepsilon_{3})<(\rho(1+\varepsilon_{\text{mach}})\cdot\sigma(1+\varepsilon_{\text{mach}}))(1+\varepsilon_{3})$$
-    then distributivity gives $$(\rho(1+\varepsilon_{\text{mach}})\cdot\sigma(1+\varepsilon_{\text{mach}}))(1+\varepsilon_{3})=(\rho\cdot\sigma)(1+\varepsilon_{\text{mach}})(1+\varepsilon_{3})$$
-    and $(1+\varepsilon_{\text{mach}})(1+\varepsilon_{3})\leq(1 + 2\varepsilon_{\text{mach}})$.
+    $$(\rho(1+\varepsilon_{1})\cdot\sigma(1+\varepsilon_{2}))(1+\varepsilon_{3})<(\rho(1+\machEps)\cdot\sigma(1+\machEps))(1+\varepsilon_{3})$$
+    then distributivity gives $$(\rho(1+\machEps)\cdot\sigma(1+\machEps))(1+\varepsilon_{3})=(\rho\cdot\sigma)(1+\machEps)(1+\varepsilon_{3})$$
+    and $(1+\machEps)(1+\varepsilon_{3})\leq(1 + 2\machEps)$.
     (Some care must be taken for division, we end up with the upper
-    bound being $1+3\varepsilon_{\text{mach}}$.)
+    bound being $1+3\machEps$.)
   \end{enumerate}
 \end{rmk}
 \begin{note}
@@ -633,10 +638,10 @@ We have lost $t-1$ digits of precision.
 
 For a concrete example, suppose $\varepsilon=2\sqrt{2}\beta^{1-t}$ so we
 have $y=1+\varepsilon$ is encoded as
-$\fl(y)=1+3\varepsilon_{\text{mach}}$ and $x=1$. The ``correct'' answer
+$\fl(y)=1+3\machEps$ and $x=1$. The ``correct'' answer
 to $x-y=-2\sqrt{2}\beta^{1-t}$. But floating-point loses
 everything but the leading coefficient, giving us
-$\fl(x)-\fl(y)=-3\varepsilon_{\text{mach}} = -3\beta^{1-t}$.
+$\fl(x)-\fl(y)=-3\machEps = -3\beta^{1-t}$.
 \end{note}
 
 Why is subtraction so horrible? Let $\fl^{-1}(\fl(x)) = x(1 + \varepsilon_{x})$
@@ -657,7 +662,7 @@ The relative error of this difference would be
 which can be arbitrarily large if $x$ is arbitrarily close to $y$.
 % Fundamental axiom of floating-point is from Trefethen & Bau
 
-\begin{lemma}[Sternbenz]
+\begin{lemma}[Sternbenz]\index{Sternbenz Lemma}
   Let $x,y\in\FF_{\beta,t}$ be floating point numbers.
   If
   \begin{equation}
@@ -815,7 +820,7 @@ For real hardware with fused multiplication and addition, the
   \end{equation}
   Hence the ratio of the products
   \begin{equation}
-    \left(\frac{1 - \varepsilon_{\text{mach}}}{1 + \varepsilon_{\text{mach}}}\right)^{2}\leq\frac{P_{1}}{P_{2}}\leq\left(\frac{1 + \varepsilon_{\text{mach}}}{1 - \varepsilon_{\text{mach}}}\right)^{2}
+    \left(\frac{1 - \machEps}{1 + \machEps}\right)^{2}\leq\frac{P_{1}}{P_{2}}\leq\left(\frac{1 + \machEps}{1 - \machEps}\right)^{2}
   \end{equation}
   which reflects failure for floating-point multiplication to be associative.
 \end{proof}

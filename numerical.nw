@@ -1,9 +1,11 @@
 \documentclass[oneside]{book}
+\usepackage{makeidx}
 \usepackage{numprint}
 \usepackage{assembly,fortran}
 \usepackage{nummac}
 \npstyleenglish
 \npthousandsep{\ensuremath\;\allowbreak}
+\makeindex
 
 \title{Notes on Numerical Analysis}
 \author{Alex Nelson\thanks{\compiledTimestamp}}
@@ -30,4 +32,9 @@
 \nocite{*}
 \bibliographystyle{siam}
 \bibliography{numerical}
+
+% https://tex.stackexchange.com/a/138973
+\clearpage
+\phantomsection
+\printindex
 \end{document}

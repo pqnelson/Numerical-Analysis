@@ -3,7 +3,7 @@
 \begin{defn}
   In the floating-point system $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
   with rounding-scheme $R\colon\RR\to\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$,
-  we define the \define{Machine Precision} as the real number
+  we define the \define{Machine Precision}\index{$\machinePrec$} as the real number
   $\machinePrec\in\RR$
   which is the bound on rounding-error.
 \end{defn}
@@ -36,7 +36,7 @@ carried over to \ieee-754 floating-point.
   $u=\fl(x)$ such that $|u|\neq\Omega$ (so there is a next consecutive
   floating-point number and a preceding floating-point number),
   if $\beta^{n}\leq |u| < \beta^{n+1}$
-  we define the \define{Unit in Last Place} of $x$ to be the real-number
+  we define the \index{$\ulp(x)$}\define{Unit in Last Place} of $x$ to be the real-number
   $\ulp(x) = \beta^{n-(t-1)}$.
 \end{defn}
 
@@ -49,10 +49,9 @@ Harrison~\cite{harrison-hol99} seems to be the first to formalize the
 notion in a theorem prover.
 \end{rmk}
 
-\begin{defn}
+\begin{defn}\index{$\ULP(u)$}
   If $u=\fl(x)$, we define $\ULP(u)=\ulp(x)$.
 \end{defn}
-
 
 \begin{ex}
   This $\ulp(-)$ function depends on the rounding scheme.

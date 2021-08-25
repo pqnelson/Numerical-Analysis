@@ -16,7 +16,8 @@
 \RequirePackage{amssymb,amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{bm}
-\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+%\RequirePackage[chapter,nottoc,notlot,notlof]{tocbibind}
+\RequirePackage{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
 \RequirePackage[chapter]{algorithm}
 \RequirePackage{fancyvrb}
@@ -188,7 +189,11 @@
 \newcommand\onto{\twoheadrightarrow}
 \newcommand\iso{\cong}
 
-\def\define#1{\textbf{``#1''}}
+\def\define{\@ifnextchar[{\@defineWithIndex}{\@defineWithoutIndex}}
+\def\@defineWithIndex[#1]#2{\index{#1}\textbf{``#2''}}
+\def\@defineWithoutIndex#1{\index{#1}\textbf{``#1''}}
+% \newcommand\define[1]{\@ifstar{}{\index{#1}}\textbf{``#1''}}
+
 \def\bigO{\mathcal{O}}
 
 % floating-point related notation

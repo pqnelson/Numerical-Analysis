@@ -12,3 +12,7 @@ numerical.pdf
 # bibtex output
 *.blg
 *.bbl
+
+# metapost
+*.mps
+*.mpx

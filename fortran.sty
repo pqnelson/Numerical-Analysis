@@ -85,7 +85,15 @@
    sensitive=f,%% not Fortran-77 standard, but allowed in Fortran-95 %%
    morestring=[d]",%% not Fortran-77 standard, but allowed in Fortran-95 %%
    morestring=[d]',%
-   morecomment=[l]!
+   morecomment=[l]!,
+   basicstyle=\ttfamily,
+   %keywordstyle=\bfseries\sffamily,
+   %keywordstyle=\color{ghkeyword}\bfseries,
+   keywordstyle=\color{ghkeyword!80!black},
+   commentstyle=\defaultCommentStyle,
+   stringstyle=\color{ghstring},
+   columns=fixed,
+   upquote=true
 }
 
 

@@ -30,6 +30,7 @@ hardware.
 We will routinely have a number of steps which should be abstracted away
 to a ``normalization'' algorithm.
 
+\index{Floating-Point!Normalization|(}
 \algbegin Algorithm N (Normalization of Floating-Point canddiate). Given
 a rounding-mode $R$ on floating-point numbers, and
 some triple $(s_{x}, m_{x}, e_{x})$ where $m_{x}\in\NN_{0}$ and
@@ -63,8 +64,9 @@ step N6.
 \algstep N6. [{\it Handle underflow\/}] If $e_{r}<e_{\text{min}}$, then
 return a signed zero $(-1)^{s_{r}}0$ and terminate the
 algorithm. Otherwise, return $(s_{r},m_{r},e_{r})$ and terminate the algorithm.\quad\slug
+\index{Floating-Point!Normalization|)}
 
-\subsubsection{Addition}
+\subsubsection{Addition}\index{Floating-Point!Addition}
 
 The algorithm for adding [finite] floating-point numbers $x$ and $y$ is
 done in the following steps:
@@ -103,7 +105,7 @@ to normalize the sum, and whatever its results are, we return that and
 terminate the algorithm.\quad\slug
 
 
-\subsubsection{Subtraction}
+\subsubsection{Subtraction}\index{Floating-Point!Subtraction}
 
 \begin{rmk}[Subtraction]
   Floating-point subtraction $x\ominus y$ is just $x\oplus y'$ where
@@ -120,8 +122,7 @@ continue to S2.
 
 \algstep S2. Sum the two numbers using algorithm A, and return the result.\quad\slug.
 
-\subsubsection{Multiplication}
-
+\subsubsection{Multiplication}\index{Floating-Point!Multiplication}
 
 \algbegin Algorithm M (Multiplication). \label{alg:float-multiplication}Given a couple floating-point
 numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
@@ -146,7 +147,7 @@ $(s_{r}, m_{r},e_{r})\gets (\XOR(s_{x},s_{y}), m_{x}m_{y}, e_{x}+e_{y})$,
 then invoke algorithm N to normalize the product. Return the normalized
 product and terminate the algorithm.\quad\slug
 
-\subsubsection{Division}
+\subsubsection{Division}\index{Floating-Point!Division}
 
 \algbegin Algorithm D (Division). \label{alg:float-division}Given a couple floating-point
 numbers $x=(s_{x},m_{x},e_{x})$ and $y=(s_{y}, m_{y}, e_{y})$, produce
@@ -198,7 +199,7 @@ idealized floating-point system carries over to ``real'' \ieee-754
 floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
 ``standard model of floating-point arithmetic'':
 
-\begin{axiom}[Standard model]
+\begin{axiom}[Standard model]\index{Floating-Point!Standard Model of Arithmetic}
   For any floating-point numbers $u$ and $v$ with machine precision
   $\machinePrec$, we have
   \begin{subequations}
@@ -231,6 +232,11 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
   of floating-point operations.
 \end{thm}
 
+\begin{rmk}
+Brent and Zimmerman~\cite{brent-zimmerman2010} have proven each
+operation satisfies the standard model of floating-point operations.
+\end{rmk}
+
 \begin{xca}[{Overton~\cite{overton2001numerical}}]
   Prove or find a counter-example:
   For any floating-point number $u$, $\fl(1)\otimes u=u$.
@@ -252,7 +258,8 @@ floating-point arithmetic. Higham~\cite[(\S2.2)]{higham2002} calls this the
   if $u\ominus v$ is zero, then $u=v$.
 \end{xca}
 
-\subsubsection{Costs of Floating-Point Operations}
+\subsubsection{Costs of Floating-Point Operations}\index{Floating-Point!Operation!Cost}
+
 \begin{heuristic}
   The CPU cycles for each floating-point operation should be estimated
   roughly as follows:

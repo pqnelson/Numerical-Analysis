@@ -20,7 +20,7 @@ implementation, and we have grounds for preferring a radix $\beta=2$.
 \begin{defn}
   Let $\beta>1$ be a fixed integer, $t>0$ an integer,
   $e_{\text{min}}<-t<0<t<e_{\text{max}}$ be
-  fixed integers. Then we define the set of \define{Floating-Point Numbers}
+  fixed integers. Then we define the set of \define[Floating-Point Number]{Floating-Point Numbers}
   in radix $\beta$ to be the set
   \begin{equation}
     \mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}} = \{(s,m,e)\in\ZZ^{3}|
@@ -53,7 +53,7 @@ implementation, and we have grounds for preferring a radix $\beta=2$.
 \end{ddanger}
 
 
-\begin{rmk}
+\begin{rmk}\index{Double-Precision!Exponent Bounds}
   The \ieee-754 standard specifies the following bounds for $\beta=2$:
   \begin{center}
     \bgroup
@@ -77,7 +77,8 @@ implementation, and we have grounds for preferring a radix $\beta=2$.
 
 \begin{chunk}
   We can write a simple \FORTRAN/ subroutine to print the binary
-  components of an \ieee-754 double-precision number:
+  components of an \ieee-754 double-precision
+  number:\marginpar{\texttt{utils.f90}}\index{binary-print-double@\lstinline{binary_print_double()}}
   \begin{fortran}
   subroutine binary_print_double(x)
     use ISO_FORTRAN_ENV
@@ -95,14 +96,14 @@ implementation, and we have grounds for preferring a radix $\beta=2$.
 
 
 \begin{defn}
-  We call a number $r\in\RR$ \define{Representable} in
+  We call a number $r\in\RR$ \define[Floating-Point Number!Representable]{Representable} in
   $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$ if there is a
   number $u\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$ such
   that
   \begin{equation}
     u = \fl(r).
   \end{equation}
-  Further, we say $r$ is \define{Exactly Representable} if
+  Further, we say $r$ is \define[Floating-Point Number!Exactly Representable]{Exactly Representable} if
   \begin{equation}
     r = (-1)^{s}\frac{m}{\beta^{t}}\beta^{e}
   \end{equation}
@@ -113,7 +114,7 @@ implementation, and we have grounds for preferring a radix $\beta=2$.
 \begin{defn}
   Floating-point numbers with $\beta=2$ and $e>e_{\text{min}}$, we may
   assume the mantissa $m$ has implicitly a leading-bit of 1,
-  called the \define{Implicit Leading Bit}.
+  called the \define[Floating-Point Number!Implicit Leading Bit]{Implicit Leading Bit}.
 \end{defn}
 
 
@@ -129,8 +130,8 @@ choice of radix, its implementation seems impossible.
 \begin{defn}\label{def:computer-float:normal-subnormal-denormal}
 We call a representable floating-point number $(s,m,e)\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
 \begin{itemize}
-\item\define{Normal} if $\beta^{t-1}\leq m<\beta^{t}$ or $m=e=0$;
-\item\define{Subnormal} if $e=e_{\text{min}}$ and $0<m<\beta^{t-1}$;
+\item\index{Normal Number}\define[Floating-Point Number!Normal]{Normal} if $\beta^{t-1}\leq m<\beta^{t}$ or $m=e=0$;
+\item\index{Subnormal Number}\define[Floating-Point Number!Subormal]{Subnormal} if $e=e_{\text{min}}$ and $0<m<\beta^{t-1}$;
 \item All others are \define{Denormalized}.
 \end{itemize}
 \end{defn}
@@ -214,11 +215,11 @@ representation $y\in\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$.
 
 \begin{defn}
   The largest finite floating-point number in $\mathbb{F}_{\beta,t,e_{\text{min}},e_{\text{max}}}$
-  is denoted
+  is denoted\index{$\Omega$}\index{Floating-Point Number!Omega@{$\Omega$}}
   \begin{equation}
     \Omega := (\beta - \beta^{1-t})\beta^{e_{\text{max}}}.
   \end{equation}
-  The smallest positive subnormal number is denoted
+  The smallest positive subnormal number is denoted\index{$\alpha$}\index{Floating-Point Number!alpha@{$\alpha$}}
   \begin{equation}
     \alpha := \beta^{e_{\text{min}}-t+1}.
   \end{equation}

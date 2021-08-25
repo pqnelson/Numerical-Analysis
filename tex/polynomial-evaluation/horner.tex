@@ -49,7 +49,11 @@ operations.
   step~\ref{step:horner-polynomial-evaluation:loop-body} can be done in
   a single floating-point operation (improving accuracy quite a bit).
 \end{rmk}
-\begin{ex}[Wilkinson stress-test revisited]
+\begin{chunk}
+  The \FORTRAN/ implementation of this:\marginpar{\texttt{polynomial.f90}}
+  \lstinputlisting[language=fortran18,firstline=32,lastline=45]{src/polynomial.f90}
+\end{chunk}
+\begin{ex}[Wilkinson stress-test revisited]\index{Wilkinson Polynomial}
 We can apply our new algorithm to $w_{20}(x)$ to see what our results
 look like.
 \begin{center}
@@ -122,7 +126,13 @@ to the roots $b_{k}=r_{k}$.
   assertions in production.
 \end{lesson}
 
-\begin{ex}\label{ex:polynomial-evaluation:horner:horner-with-base-points-wilkinson}
+\begin{chunk}
+  The \FORTRAN/ implementation of this:\marginpar{\texttt{polynomial.f90}}
+  \lstinputlisting[language=fortran18,firstline=17,lastline=30]{src/polynomial.f90}
+\end{chunk}
+
+
+\begin{ex}\label{ex:polynomial-evaluation:horner:horner-with-base-points-wilkinson}\index{Wilkinson Polynomial}
   Continuing with the Wilkinson polynomial, we can now observe that the
   coefficients $c_{0}=c_{1}=\dots=c_{20}=0$ and the base-points
   $b_{1}=1$, $b_{2}=2$, \dots, $b_{20}=20$. When we use Algorithm~\ref{alg:horner-base-evaluation}
@@ -164,17 +174,17 @@ answer for $w_{20}(10.001)$ is
     &\approx 1316685234.713890342.
 \end{align}
   Our approximation aggrees with the exact answer to 13 digits. We may
-  be more precise, and compute by hand $w_{*}=w_{20}(x_{0})$, where
-  $x_{0}$ is
+  be more precise, and compute by hand $w_{0}^{*}=w_{20}(x_{0}^{*})$, where
+  $x_{0}$ is approximated by the floating-point number
   \begin{equation}
     \begin{split}
-      x_{0}&:= \fl^{-1}(\fl(10.001))\\
+      x_{0}^{*} &:= \fl^{-1}(\fl(10.001))\\
       &=\frac{5630062484166541}{562949953421312}.
     \end{split}
   \end{equation}
   We find
   \begin{equation}
-    w_{*} = \frac{n}{d}
+    w_{0}^{*} = \frac{n}{d}
   \end{equation}
   where
   \medbreak
@@ -190,13 +200,13 @@ answer for $w_{20}(10.001)$ is
   \medbreak\noindent%
 Or, as a more manageable expression,
   \begin{equation}
-    w_{*} \approx \numprint{1316685234.7131606799}.
+    w_{0}^{*} \approx \numprint{1316685234.7131606799}.
   \end{equation}
   Our approximation to this value has an absolute error of approximately
   $1.367\times10^{-7}$ which is nearly as good as it gets (an absolute
   error of $10^{-7}$ in a number $10^{9}$ means we have 16 good digits,
   which exhausts double precision), and a relative error of about
-  $1.36657\times10^{-16}$. We could look at the binary form of $w_{*}$
+  $1.36657\times10^{-16}$. We could look at the binary form of $w_{0}^{*}$
   and what Horner's method produces, which gives us an even better bound
   on error\footnote{The absolute error is about $1.48315\times 10^{-8}$ and
   relative error about $1.12643\times10^{-17}$.}, but the moral should be understood: Horner's method with
