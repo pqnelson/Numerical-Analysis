@@ -1,0 +1,21 @@
+\chapter{Root Finding}
+
+\begin{problem}
+  \textsc{Given:}\enspace\ignorespaces%
+a function of a single real variable $f\colon\RR\to\RR$.
+
+\textsc{Find:}\enspace\ignorespaces%
+an $r\in\RR$ such that $f(r)=0$. We call such an $r$ a \define{Root} or
+\define{Zero} of $f$.
+\end{problem}
+\begin{rmk}
+A related problem: given an $f\colon\RR\to\RR$, find an $x_{0}$ such
+that $f(x_{0})=x_{0}$. Such a point is called a \define{Fixed-Point} of
+$f$. We can relate this to finding the root of $g(x)=f(x)-x$, then
+$g(r)=0$ is a fixed point of $f(r)=r$. 
+\end{rmk}
+
+\input{tex/root/bisection}
+\input{tex/root/fixed-point}
+%\input{tex/root/newton}
+  

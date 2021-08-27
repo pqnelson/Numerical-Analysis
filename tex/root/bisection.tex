@@ -1,0 +1,136 @@
+\section{Bisection Method}
+
+\begin{ex}
+We can find the numerical value of $\sqrt{2}$ by finding the root
+$f(x)=2-x^{2}$. How can we find the root?
+
+We know
+\begin{equation}
+  f(1) = 2-1=1>0
+\end{equation}
+\emph{and}
+\begin{equation}
+  f(2) = 2 - 4 = -2 < 0.
+\end{equation}
+Hence the intermediate value theorem tells us $1<\sqrt{2}<2$. But how do
+we find it?
+
+We can guess $x_{\text{mid}}=(1 + 2)/2$ the midpoint would be a better
+approximation to the $\sqrt{2}$. We find
+\begin{equation}
+  f(3/2) = 2 - \frac{9}{4} = \frac{-1}{4}.
+\end{equation}
+Although a better approximation than either 1 or 2, it's still not quite
+right. However, we can infer the numerical value of the square root of 2
+lies between $1 < \sqrt{2} < 3/2$.
+
+Now we can iterate this step: we check the midpoint between 1 and $3/2$
+as a better approximation to the square root of 2. If it is positive,
+then we replace the lower-bound by the midpoint; if it is negative, we
+replace the upper-bound by the midpoint. The claim is this sequence
+converges to $\sqrt{2}$ and gives us an effective method for finding the
+root of $f(x)$.
+\end{ex}
+
+We could picture this as giving us a sequence of pairs $(a_{n},b_{n})$
+where $a_{n}<b_{n}$ for each $n\in\NN_{0}$,
+$\sgn(f(a_{n}))=\sgn(f(a_{n-1}))$ for each $n\in\NN$, and
+$\sgn(f(b_{n}))=\sgn(f(b_{n-1}))$ for each $n\in\NN$. We see that
+$|a_{n}-b_{n}|=2|a_{n+1}-b_{n+1}|$. The root of $f(x)$ lies in the
+interval $a_{n}\leq x\leq b_{n}$ for each $n\in\NN_{0}$, and the sequence
+converges to it. We can take $p_{n}=(b_{n}+a_{n})/2$ and observe
+$p_{n}\to r$ where $f(r)=0$. This is the bisection method, which we
+describe using Algorithm~\ref{alg:root:bisection-method}.
+
+\begin{lesson}
+(1) We should note a couple of parameters in Algorithm~\ref{alg:root:bisection-method}
+are present due to best practices: we should limit the number of
+iterations to $N_{\text{max}}>0$, and we should demand termination upon
+finding an answer good to some tolerance $0<\varepsilon_{\text{tol}}\ll1$.
+It's a good idea to ensure numerical algorithms will terminate after
+finitely many iterations.
+
+(2) We should prove the algorithm ``works''. This will be the first
+thing we do, with Theorem~\ref{thm:root:bisection:bolzano}.
+\end{lesson}
+
+\begin{algorithm}\label{alg:root:bisection-method}
+  \caption{Bisection Method for finding roots}
+  \begin{algorithmic}[1]
+    \Require $f$ is continuous on the interval $[\ell,u]$
+    \Require $\sgn(f(\ell))\cdot\sgn(f(u))=1$
+    \Require $0<\varepsilon_{\text{tol}}\ll 1$
+    \Require $N_{\text{max}}\in\NN$
+    \Ensure $f(\mbox{result}) < \varepsilon_{\text{tol}}$ or 
+    \Function{Bisect}{$f$,$\ell$,$u$,$N_{\text{max}}$, $\varepsilon_{\text{tol}}$}
+    \State Initialize $n\gets 0$, $s_{\ell}\gets\sgn(f(\ell))$
+    \For{$n=1,N_{\text{max}}$}
+      \State $x_{\text{mid}}\gets(\ell+u)/2$
+      \State $y\gets f(x_{\text{mid}})$
+      \If{$|y| < \varepsilon_{\text{tol}}$}
+      \State\Return $x_{\text{mid}}$
+      \ElsIf{$\sgn(y) = s_{\ell}$}
+      \State $\ell\gets x_{\text{mid}}$
+      \Else\Comment{$\sgn(y)=\sgn(f(u))$}
+      \State $u\gets x_{\text{mid}}$
+      \EndIf
+    \EndFor
+    \State\Return $(u+\ell)/2$
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{thm}[Bolzano]\label{thm:root:bisection:bolzano}
+  Let $f\in C[a,b]$ with $f(a)f(b) < 0$. The bisection method generates
+  a sequence $\{p_{n}\}_{n\in\NN}$ which converge to a root $p$ of $f$,
+  with
+  \begin{equation*}
+    |p_{n} - p| \leq\frac{b-a}{2^{n}},\quad\mbox{when }n\geq1.
+  \end{equation*}
+\end{thm}
+\begin{proof}
+  We see, for each $n\in\NN$, we have
+  \begin{equation}
+    b_{n} - a_{n} = \frac{b-a}{2^{n-1}}\quad\mbox{and}\quad a_{n}<p<b_{n}.
+  \end{equation}
+  Since $p_{n} = (a_{n}+b_{n})/2$, we have
+  \begin{equation*}
+    |p_{n} - p|\leq\frac{b_{n}-a_{n}}{2} = \frac{b-a}{2^{n}}.\qedhere
+  \end{equation*}
+\end{proof}
+
+
+\begin{cor}
+  If we want to get $t$ digits of precision, then we need to take
+  \begin{equation*}
+    N_{\text{max}}\geq \frac{t}{\log_{10}(2)} + \log_{2}(b-a)
+  \end{equation*}
+  iterations.
+\end{cor}
+\begin{proof}
+  We want to take
+  \begin{equation}
+    |p_{n+1} - p| < \frac{10^{-t}}{2}
+  \end{equation}
+  to get $t$ digits of precision. Hence
+  \begin{equation}
+    \frac{b-a}{2^{n+1}}\leq\frac{10^{-t}}{2}\implies 10^{t}(b-a)\leq 2^{n}.
+  \end{equation}
+  Taking $\log_{10}(-)$ of both sides yields
+  \begin{equation}
+    t + \log_{10}(b-a)\leq n \log_{10}(2).
+  \end{equation}
+  Solving for $n$ gives the desired result.
+\end{proof}
+
+\begin{rmk}
+  We should interpret this corollary as telling us, \emph{we gain one
+  bit of accuracy per iteration} (in the sense that the absolute error
+  is halved each iteration).
+  For $t=52$ bits of precision in the result (i.e., full precision for
+  doubles), then we'd need at least $173 + \log_{2}(b-a)$ iterations.
+  For $t=23$ bits of precision (for single-precision floats), we'd need
+  at least $77 + \log_{2}(b-a)$ iterations.
+\end{rmk}
+
+

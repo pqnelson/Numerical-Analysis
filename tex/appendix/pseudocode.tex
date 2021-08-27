@@ -1,0 +1,19 @@
+\chapter{Pseudocode Conventions}
+
+This is just a grocery list of the conventions adopted for the
+pseudocode used in the algorithms:
+\begin{itemize}
+\item Assignment looks like ``$\langle\mbox{\it var}\rangle\gets\langle\mbox{\it expr}\rangle$''
+\item Testing if $x$ is equal to $y$ is done by writing ``$x = y$''.
+\item Exceptions are raised with the ``\Fail$\langle$\textit{message}$\rangle$'' keyword
+\item Results are returned using the ``\Return$\langle$\textit{expression}$\rangle$'' keyword
+\item For-loops used \FORTRAN/-like syntax, ``\algorithmicfor 
+  $\langle$\textit{counter variable}$\rangle = \langle$\textit{initial
+  value}$\rangle$, $\langle$\textit{final value}$\rangle$'' which
+  increments the counter-variable by 1 for each iteration until it is
+  greater than the final value
+\item While-loops iterate until the test condition fails, or a result is
+  returned, or a ``\Break'' is encountered. ``\Break'' corresponds to
+  \FORTRAN/ \verb#EXIT#
+
+\end{itemize}

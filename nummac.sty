@@ -55,7 +55,7 @@
   {1em}
   {}
   
-% theorems
+%%% theorems
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{cor}[thm]{Corollary}
@@ -91,9 +91,7 @@
 \newtheorem{note}[rmk]{Note}
 \newtheorem{notation}[rmk]{Notation}
 
-% Bourbaki's dangerous bend environment
-
-
+%%% Bourbaki's dangerous bend environment
 % Danger, Will Robinson!
 \newenvironment{danger}{\medbreak\noindent\hangindent=2pc\hangafter=-2%
   \clubpenalty=10000%
@@ -112,18 +110,25 @@
 \renewcommand\nwendcode{\endtrivlist\endgroup\vfil\penalty10\vfilneg}
 \let\nwdocspar=\smallbreak
 
-% links to arXiv
+%%% links to arXiv
 \def\arXiv{\@ifnextchar[{\@arXivWith}{\@arXivWithout}}
 \def\@arXivWith[#1]#2{\texttt{\href{http://arxiv.org/abs/#2}{arXiv:#2} [#1]}}
 \def\@arXivWithout#1{\texttt{\href{http://arxiv.org/abs/#1}{arXiv:#1}}}
 % \def\doi#1{\texttt{\href{http://dx.doi.org/#1}{doi:#1}}}
 
-% avoid making the page numbers reset in mainmatter
+%%% avoid making the page numbers reset in mainmatter
 % https://tex.stackexchange.com/a/61473/14751
 \def\pagenumbering#1{%
   %\global\c@page \@ne
   \gdef\thepage{\csname @#1\endcsname
    \c@page}}
+
+%%% Custom algorithmicx keywords
+\algnewcommand\algorithmicfail{\textbf{fail}}
+\algnewcommand\Fail{\algorithmicfail{} }
+\algnewcommand\algorithmicbreak{\textbf{break}}
+\algnewcommand\Break{\algorithmicbreak{}}
+
 
 %%% Knuth style algorithms
 \newcommand{\slug}{$\qedsymbol$}%\hbox{\kern1.5pt\vrule width2.5pt height6pt depth1.5pt\kern1.5pt}}

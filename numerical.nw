@@ -22,6 +22,7 @@
 \part{Fundamentals}
 \include{tex/float}
 \include{tex/polynomial-evaluation}
+\include{tex/root}
 
 \part{Linear Algebra}
 
@@ -29,6 +30,7 @@
 
 \backmatter
 \part{Appendices}
+\include{tex/appendix/pseudocode}
 \nocite{*}
 \bibliographystyle{siam}
 \bibliography{numerical}

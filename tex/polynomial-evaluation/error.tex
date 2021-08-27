@@ -17,6 +17,10 @@ where
     &\approx5.5422333389287814497947692871094 \times10^{-16}.
   \end{split}
 \end{equation}
+We can do a quick sanity check and observe the relative error of $x_{0}$
+approximated by $\fl(x_{0})$ is $\Delta x_{\text{round}}/x_{0}\approx 5.5\times10^{-17}<\machEps$,
+which agrees with the bounds on relative error for rounding.
+
 At the same time, we have error computing $w_{20}(x_{0})$ using some
 algorithm, ${\rm alg}(x_{0})$, which gives us:
 \begin{equation}
