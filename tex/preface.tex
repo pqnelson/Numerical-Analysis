@@ -47,14 +47,19 @@ Further, the following notation should be familiar and understood:
 
 The programming language of choice for numerical analysis remains
 \FORTRAN/, despite what Julia fanatics claim. Consequently, I write
-modern \FORTRAN/-90 code implementing the algorithms discussed. This is
+modern \FORTRAN/-2018 code implementing the algorithms discussed. This is
 done using literate programming (thanks to Norman Ramsey's {\tt noweb}
 toolkit).
 
 I'm leaning on Knuth's literate programs written in WEB as an example,
-since \FORTRAN/-90 greatly resembles \PASCAL/ in many ways. Having a
+since \FORTRAN/-2018 greatly resembles \PASCAL/ in many ways. Having a
 lack of research on ``What makes a program understandable'' complicates
 things, so I'm relying on examples from authority.
+
+As an aside, I'm still quite amazed that \FORTRAN/ was considered ``high
+level'', since it appears (prior to the \FORTRAN/-90 dialect) to amount
+to a platform-independent assembly with support for algebraic expressions.
+Quite literally, translating formulas to assembly.
 
 \section*{Mathematical Registers}
 
