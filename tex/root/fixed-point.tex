@@ -164,3 +164,11 @@ Algorithm~\ref{alg:root:fixed-point}, and will prove it actually works.
   The rate of convergence is related to the bound $k$ of the derivative
   $g'(x)$. The smaller the value of $k$, the faster the convergence.
 \end{rmk}
+
+\begin{chunk}
+  The \FORTRAN/ implementation of this requires some care. The
+  \verb#fixedPoint# function returns whether the method succeeded or
+  failed; if it succeeds, then it will set the \verb#result# parameter
+  to the approximate fixed-point.\marginpar{\texttt{root.f90}}
+  \lstinputlisting[language=fortran18,firstline=44,lastline=65]{src/root.f90}
+\end{chunk}
