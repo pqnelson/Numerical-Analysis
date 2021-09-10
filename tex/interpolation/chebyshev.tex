@@ -1,0 +1,29 @@
+\section{Chebyshev Interpolation}
+
+We've seen polynomial interpolation approximate complicated functions
+like $\sin(x)$. But the approximation left much to be desired. What's
+the solution? Adding more observations? Sometimes this causes more
+problems than it solves.
+
+\begin{ex}[Runge phenomena]
+  Runge studied the exponential function in a clever way. He took
+  \begin{equation}
+    u := \E^{h}-1
+  \end{equation}
+  and
+  \begin{equation}
+    v := x/h
+  \end{equation}
+  then examined the [truncated] binomial expansion of
+  \begin{equation}
+    g_{n}(x) = (1 + u)^{v} = 1 + uv + u^{2}\frac{v(v-1)}{1\cdot 2}
+    +\dots+u^{n}\frac{v(v-1)(\dots)(v-(n-1))}{1\cdot2\cdot3\cdot(\dots)\cdot n}.
+  \end{equation}
+  It should converge to $\exp(x)$, right?
+  
+  Consider the function
+  \begin{equation}
+    f(x) = \frac{1}{1 + x^{2}}
+  \end{equation}
+  on the domain $x\in[-1,1]$.
+\end{ex}

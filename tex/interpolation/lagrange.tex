@@ -1,0 +1,267 @@
+\section{Lagrange Interpolation}
+
+\begin{ex}
+  Suppose we have two observations $(x_{0},y_{0})$ and $(x_{1},y_{1})$.
+  We can construct a function
+  \begin{equation}
+    L_{0}(x) = \frac{x-x_{1}}{x_{0}-x_{1}}
+  \end{equation}
+  such that $L_{0}(x_{0})=1$ and $L_{0}(x_{1})=0$. Similarly, we can
+  construct 
+  \begin{equation}
+    L_{1}(x) = \frac{x-x_{0}}{x_{1}-x_{0}}
+  \end{equation}
+  which satisfies $L_{1}(x_{1})=1$ whereas $L_{1}(x_{0})=0$. Thus
+  \begin{equation}
+    P_{2}(x) = L_{0}(x)y_{0} + L_{1}(x)y_{1}
+  \end{equation}
+  is a polynomial which passes through the observations.
+\end{ex}
+
+\begin{ex}
+  Consider now the case when we have three observations
+  $(x_{0},y_{0})$, $(x_{1},y_{1})$,  $(x_{2},y_{2})$. We can construct
+  similar functions $L_{i}(x_{j})=0$ if $i\neq j$ and $L_{i}(x_{i})=1$.
+  We'd have
+  \begin{subequations}
+  \begin{equation}
+    L_{0}(x) = \frac{x - x_{1}}{x_{0}-x_{1}}\frac{x - x_{2}}{x_{0} - x_{2}}
+  \end{equation}
+  for $L_{0}(x_{0})=1$ and vanishes on the other observations,
+  \begin{equation}
+    L_{1}(x) = \frac{x - x_{0}}{x_{1}-x_{0}}\frac{x - x_{2}}{x_{1} - x_{2}}
+  \end{equation}
+  and
+  \begin{equation}
+    L_{2}(x) = \frac{x - x_{0}}{x_{2}-x_{0}}\frac{x - x_{1}}{x_{2} - x_{1}}.
+  \end{equation}
+  \end{subequations}
+  Then we have
+  \begin{equation}
+    P(x) = y_{0}L_{0}(x) + y_{1}L_{1}(x) + y_{2}L_{2}(x)
+  \end{equation}
+  as the approximation.
+\end{ex}
+
+We can generalize further to $n$ observations, giving us the following interpolation:
+
+\begin{defn}\label{defn:interpolation:lagrange:lagrange-interpolating-polynomial}
+  Let $(x_{1}, y_{1})$, \dots, $(x_{n}, y_{n})$ be $n > 0$ observations.
+  Then the \define{Lagrange Interpolating Polynomial} is the degree $n$
+  polynomial
+  \begin{subequations}
+  \begin{equation}
+    P(x) = \sum^{n}_{i=1}y_{i}L_{i,n}(x)
+  \end{equation}
+  where the \define{Lagrange Basis Polynomials} are
+  \begin{equation}
+    L_{i,n}(x) = \prod^{n}_{\substack{j=1\\ j\neq i}}\frac{x - x_{j}}{x_{i}-x_{j}}.
+  \end{equation}
+  \end{subequations}
+\end{defn}
+
+\begin{ex}\label{ex:interpolation:lagrange:random-example}
+  Find the Lagrange interpolation passing through the
+  points\footnote{These were digits based on the time of writing.} $(1,0)$,
+  $(9,12)$, $(3,6)$.
+
+  We find
+  \begin{subequations}
+    \begin{align}
+      P(x)
+      &= 0 L_{1,3}(x) + 12 L_{2,3}(x) + 6 L_{3,3}(x)\\
+      &= 12\frac{(x - 1)(x - 3)}{(9 - 1)(9 - 3)}
+       + 6 \frac{(x - 1)(x - 9)}{(3 - 1)(3 - 9)}\\
+      &= \frac{x^{2} - 4x + 3}{4} - \frac{x^{2} - 10x + 9}{2}.
+    \end{align}
+  \end{subequations}
+  Hence, when expanded out,
+  \begin{equation}
+    P(x) = \frac{-1}{4}x^{2} + 4x - \frac{15}{4}
+  \end{equation}
+  is the Lagrange interpolation polynomial.
+\end{ex}
+
+\begin{ex}
+  Let $f(x)$ be a function defined at $x_{1}=a$ and $x_{2}=b$. Find the
+  Lagrange interpolation of the observations $(a, f(a))$ and $(b, f(b))$.
+
+  We find
+  \begin{equation}
+    P(x) = \left(\frac{x-b}{a-b}\right)f(a) + \left(\frac{x-a}{b-a}\right)f(b)
+  \end{equation}
+  since
+  \begin{subequations}
+  \begin{equation}
+    P(a) = \left(\frac{a-b}{a-b}\right)f(a) + \left(\frac{0}{b-a}\right)f(b)=f(a)
+  \end{equation}
+  and
+  \begin{equation}
+    P(a) = \left(\frac{0}{a-b}\right)f(a) + \left(\frac{b-a}{b-a}\right)f(b)=f(b).
+  \end{equation}
+  \end{subequations}
+  Observe, when we expand out the interpolating polynomial, we have
+  \begin{equation}
+    P(x) = \frac{f(b) - f(a)}{b - a}x +\frac{bf(a) - af(b)}{b - a}.
+  \end{equation}
+  The slope matches intuition, the $y$-intercept may be surprising.
+\end{ex}
+
+\begin{ex}\label{ex:interpolation:lagrange:sine}
+  Suppose we want to approximate $\sin(x)$ by a polynomial. We can do
+  this using Lagrange polynomial interpolation operating on the
+  following data: $(0,0)$, $(\pi/6,1/2)$, $(\pi/4,\sqrt{2}/2)$, $(\pi/3,\sqrt{3}/2)$, $(\pi/2,1)$.
+
+  We find
+  \begin{equation}
+    P(x) = P_{0}(x) + P_{1}(x) + \dots + P_{4}(x)
+  \end{equation}
+  where $P_{i}(x_{j})=0$ if $i\neq j$ and $P_{i}(x_{i})=y_{i}$. Then we
+  find
+  \begin{subequations}
+  \begin{equation}
+    P_{0}(x) = 0
+  \end{equation}
+  \begin{equation}
+    P_{1}(x) = \frac{648}{\pi^{4}}x(x - \pi/2)(x - \pi/3)(x - \pi/4)
+  \end{equation}
+  \begin{equation}
+    P_{2}(x) = \frac{1152\sqrt{2}}{\pi^{4}}x(x - \pi/2)(x - \pi/3)(x - \pi/6)
+  \end{equation}
+  \begin{equation}
+    P_{3}(x) = \frac{648\sqrt{3}}{\pi^{4}}x(x - \pi/2)(x - \pi/4)(x - \pi/6)
+  \end{equation}
+  \begin{equation}
+    P_{4}(x) = \frac{144}{\pi^{4}}x(x - \pi/3)(x - \pi/4)(x - \pi/6).
+  \end{equation}
+  \end{subequations}
+  We can add these together, expand, then collect coefficients of powers
+  of $x$:
+  \begin{equation}\label{eq:interpolation:polynomial:sine}
+    \begin{split}
+      P(x)
+      &= (50 - 64\sqrt{2} + 27\sqrt{3})\frac{x}{2\pi}
+      - (217 - 352\sqrt{2} + 162\sqrt{3})\frac{x^{2}}{\pi^{2}}\\
+      &\quad+ (33 - 64\sqrt{2} + 33\sqrt{3})\frac{18}{\pi^{3}}x^{3}
+      - (7 - 16\sqrt{2} + 9\sqrt{3})\frac{72}{\pi^{4}}x^{4}
+    \end{split}
+  \end{equation}
+  Or as single-precision arithmetic would describe
+  \begin{equation}
+    P(x)\approx 0.028797112 x^4-0.20434070 x^3+0.021373008 x^2+0.99562618 x.
+  \end{equation}
+  This can quickly get complicated.
+\end{ex}
+
+\begin{thm}[Existence and Uniqueness]
+Let $(x_{0},y_{0})$, \dots, $(x_{n}, y_{n})$ be $n>1$ observations with
+$x_{i}\neq x_{j}$ for $i\neq j$.
+
+Then there exists a unique polynomial $P(x)$ of degree at most $n$ such
+that $P(x_{i})=y_{i}$ for $i=0,\dots,n$.
+\end{thm}
+
+\begin{proof}
+  (1) Existence: the Lagrange interpolating polynomial from Definition~\ref{defn:interpolation:lagrange:lagrange-interpolating-polynomial}
+  \begin{equation}
+    P(x) = \sum^{n}_{j=0}y_{j}L_{j,n}(x)
+  \end{equation}
+  Then
+  \begin{equation}
+    L_{j,n}(x_{i}) = \delta_{i,j} = \begin{cases}1 &\mbox{if $i=j$}\\
+      0 & \mbox{otherwise}
+    \end{cases}
+  \end{equation}
+  implies
+  \begin{equation}
+    P(x_{i})=y_{i}
+  \end{equation}
+  for each $i=0,\dots,n$.
+
+  (2) Uniqueness: Suppose $Q$ is a second polynomial of degree at most
+  $n$ passing through the data. Set
+  \begin{equation}
+    D(x) = P(x) - Q(x)
+  \end{equation}
+  Thus $D(x)$ is a polynomial of degree at most $n$. Observe
+  \begin{subequations}
+    \begin{align}
+      D(x_{i}) &= P(x_{i}) - Q(x_{i})\\
+      &= y_{i} - y_{i}\\
+      &= 0
+    \end{align}
+  \end{subequations}
+  Hence $x_{i}$ is a root of $D(x)$ for each $i=0,\dots,n$.
+  Thus either $\deg(D)\geq n+1$ or $D(x)=0$ is the zero polynomial.
+  But we stipulated $\deg(D)\leq n$.
+  Hence $D(x)=0$ is the zero polynomial, i.e., $P(x)=Q(x)$.
+\end{proof}
+
+\begin{thm}[Error]
+Let $x_{0}<x_{1}<\dots<x_{n}$ be distinct and contained in $[a,b]$, let
+$f\in C^{n+1}[a,b]$.
+
+Then for each $x\in[a,b]$, a number $\xi(x)$ between $x_{0}$, $x_{1}$,
+\dots, $x_{n}$ (and hence $a < \xi(x) < b$) exists with
+\begin{equation}
+  f(x) = P(x) + \frac{f^{(n+1)}(\xi(x))}{(n+1)!}(x-x_{0})(x-x_{1})(\dots)(x-x_{n})
+\end{equation}
+where $P(x)$ is the Lagrange interpolating polynomial.
+\end{thm}
+
+\begin{proof}[Proof sketch]
+We write $f(x) = P(x) + R(x)$ and seek the remainder term $R(x)$. We see
+that it is zero at the observations, which means it looks like
+\begin{equation}
+  R(x) = \rho(x)(x-x_{0})(x-x_{1})(\dots)(x-x_{n})=\rho(x)\prod^{n}_{j=0}(x-x_{j}).
+\end{equation}
+We then either give a sloppy inductive argument on $k=0,\dots,n$ derivatives
+and invoke Rolle's theorem, or appeal to generalized Rolle's theorem, to
+find $\rho(x) = f^{(n+1)}(\xi(x))/(n+1)!$.
+\end{proof}
+
+\begin{rmk}
+  The proof for the error, or \emph{remainder term}, of the Lagrange
+  polynomial interpolation is rather boring. There are other forms of
+  the remainder, which the interested reader may find
+  elsewhere\footnote{E.g., Abramowitz and Stegun, \emph{Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables},
+  chapter 25, Eq 25.2.3, \url{https://personal.math.ubc.ca/~cbm/aands/page_878.htm}}.
+  We give another expression for a bound on the remainder $R(x)$ without proof
+  \begin{equation}
+    |R(x)|\leq\frac{(x_{n}-x_{0})^{n+1}}{(n+1)!}\max_{x_{0}\leq x\leq x_{n}}|f^{(n+1)}(x)|.
+  \end{equation}
+\end{rmk}
+
+\begin{xca}[Very hard]
+  Prove, if $f(x)=1$ is the constant function, then any Lagrange
+  interpolation $P(x)$ of $f(x)$ will be the constant polynomial
+  $P(x)=1$.
+  
+  [The only proofs I could devise requires graduate level abstract
+    algebra, but there may be some clever trick to prove this; for
+    example, it may be easier to prove any polynomial of degree less
+    than $n$ is interpolated exactly by $P(x)$ and $n$ observations.]
+\end{xca}
+
+\begin{problem}
+  There are a couple problems with using Lagrange polynomial
+  interpolation:
+  \begin{enumerate}
+  \item Adding a new observation forces us to recompute everything:
+    nothing can be reused.
+  \item Evaluating the Lagrange interpolation cannot easily use Horner's
+    method, making it even more inefficient.
+  \end{enumerate}
+\end{problem}
+
+\begin{rmk}
+  For decades, Lagrange interpolation was seen as an intuitive
+  introduction to polynomial interpolation, only for pedagogical
+  purposes to give us divided difference methods.
+  In Acton's \emph{Numerical Methods That [Usually] Work}, we read,
+  ``Lagrangian interpolation is praised for analytic utility and beauty
+  but deplored for numerical practice.''
+  Only in 2004 did Berrut and Trefethen~\cite{berrut2004barycentric}
+  rescue Lagrange interpolation with a brilliant strategy, which we will
+  cover later.
+\end{rmk}

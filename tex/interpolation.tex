@@ -1,0 +1,18 @@
+\chapter{Polynomial Interpolation}
+
+\begin{problem}
+  \textsc{Given:} a bunch of observations as ordered pairs
+  $(x_{1},y_{1})$, \dots, $(x_{n},y_{n})$ where $x_{i}\neq x_{j}$ for
+  $i\neq j$.
+
+  \textsc{Produce:} a polynomial $P(x)$ such that it passes through the
+  observed points $P(x_{j})=y_{j}$ for each $j=1,\dots,n$.
+\end{problem}
+
+Why produce a polynomial? By Weierstrass' approximation theorem, it
+suffices to work with polynomial approximations.
+
+\input{tex/interpolation/lagrange}
+% TODO: prove Newton's divided differences works
+\input{tex/interpolation/divided-diff}
+\input{tex/interpolation/chebyshev}

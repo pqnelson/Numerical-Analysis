@@ -23,6 +23,7 @@
 \include{tex/float}
 \include{tex/polynomial-evaluation}
 \include{tex/root}
+\include{tex/interpolation}
 
 \part{Linear Algebra}
 
