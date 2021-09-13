@@ -54,7 +54,7 @@ We can generalize further to $n$ observations, giving us the following interpola
     P(x) = \sum^{n}_{i=1}y_{i}L_{i,n}(x)
   \end{equation}
   where the \define{Lagrange Basis Polynomials} are
-  \begin{equation}
+  \begin{equation}\label{eq:interpolation:lagrange:basis-polynomial}
     L_{i,n}(x) = \prod^{n}_{\substack{j=1\\ j\neq i}}\frac{x - x_{j}}{x_{i}-x_{j}}.
   \end{equation}
   \end{subequations}
@@ -116,20 +116,28 @@ We can generalize further to $n$ observations, giving us the following interpola
   \begin{equation}
     P(x) = P_{0}(x) + P_{1}(x) + \dots + P_{4}(x)
   \end{equation}
-  where $P_{i}(x_{j})=0$ if $i\neq j$ and $P_{i}(x_{i})=y_{i}$. Then we
-  find
+  where $P_{i}(x_{j})=0$ if $i\neq j$ and $P_{i}(x_{i})=y_{i}$. One
+  trick is to write
+  \begin{equation}
+    L(x) = \prod^{4}_{k=0}(x - x_{k})
+  \end{equation}
+  and consider
+  \begin{equation}
+    P_{k}(x) = y_{k}\frac{L(x)}{x - x_{k}}.
+  \end{equation}
+  Then we find
   \begin{subequations}
   \begin{equation}
     P_{0}(x) = 0
   \end{equation}
   \begin{equation}
-    P_{1}(x) = \frac{648}{\pi^{4}}x(x - \pi/2)(x - \pi/3)(x - \pi/4)
+    P_{1}(x) = \frac{-648}{\pi^{4}}x(x - \pi/2)(x - \pi/3)(x - \pi/4)
   \end{equation}
   \begin{equation}
     P_{2}(x) = \frac{1152\sqrt{2}}{\pi^{4}}x(x - \pi/2)(x - \pi/3)(x - \pi/6)
   \end{equation}
   \begin{equation}
-    P_{3}(x) = \frac{648\sqrt{3}}{\pi^{4}}x(x - \pi/2)(x - \pi/4)(x - \pi/6)
+    P_{3}(x) = \frac{-648\sqrt{3}}{\pi^{4}}x(x - \pi/2)(x - \pi/4)(x - \pi/6)
   \end{equation}
   \begin{equation}
     P_{4}(x) = \frac{144}{\pi^{4}}x(x - \pi/3)(x - \pi/4)(x - \pi/6).
@@ -137,18 +145,23 @@ We can generalize further to $n$ observations, giving us the following interpola
   \end{subequations}
   We can add these together, expand, then collect coefficients of powers
   of $x$:
+%% (25/Pi - (32*Sqrt[2])/Pi + (27*Sqrt[3])/(2*Pi))*x + 
+%%  (-217/Pi^2 + (352*Sqrt[2])/Pi^2 - (162*Sqrt[3])/Pi^2)*x^2 + 
+%%  (594/Pi^3 - (1152*Sqrt[2])/Pi^3 + (594*Sqrt[3])/Pi^3)*x^3 + 
+%%  (-504/Pi^4 + (1152*Sqrt[2])/Pi^4 - (648*Sqrt[3])/Pi^4)*x^4
   \begin{equation}\label{eq:interpolation:polynomial:sine}
     \begin{split}
       P(x)
-      &= (50 - 64\sqrt{2} + 27\sqrt{3})\frac{x}{2\pi}
-      - (217 - 352\sqrt{2} + 162\sqrt{3})\frac{x^{2}}{\pi^{2}}\\
-      &\quad+ (33 - 64\sqrt{2} + 33\sqrt{3})\frac{18}{\pi^{3}}x^{3}
-      - (7 - 16\sqrt{2} + 9\sqrt{3})\frac{72}{\pi^{4}}x^{4}
+      &=
+      [50-64 \sqrt{2}+27 \sqrt{3}]\frac{x}{2\pi}
+      -[217-352 \sqrt{2}+162 \sqrt{3}]\frac{x^{2}}{\pi^{2}}\\
+      &\quad- 18 [33-64 \sqrt{2}+33 \sqrt{3}]\frac{x^{3}}{\pi^{3}}
+      - 72 (7 - 16\sqrt{2} + 9\sqrt{3})\frac{x^{4}}{\pi^{4}}
     \end{split}
   \end{equation}
   Or as single-precision arithmetic would describe
   \begin{equation}
-    P(x)\approx 0.028797112 x^4-0.20434070 x^3+0.021373008 x^2+0.99562618 x.
+    P(x)\approx -2.2450489 x + 7.9018255 x^{2}  - 8.7733061 x^{3}  + 3.0731322 x^{4}
   \end{equation}
   This can quickly get complicated.
 \end{ex}
@@ -197,7 +210,7 @@ that $P(x_{i})=y_{i}$ for $i=0,\dots,n$.
   Hence $D(x)=0$ is the zero polynomial, i.e., $P(x)=Q(x)$.
 \end{proof}
 
-\begin{thm}[Error]
+\begin{thm}[Error]\label{thm:interpolation:lagrange:error}
 Let $x_{0}<x_{1}<\dots<x_{n}$ be distinct and contained in $[a,b]$, let
 $f\in C^{n+1}[a,b]$.
 
@@ -232,7 +245,7 @@ find $\rho(x) = f^{(n+1)}(\xi(x))/(n+1)!$.
   \end{equation}
 \end{rmk}
 
-\begin{xca}[Very hard]
+\begin{xca}[Very hard]\label{xca:interpolation:lagrange:one}
   Prove, if $f(x)=1$ is the constant function, then any Lagrange
   interpolation $P(x)$ of $f(x)$ will be the constant polynomial
   $P(x)=1$.

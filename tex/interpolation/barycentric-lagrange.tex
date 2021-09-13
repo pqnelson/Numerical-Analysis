@@ -1,0 +1,102 @@
+\section{Barycentric Lagrange Interpolation}
+
+In recent years, numerical analysts have revisited Lagrange polynomial
+interpolation. We will briefly review the conceptual underpinnings of
+it. Let
+\begin{equation}
+  L(x) = \prod^{n}_{k=1}(x - x_{k}).
+\end{equation}
+Observe
+\begin{equation}
+  L'(x_{j}) = \left.\frac{\D L(x)}{\D x}\right|_{x=x_{j}}
+  = \prod^{n}_{k\neq j}(x_{j} - x_{k}).
+\end{equation}
+This permits us to rewrite the Lagrange basis polynomials Eq~\eqref{eq:interpolation:lagrange:basis-polynomial} as
+\begin{equation}
+  L_{i,n}(x) = \frac{L(x)}{L'(x_{i})(x - x_{i})}.
+\end{equation}
+Let's write
+\begin{equation}
+  w_{j} = \frac{1}{L'(x_{j})}
+\end{equation}
+for the \define{Barycentric Weights}, then
+\begin{equation}
+  L_{i,n}(x) = L(x)\frac{w_{i}}{x - x_{i}}.
+\end{equation}
+Thus we have
+\begin{equation}\label{eq:interpolation:barycentric-lagrange:rewrite}
+  P(x) = L(x) \sum^{n}_{k=1}\frac{w_{k}}{x - x_{k}}y_{k}.
+\end{equation}
+This is the first half of the argument, because we really haven't done
+anything yet.
+
+The second half is to recall
+Exercise~\ref{xca:interpolation:lagrange:one},
+where we asked the reader to prove the Lagrange polynomial interpolation
+for $g(x)=1$ is the constant polynomial $Q(x)=1$. Now, we take
+Eq~\eqref{eq:interpolation:barycentric-lagrange:rewrite}
+and divide it by 1. Well, first, $Q(x)$ may be written, using
+Eq~\eqref{eq:interpolation:barycentric-lagrange:rewrite}, as
+\begin{equation}
+  Q(x) = L(x) \sum^{n}_{k=1}\frac{w_{k}}{x - x_{k}}.
+\end{equation}
+Then
+\begin{equation}
+  P(x) = \frac{P(x)}{1} = \frac{P(x)}{Q(x)}
+\end{equation}
+and we have
+\begin{equation}
+  \boxed{P(x) = \frac{\displaystyle \sum^{n}_{k=1}\frac{w_{k}}{x - x_{k}}y_{k}}{\displaystyle\sum^{n}_{k=1}\frac{w_{k}}{x - x_{k}}}}.
+\end{equation}
+This has 1 subtraction and 1 division in the calculation of
+$w_{j}/(x - x_{j})$, there are $n$ multiplications in the numerator, and
+$2n$ additions in the numberator and denominator.
+Thus evaluating this would require $n$ subtractions, $2n$ additions, $n$
+multiplications, and $n+1$ divisions. Compare this to divided
+differences which requires $(n-1)(n-2)/2$ division operations to compute
+the coefficients, and an equal number of subtractions. Reader:
+divided differences requires $\sim n^{2}$ division and subtraction
+operations, whereas barycentric Lagrange interpolation requires only
+$\sim n$ operations!
+
+\begin{algorithm}\label{alg:interpolation:barycentric-lagrange}
+  \caption{Barycentric Lagrange Polynomial Interpolation}
+  \begin{algorithmic}[1]
+    \Require $(x_{0},y_{0})$, \dots, $(x_{n},y_{n})$ are $n+1$ distinct observations
+    \Require some point $x$ to evaluate the polynomial at
+    \Ensure the result corresponds to $P(x)$
+
+    \Function{BarycentricLagrangeInterpolation}{$x_{j}$, $y_{j}$,x}
+    \State Initialize $num\gets 0$, $den\gets 0$
+    \For{$i=0,n$}
+      \If{$x_{i}=x$}
+      \State\Return $y$
+      \Else
+      \State Set $t \gets w_{i}\oslash(x \ominus x_{i})$
+      \State Set $num\gets num \oplus (t\otimes y_{i})$
+      \State Set $den\gets den\oplus t$
+      \EndIf
+    \EndFor
+    \State\Return $num\oslash den$
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+
+The implementation amounts to ``following your nose'', as shown in
+Algorithm~\ref{alg:interpolation:barycentric-lagrange}. Care must be
+taken if trying to evaluate the Barycentric Lagrange interpolation at
+$x\approx x_{i}$ for some observed point $(x_{i},y_{i})$, as it can lead
+to catastrophic loss of precision. The other passing remark, if you use
+a language which can return a closure (function object, lambda), then
+you can transform the algorithm into a factory method by Currying.
+
+\begin{xca}
+  How many addition, subtraction, multiplication, and division
+  operations occur in Algorithm~\ref{alg:interpolation:barycentric-lagrange}?
+\end{xca}
+
+\begin{xca}[Hard, open?]
+  Algorithm~\ref{alg:interpolation:barycentric-lagrange} does not use
+  Horner's method. Does this lead to numerical instability?
+\end{xca}
+

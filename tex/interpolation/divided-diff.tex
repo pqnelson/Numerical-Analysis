@@ -204,64 +204,38 @@ The Newton's divided-difference polynomial gives us
   \end{split}
 \end{equation}
 We can simplify, a bit, to get
+%% (25/Pi - (32*Sqrt[2])/Pi + (27*Sqrt[3])/(2*Pi))*x + 
+%%  (-217/Pi^2 + (352*Sqrt[2])/Pi^2 - (162*Sqrt[3])/Pi^2)*x^2 + 
+%%  (594/Pi^3 - (1152*Sqrt[2])/Pi^3 + (594*Sqrt[3])/Pi^3)*x^3 + 
+%%  (-504/Pi^4 + (1152*Sqrt[2])/Pi^4 - (648*Sqrt[3])/Pi^4)*x^4
 \begin{equation}
   \begin{split}
-P(x) &= [36 - 32\sqrt{2} + 9\sqrt{3} - (7 - 16\sqrt{2} + 9\sqrt{3})\pi]\frac{x}{2\pi}\\
-&\quad-\frac{3}{2\pi^{2}}[84 - 96\sqrt{2} + 30\sqrt{3} - 5\pi(7 - 16\sqrt{2}+9\sqrt{3})]x^{2}\\
-&\quad+ \frac{4}{\pi^{3}}[9(6 - 8\sqrt{2} + 3\sqrt{3}) - 10\pi(7 - 16\sqrt{2}
-  + 9\sqrt{3})]x^{3}\\
-&\quad+ \frac{90}{\pi^{3}}(7 - 16\sqrt{2} + 9\sqrt{3}) x^{4}\\
-&\quad- \frac{72}{\pi^{4}}(7 - 16\sqrt{2} + 9\sqrt{3}) x^{5}
+    P(x) &= (50-64 \sqrt{2}+27 \sqrt{3})\frac{x}{2\pi}\\
+&\quad-[217-352 \sqrt{2}+162 \sqrt{3}]\frac{x^{2}}{\pi^{2}}\\
+&\quad-18[33-64 \sqrt{2}+33 \sqrt{3}]\frac{x^{3}}{\pi^{3}}\\
+&\quad-72[7-16 \sqrt{2}+9 \sqrt{3}]\frac{x^{4}}{\pi^{4}}
   \end{split}
 \end{equation}
 Or, as a single-precision approximation to this polynomial:
 \begin{equation}
-  P(x)\approx 1.0275073 x - 0.12295329 x^{2}  + 0.021408739 x^{3}  - 0.11308600 x^{4}
-+ 0.028797112 x^{5}
+  P(x)\approx 0.99562618 x +0.021373008 x^2-0.20434070 x^3+ 0.028797112 x^4
 \end{equation}
 What does Lagrange polynomial interpolation give us? Well, we can recall Eq~\eqref{eq:interpolation:polynomial:sine}
 \begin{equation*}
   \begin{split}
     P_{\text{Lagrange}}(x)
-    &= (50 - 64\sqrt{2} + 27\sqrt{3})\frac{x}{2\pi}
-    - (217 - 352\sqrt{2} + 162\sqrt{3})\frac{x^{2}}{\pi^{2}}\\
-    &\quad+ (33 - 64\sqrt{2} + 33\sqrt{3})\frac{18}{\pi^{3}}x^{3}
-    - (7 - 16\sqrt{2} + 9\sqrt{3})\frac{72}{\pi^{4}}x^{4}
+      &=
+      [50-64 \sqrt{2}+27 \sqrt{3}]\frac{x}{2\pi}
+      -[217-352 \sqrt{2}+162 \sqrt{3}]\frac{x^{2}}{\pi^{2}}\\
+      &\quad- 18 [33-64 \sqrt{2}+33 \sqrt{3}]\frac{x^{3}}{\pi^{3}}
+      - 72 (7 - 16\sqrt{2} + 9\sqrt{3})\frac{x^{4}}{\pi^{4}}
   \end{split}
 \end{equation*}
-which is clearly a different polynomial (they're of different orders!).
+which is clearly the same polynomial.
 
-So which approximation is better? Well, it depends on what you mean by
-``better''. But one measure of goodness is the $L^{2}$-distance between
-the polynomial and $\sin(x)$ over the interval $0\leq x\leq \pi/2$. This
-is a straightforward, though tedious, calculation:
-\begin{equation}
-  \begin{split}
-  \int^{\pi/2}_{0}&(P(x)-\sin(x))^{2}\,\D x\\
- =& \frac{120960-276480\sqrt{2}+155520 \sqrt{3}}{\pi ^4}
-  +\frac{-27648+65664\sqrt{2}-37584 \sqrt{3}}{\pi^3}\\
-  &+\frac{-3864+8256 \sqrt{2}-4500\sqrt{3}}{\pi^2}
-  +\frac{102-304 \sqrt{2}+189 \sqrt{3}}{\pi}\\
-  &+7 - 16\sqrt{2} + 9\sqrt{3}
-+\left(1294238-392832 \sqrt{2}+238788 \sqrt{3}-440352 \sqrt{6}\right)
-  \frac{\pi }{147840}\\
-&+\left(52459-13112 \sqrt{2}+8415 \sqrt{3}-19800 \sqrt{6}\right)
-\frac{\pi^2}{147840}\\
-&+\left(2010-560 \sqrt{2}+315 \sqrt{3}-720 \sqrt{6}\right) \frac{\pi^3}{147840}\\
-\approx&4.029670120332435\times 10^{-5}
-  \end{split}
-\end{equation}
-And for Lagrange interpolation:
-\begin{equation}
-  \begin{split}
-  &\int^{\pi/2}_{0}(P_{\text{Lag}}(x)-\sin(x))^{2}\,\D x\\
-  =& \frac{3456}{\pi ^4} \left(7-16 \sqrt{2}+9 \sqrt{3}\right)
-  +\frac{216}{\pi ^3}\left(-23+64 \sqrt{2}-39 \sqrt{3}\right)\\
-  &+\frac{4}{\pi ^2} \left(-217+352\sqrt{2}-162 \sqrt{3}\right)
-  +\frac{\pi}{6720} \left(6948-1648 \sqrt{2}+1107 \sqrt{3}-1296 \sqrt{6}\right) \\
-  &+\frac{-3-64 \sqrt{2}+54 \sqrt{3}}{\pi}\\
-  \approx&3.20243293420500498\times 10^{-8}
-  \end{split}
-\end{equation}
-So we find Newton's divided difference is slightly worse by this metric.
+Why have two different methods for polynomial interpolation? Well, if we
+keep the table of divided differences, adding a datapoint requires only
+$2(n-2)$ subtraction operations and $n-2$ division operations. But for
+Lagrange interpolation, we have to start over from scratch. There's no
+easy way to update an existing Lagrange polynomial interpolation.
 \end{ex}
