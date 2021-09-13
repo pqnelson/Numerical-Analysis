@@ -1,0 +1,218 @@
+\section{Numerical Differentiation}
+
+There are various strategies for approximating the derivative of a
+function $f(x)$ at some point $x=a$. Let's just review some of the
+clever ideas:
+\begin{enumerate}
+\item Take some polynomial interpolation $P(x)$ of $f(x)$, then use
+  $P'(x)$ as the approximation for $f'(x)$. (Amazingly enough, this works.)
+\item Take finitely many $f(a)$, $f(a\pm h)$, \dots, $f(a\pm kh)$, then
+  take their linear combination
+  $c_{-k}f(a-kh)+\dots+c_{-1}f(a-h)+c_{0}f(a)+c_{1}f(a+h)+\dots+c_{k}f(a+kh)=f'(a)+Ch^{2k}f^{(2k)}(\xi)$
+  which requires solving $2k+1$ equations in $2k+1$ unknowns (the
+  coefficients $c_{j}$)
+\item Some clever methods using complex analysis, which is beyond our scope.
+\end{enumerate}
+Some caveats must be stressed, especially:
+\emph{numerical differentiation is numerical unstable}. This is because
+we're subtracting nearly equal values $f(x+h)-f(x)$ for $|h|\ll 1$.
+
+\begin{defn}
+  Let $f\in C^{2}[a,a+h]$.
+  The \define{Forward Difference} approximation to the derivative $f'(a)$
+  is given by
+  \begin{equation}
+    \frac{f(a+h)-f(a)}{h} = f'(a) + \frac{1}{2}f''(\xi)h
+  \end{equation}
+  for some $\xi\in[a,a+h]$.
+\end{defn}
+\begin{proof}
+  Taylor expand to second order
+  \begin{equation}
+    f(a+h) = f(a) + hf'(a) + \frac{1}{2!}h^{2}f''(\xi)
+  \end{equation}
+  where $a\leq\xi\leq a+h$. Rearranging terms gives the result.
+\end{proof}
+
+\begin{defn}
+  Let $f\in C^{2}[a-h,a]$.
+  The \define{Backward Difference} approximation to the derivative $f'(a)$
+  is given by
+  \begin{equation}
+    \frac{f(a)-f(a-h)}{h} = f'(a) - \frac{1}{2}f''(\xi)h
+  \end{equation}
+  for some $\xi\in[a-h,a]$.
+\end{defn}
+\begin{proof}
+  Taylor expand to second order
+  \begin{equation}
+    f(a-h) = f(a) - hf'(a) + \frac{1}{2!}h^{2}f''(\xi)
+  \end{equation}
+  where $a-h\leq\xi\leq a$. We see
+  \begin{equation}
+    f(a-h)-f(a) = -hf'(a) + \frac{1}{2!}h^{2}f''(\xi),
+  \end{equation}
+  and dividing through by $-h$ gives the result.
+\end{proof}
+
+\begin{defn}
+  Let $f\in C^{3}[a-h,a+h]$.
+  The \define{Central Difference} approximation to the derivative $f'(a)$
+  is given by
+  \begin{equation}
+    \frac{f(a+h)-f(a-h)}{2h} = f'(a) - \frac{1}{3}f'''(\xi)h^{2}
+  \end{equation}
+  for some $\xi\in[a-h,a+h]$.
+\end{defn}
+\begin{proof}
+  Take
+  \begin{subequations}
+  \begin{align}
+    f(a+h) &= f(a) + hf'(a) + \frac{1}{2!}h^{2}f''(a) + \frac{1}{3!}f^{(3)}(\xi_{1})h^{3}\\
+    f(a-h) &= f(a) - hf'(a) + \frac{1}{2!}h^{2}f''(a)
+    - \frac{1}{3!}f^{(3)}(\xi_{2})h^{3}
+  \end{align}
+  \end{subequations}
+  for $a-h\leq\xi_{2}\leq a\leq\xi_{1}\leq a+h$.
+  Then subtraction gives us
+  \begin{equation}
+    f(a+h)-f(a-h) = 2hf'(a) + \frac{1}{3}h^{3}\bigl(f^{(3)}(\xi_{1})+f^{(3)}(\xi_{2})\bigr).
+  \end{equation}
+  Applying the intermediate value theorem gives the error term
+  \begin{equation}
+    R(a,h)h = \frac{1}{3}h^{3}f^{(3)}(\xi)
+  \end{equation}
+  for some $\xi_{2}\leq \xi\leq\xi_{1}$. Rearranging terms gives the result.
+\end{proof}
+
+\begin{ex}
+  Consider $f(x)=\sin(x)$. What is its approximate derivative using
+  these finite-difference schemes?
+
+  We compute, using the angle-addition formula
+  \begin{equation}
+    \sin(a\pm h) = \sin(a)\cos(h)+\sin(\pm h)\cos(a)
+  \end{equation}
+  that
+  \begin{equation}
+    \frac{\sin(a+h)-\sin(a)}{h} = \frac{\sin(a)\bigl(\cos(h)-1\bigr)}{h}
+    + \frac{\sin(h)}{h}\cos(a).
+  \end{equation}
+  Similarly, for the backward difference, we have
+  \begin{equation}
+    \frac{\sin(a)-\sin(a-h)}{h} = \frac{\sin(a)\bigl(1-\cos(h)\bigr)}{h}
+    + \frac{\sin(h)}{h}\cos(a).
+  \end{equation}
+  Central difference gives us
+  \begin{equation}
+    \begin{split}
+      \sin(a+h)-\sin(a-h) &= [\sin(a)\cos(h) +\sin(h)\cos(a)]\\
+      &\qquad-[\sin(a)\cos(h)-\sin(h)\cos(a)]\\
+    &= 2\sin(h)\cos(a).
+    \end{split}
+  \end{equation}
+  Hence we obtain
+  \begin{equation}
+    \frac{\sin(a+h)-\sin(a-h)}{2h} = \frac{\sin(h)}{h}\cos(a).
+  \end{equation}
+  For what values of $h$ would this be good to machine precision? (In
+  other words, when would these be exact for double-precision
+  arithmetic? When will round-off error be our friend, rather than arch-enemy.)
+\end{ex}
+
+\begin{xca}
+  Find the forward difference, backward difference, and central
+  difference approximation to the derivative of $f(x)=\exp(x)$ at some
+  point $x=a$ with step-size $h$. Compare it to the exact value $f'(a)=\exp(a)$.
+\end{xca}
+
+\begin{xca}
+  Find the forward difference, backward difference, and central
+  difference approximation to the derivative of $f(x)=\log(x)$ at some
+  point $x=a$ with step-size $h$. Compare it to the exact value $f'(a)=1/a$.
+\end{xca}
+
+
+\begin{xca}
+  Find the forward difference, backward difference, and central
+  difference approximation to the derivative of $f(x)=\tan(x)$ at some
+  point $x=a$ with step-size $h$. Compare it to the exact value $f'(a)=\sec^{2}(a)$.
+\end{xca}
+
+\begin{xca}
+  How do these finite-difference schemes respect the usual laws of
+  differentiation? That is, if we have $h_{1} = g\circ f$, what's the error
+  of the chain-rule? What about the quotient rule $h_{2}(x)=g(x)/f(x)$?
+\end{xca}
+
+\begin{puzzle}
+Is there a ``best'' step size $h$ for numerical differentiation? (In the
+sense of minimizing error.)
+\end{puzzle}
+
+The basic algorithm for answering this question is the same in each
+approximation for numerical differentiation. We'll work out the solution
+for the central difference scheme.
+
+\begin{thm}
+  The optimal step-size for central difference approximation of $f'(a)$ is
+  \begin{equation}
+    h = \left|\frac{3\machEps |f(a)|}{|f'''(\xi)|}\right|^{1/3},
+  \end{equation}
+  where $\xi\in[a-h,a+h]$.
+\end{thm}
+\begin{proof}
+  We want to find
+  \begin{equation}
+    E(h) = \left|f'(a) - \frac{\fl(f(a+h))-\fl(f(a-h))}{2h}\right|.
+  \end{equation}
+  Let
+  \begin{equation}
+    \frac{\fl(f(a+h) - f(a-h))}{2h} = \frac{f(a+h)-f(a-h)}{2h} + \frac{\delta(a+h)-\delta(a-h)}{2h}
+  \end{equation}
+  be the round-off error, due to using floating-point arithmetic. Note
+  that $\delta(a)\approx f(a)\machEps$ is on the order of $\ulp(f(a))$.
+  Then
+  \begin{equation}
+     E(h) = \left|f'(a) - \frac{f(a+h)-f(a-h)}{2h} - \frac{\delta(a+h)-\delta(a-h)}{2h}\right|
+  \end{equation}
+  is the error. This is bounded by
+  \begin{equation}
+     E(h) \leq\left|f'(a) - \frac{f(a+h)-f(a-h)}{2h}\right|+ \left|\frac{\delta(a+h)-\delta(a-h)}{2h}\right|
+  \end{equation}
+  using the triangle inequality, and then
+  \begin{equation}
+    \left|f'(a) - \frac{f(a+h)-f(a-h)}{2h}\right|+ \left|\frac{\delta(a+h)-\delta(a-h)}{2h}\right|
+    \leq\frac{h^{2}M}{6} + \frac{2\machEps}{2h}|f(a)|
+  \end{equation}
+  using the error for central difference, and round-off error being
+  bounded by machine-epsilon by the fundamental axiom of floating-point arithmetic.
+  Thus have have our desired bound
+  \begin{equation}\label{eq:quadrature:derivatives:error-bound}
+    E(h) \leq\frac{h^{2}M}{6} + \frac{2\machEps}{2h}|f(a)|.
+  \end{equation}
+  Since this is an upper bound, we can just pretend they're
+  equal\footnote{This is common in mathematical analysis: work with
+  bounds, then minimize the upper bound, and sandwich estimates together.}.
+  We find the extrema of this error by taking the derivative
+  \begin{equation}
+    E'(h_{\text{cr}})=\frac{h_{\text{cr}}M}{3}-\frac{\machEps |f(a)|}{h_{\text{cr}}^{2}}=0.
+  \end{equation}
+  Solving this gives us
+  \begin{equation*}
+    h_{\text{cr}} = \left|\frac{3\machEps |f(a)|}{M}\right|^{1/3}.\qedhere
+  \end{equation*}
+\end{proof}
+
+\begin{xca}
+  Determine a good estimate for $f'''(\xi)$ in the previous theorem. Can
+  we use finite differences? Polynomial interpolation?
+\end{xca}
+\begin{xca}
+  Prove, for the forward difference approximation of $f'(a)$, that the
+  optimal step size is $h = \sqrt{4\machEps |f(a)|/|f''(\xi)|}$.
+\end{xca}
+\begin{xca}
+  From the bounds on error given in Eq~\eqref{eq:quadrature:derivatives:error-bound},
+  determine the stability of central difference.
+\end{xca}

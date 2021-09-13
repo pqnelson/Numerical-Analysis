@@ -24,6 +24,7 @@
 \include{tex/polynomial-evaluation}
 \include{tex/root}
 \include{tex/interpolation}
+\include{tex/quadrature}
 
 \part{Linear Algebra}
 
