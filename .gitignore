@@ -3,11 +3,17 @@ refs/
 *#
 # latex output
 *.aux
+*.idx
+*.ilg
+*.ind
 *.log
 *.out
 *.toc
 numerical.tex
 numerical.pdf
+
+# assembly output
+*.s
 
 # bibtex output
 *.blg
