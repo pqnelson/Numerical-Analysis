@@ -1,20 +1,22 @@
 \ProvidesPackage{fortran}[2021/06/05 Fortran Highlighting Package]
+% For the most part, I am emulating Github's syntax highlighting
+% choices. This has guided the choice of colors below. Feel free to
+% overwrite whichever \defaultX choices you dislike.
 
 \RequirePackage{listings}
 \RequirePackage{xcolor}
 
+\definecolor{ghComment}{RGB}{36, 41, 47}
+\definecolor{ghBlue}{RGB}{5, 80, 174}
+\definecolor{ghkeyword}{RGB}{207, 34, 46}
+\definecolor{ghstring}{RGB}{10, 48, 105}
 
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\def\defaultCommentStyle{\color{dkgreen}}
-\def\defaultInstructionStyle{\bfseries\color{blue}} % keyword[1] are opcodes
-\def\defaultRegisterColor{\color{red!50!black}} % keyword[3] are registers
-\def\defaultDirectiveStyle{\color{orange!80!black}} % kw[2] are directives
-\def\defaultStringStyle{\color{mauve}}
-\definecolor{ghkeyword}{HTML}{d73a49}
-\definecolor{ghstring}{HTML}{032f62}
+\def\defaultCommentStyle{\color{ghComment}}
+\def\defaultInstructionStyle{\color{ghkeyword}} % keyword[1] are opcodes
+\def\defaultDirectiveStyle{\color{ghkeyword}} % kw[2] are directives
+\def\defaultRegisterStyle{\color{ghkeyword}} % keyword[3] are registers
+\def\defaultStringStyle{\color{ghstring}}
+\def\defaultBooleanStyle{\color{ghBlue}}
 
 \lstdefinelanguage{fortran18}%
 {
@@ -87,26 +89,20 @@
    morestring=[d]',%
    morecomment=[l]!,
    basicstyle=\ttfamily,
-   %keywordstyle=\bfseries\sffamily,
-   %keywordstyle=\color{ghkeyword}\bfseries,
-   keywordstyle=\color{ghkeyword!80!black},
+   keywordstyle=\defaultInstructionStyle,
+   keywordstyle=[2]\defaultDirectiveStyle,
+   keywordstyle=[3]\defaultRegisterStyle,
+   keywordstyle=[4]\defaultBooleanStyle,
    commentstyle=\defaultCommentStyle,
-   stringstyle=\color{ghstring},
+   stringstyle=\defaultStringStyle,
    columns=fixed,
    upquote=true
 }
-
-
 
 \lstnewenvironment{fortran}[1][]%
                   {\lstset{%language=[08]Fortran,
                       language=fortran18,
                       basicstyle=\ttfamily,
-                      %keywordstyle=\bfseries\sffamily,
-                      %keywordstyle=\color{ghkeyword}\bfseries,
-                      keywordstyle=\color{ghkeyword!80!black},
-                      commentstyle=\defaultCommentStyle,
-                      stringstyle=\color{ghstring},
                       columns=fixed,
                       upquote=true}}
                   {}
