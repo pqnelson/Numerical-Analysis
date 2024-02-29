@@ -1,7 +1,6 @@
 \documentclass[oneside]{book}
 \usepackage{makeidx}
 \usepackage{numprint}
-\usepackage{assembly,fortran}
 \usepackage{nummac}
 \npstyleenglish
 \npthousandsep{\ensuremath\;\allowbreak}

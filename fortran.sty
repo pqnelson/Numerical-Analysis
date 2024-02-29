@@ -6,17 +6,30 @@
 \RequirePackage{listings}
 \RequirePackage{xcolor}
 
-\definecolor{ghComment}{RGB}{36, 41, 47}
+\definecolor{ghCommentOld}{RGB}{36, 41, 47} % old
+\definecolor{ghComment}{RGB}{106,115,125} % 6a737d
 \definecolor{ghBlue}{RGB}{5, 80, 174}
+% constant, entity.name.constant, variable.other.constant, variable.language, support, meta.property-name, support.constant, support.variable, meta.module-reference, markup.raw, meta.diff.header, meta.output
+\definecolor{ghBlue2}{RGB}{0,92,197}    % 005cc5
+\definecolor{ghPurple}{RGB}{111,66,193} % 6f42c1 entity.name
+\definecolor{ghPurple2}{RGB}{102,57,186}
+\definecolor{ghGreen}{RGB}{34,134,58}   % 22863a entity.name.tag, markup.quote
+\definecolor{ghRed}{RGB}{215,58,73}     % d73a49 keyword, storage, storage.type
+\definecolor{ghDarkBlue}{RGB}{3,47,98}  % 032f62 string
+\definecolor{ghOrange}{RGB}{227,98,9}   % e36209 variable
+\definecolor{ghDarkRed}{RGB}{179,29,40} % b31d28
+\definecolor{ghBrown}{RGB}{115,92,15}   % 735c0f
 \definecolor{ghkeyword}{RGB}{207, 34, 46}
 \definecolor{ghstring}{RGB}{10, 48, 105}
 
-\def\defaultCommentStyle{\color{ghComment}}
-\def\defaultInstructionStyle{\color{ghkeyword}} % keyword[1] are opcodes
-\def\defaultDirectiveStyle{\color{ghkeyword}} % kw[2] are directives
-\def\defaultRegisterStyle{\color{ghkeyword}} % keyword[3] are registers
-\def\defaultStringStyle{\color{ghstring}}
-\def\defaultBooleanStyle{\color{ghBlue}}
+\def\githubCommentStyle{\color{ghComment}}
+
+\def\fortranCommentStyle{\color{ghComment}}
+\def\fortranInstructionStyle{\color{ghkeyword}} % keyword[1] are opcodes
+\def\fortranDirectiveStyle{\color{ghkeyword}} % kw[2] are directives
+\def\fortranRegisterStyle{\color{ghkeyword}} % keyword[3] are registers
+\def\fortranStringStyle{\color{ghstring}}
+\def\fortranBooleanStyle{\color{ghBlue}}
 
 \lstdefinelanguage{fortran18}%
 {
@@ -89,13 +102,14 @@
    morestring=[d]',%
    morecomment=[l]!,
    basicstyle=\ttfamily,
-   keywordstyle=\defaultInstructionStyle,
-   keywordstyle=[2]\defaultDirectiveStyle,
-   keywordstyle=[3]\defaultRegisterStyle,
-   keywordstyle=[4]\defaultBooleanStyle,
-   commentstyle=\defaultCommentStyle,
-   stringstyle=\defaultStringStyle,
-   columns=fixed,
+   keywordstyle=\fortranInstructionStyle,
+   keywordstyle=[2]\fortranDirectiveStyle,
+   keywordstyle=[3]\fortranRegisterStyle,
+   keywordstyle=[4]\fortranBooleanStyle,
+   commentstyle=\fortranCommentStyle,
+   stringstyle=\fortranStringStyle,
+   columns=flexible,
+   basewidth={0.5em,0.5em},
    upquote=true
 }
 

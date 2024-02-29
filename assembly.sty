@@ -13,22 +13,24 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\def\defaultCommentStyle{\color{dkgreen}}
-\def\defaultInstructionStyle{\bfseries\color{blue}} % keyword[1] are opcodes
-\def\defaultRegisterColor{\color{red!50!black}} % keyword[3] are registers
-\def\defaultDirectiveStyle{\color{orange!80!black}} % kw[2] are directives
-\def\defaultStringStyle{\color{mauve}}
+\def\defaultCommentStyle{\githubCommentStyle}
+\def\defaultInstructionStyle{\bfseries\color{ghBlue2}} % keyword[1] are opcodes
+\def\defaultRegisterColor{\color{ghDarkRed}} % keyword[3] are registers
+\def\defaultDirectiveStyle{\color{ghBrown}} % kw[2] are directives
+\def\defaultStringStyle{\color{ghDarkBlue}}
 
 \def\armCommentStyle{\defaultCommentStyle}
 \def\armInstructionStyle{\defaultInstructionStyle}
-\def\armDirectiveStyle{\defaultDirectiveStyle}
+\def\armDirectiveStyle{\color{ghRed}}
 \def\armRegisterStyle{\defaultRegisterColor}
 \def\armStringStyle{\defaultStringStyle}
 %% https://github.com/frosc/arm-assembler-latex-listings
 %% ARM definition (c) 2013 Jacques Supcik
 %%
 \lstdefinelanguage[ARM]{Assembler}%
-   {% instructions
+   { columns=flexible,
+     basewidth={0.5em,0.5em},
+     % instructions
      keywordstyle={[1]\armInstructionStyle},
      keywordstyle={[2]\armDirectiveStyle},
      keywordstyle={[3]\armRegisterStyle},
@@ -456,7 +458,7 @@
     morekeywords=[3]{ % registers
       r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr,sp,pc,    %
       apsr,cpsr,r13,r14,r15,ip,fp,d0,d1,d2,d3,d4,d5,d6},%
-    alsoletter={.\#}, %alsoletter={.,0,1,2,3,4,5,6,7,8,9,[,]},%
+    alsoletter={.\#@}, %alsoletter={.,0,1,2,3,4,5,6,7,8,9,[,]},%
     alsodigit={?},%
     sensitive=false,%
     morestring=[b]",%
@@ -473,6 +475,8 @@
 
 % https://gist.github.com/walkie/4591789
 \lstdefinelanguage[mips]{Assembler}{%
+  columns=flexible,
+  basewidth={0.5em,0.5em},
   % so listings can detect directives and register names
   alsoletter={.\$},
   keywordstyle={[1]\mipsInstructionStyle},
@@ -521,14 +525,15 @@
 % language definition
 \lstdefinelanguage[RISC-V]{Assembler}
 {
+  columns=flexible,
+  basewidth={0.5em,0.5em},
   alsoletter={.}, % allow dots in keywords
   alsodigit={0x}, % hex numbers are numbers too!
   keywordstyle={[1]\riscvInstructionStyle},
   keywordstyle={[2]\riscvDirectiveStyle},
   keywordstyle={[3]\riscvRegisterStyle},
-  commentstyle=\riscvCommentStyle,
   morekeywords=[1]{ % instructions
-    lb, lh, lw, lbu, lhu,
+    lb, ld, lh, lw, lbu, lhu,
     sb, sh, sw,
     sll, slli, srl, srli, sra, srai,
     add, addi, sub, lui, auipc,
@@ -553,7 +558,8 @@
     fa0, fa1, fa2, fa3, fa4, fa5, fa6, fa7
   },
   morecomment=[l]{;},   % mark ; as line comment start
-  morecomment=[l]{\#},  % as well as # (even though it is unconventional)
+  morecomment=[l][\riscvCommentStyle]{\#},  % as well as # (even though it is unconventional)
+  commentstyle=\riscvCommentStyle,
   morestring=[b]",      % mark " as string start/end
   morestring=[b]'       % also mark ' as string start/end
 }
@@ -561,11 +567,13 @@
 
 \def\xEightySixCommentStyle{\defaultCommentStyle}
 \def\xEightySixInstructionStyle{\defaultInstructionStyle}
-\def\xEightySixRegisterStyle{\defaultRegisterColor}
+\def\xEightySixRegisterStyle{\color{ghBrown}}
 \def\xEightySixDirectiveStyle{\defaultDirectiveStyle}
 
 \lstdefinelanguage[x86]{Assembler}%
-  {morekeywords={cdqe,vmovsd},%
+  {columns=flexible,
+   basewidth={0.5em,0.5em},
+   morekeywords={cdqe,vmovsd},%
    morekeywords={aaa,aad,aam,aas,adc,add,and,arpl,bound,bsf,bsr,bswap,bt,btc,%
       btr,bts,call,cbw,cdq,clc,cld,cli,clts,cmc,cmp,cmps,cmpsb,cmpsw,%
       cmpsd,cmpxchg,cwd,cwde,daa,das,dec,div,enter,hlt,idiv,imul,in,%
@@ -627,7 +635,7 @@
    morestring=[b]',%
    morecomment=[l]{\#},
   keywordstyle={[1]\xEightySixInstructionStyle},
-  keywordstyle={[2]\xEightySixDirectiveStyle},
+  keywordstyle={[2]\color{ghPurple2}},
   keywordstyle={[3]\xEightySixRegisterStyle},
   commentstyle=\xEightySixCommentStyle
    }[keywords,comments,strings]
@@ -638,12 +646,14 @@
 \def\sparcDirectiveStyle{\defaultDirectiveStyle}
 
 \lstdefinelanguage[sparc64]{Assembler}{%
+  columns=flexible,
+  basewidth={0.5em,0.5em},
   % so listings can detect directives and register names
   alsoletter={.\%_},
   % strings, characters, and comments
   morestring=[b]",
   morestring=[b]',
-  morecomment=[l]{!},
+  morecomment=[l]!,
   % https://docs.oracle.com/cd/E19120-01/open.solaris/816-1681/6m83631lm/index.html
   morekeywords=[1]{add,addcc,addx,addxcc,and,andcc,andn,andncc,
     ba,bcs,bcc,be,bn,bne,bg,bge,bgeu,bl,ble,blu,bleu,bneg,
