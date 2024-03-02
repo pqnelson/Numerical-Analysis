@@ -39,17 +39,21 @@ strategy obtained from Eq~\eqref{eq:iterative-linear:jacobi-matrix-form}
 is called the \define{Jacobi method}, and its basic structure may be
 outlined in Algorithm~\ref{alg:iterative-linear:jacobi-iterative}.
 
+If we don't have any good grounds for picking the initial approximation
+$\vec{x}^{(0)}$, then the standard is to pick $\vec{x}^{(0)}=\vec{c}=D^{-1}\vec{b}$.
+
 \begin{algorithm}\label{alg:iterative-linear:jacobi-iterative}
   \caption{Jacobi iterative method}
   \begin{algorithmic}[1]
     \Require $A=(a_{ij})$ is an $n\times n$ matrix
+    \Require $a_{ii}\neq0$ for each $i=1,\dots,n$
     \Require $\vec{b}$ is an $n$ vector
     \Ensure $\vec{x}$ is a solution
     \Function{Jacobi}{$A$, $\vec{b}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
     \State $\vec{p}\gets\vec{0}$ \algorithmiccomment{for previous iteration's guess}
     \For{$k=1,\dots,N_{\text{max}}$}
-      \For{i=1,\dots,n}
-        \State{$x_{i}\gets b_{i} - \sum^{n}_{j\neq i}a_{ij}p_{j}$}
+      \For{i=1,\dots,n}\label{alg:iterative-linear:jacobi-iterative:parallelizable-step}
+        \State{$x_{i}\gets (b_{i} - \sum^{n}_{j\neq i}a_{ij}p_{j})/a_{ii}$}
       \EndFor
       \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
         \State\Return $\vec{x}$
@@ -60,6 +64,71 @@ outlined in Algorithm~\ref{alg:iterative-linear:jacobi-iterative}.
   \EndFunction
 \end{algorithmic}
 \end{algorithm}
+
+\begin{chunk}
+  The \FORTRAN/ implementation of Jacobi's method follows the algorithm
+  we sketched out. An improved
+  implementation would also pivot as needed to avoid any divide-by-zero
+  problems. The
+  \verb#jacobi_iterate# subroutine will store the approximation in the
+  \verb#ans# parameter.\marginpar{\texttt{jacobi.f90}}
+  \lstinputlisting[language=fortran18,firstline=27,lastline=57]{src/jacobi.f90}
+\end{chunk}
+
+One advantage of the Jacobi method is that we can parallelize the
+inner-loop in
+Step~\ref{alg:iterative-linear:jacobi-iterative:parallelizable-step}. The
+problem is that we typically need many more steps for the Jacobi method
+than alternatives.
+
+The astute reader may wonder: why don't we just use the new values of
+$x_{i}$ as we compute them? That is, why not compute
+\begin{equation}
+x_{i}=(b_{i}-\sum^{i-1}_{j=1}a_{ij}x_{j}-\sum^{n}_{j=i+1}a_{ij}p_{j})/a_{ii},
+\end{equation}
+instead of reusing the previous iteration's approximation throughout?
+This is precisely the \define{Gauss-Seidel method}. Its skeleton may be
+found in Algorithm~\ref{alg:iterative-linear:gauss-seidel}.
+
+\begin{algorithm}\label{alg:iterative-linear:gauss-seidel}
+  \caption{Gauss-Seidel iterative method}
+  \begin{algorithmic}[1]
+    \Require $A=(a_{ij})$ is an $n\times n$ matrix
+    \Require $a_{ii}\neq0$ for each $i=1,\dots,n$
+    \Require $\vec{b}$ is an $n$ vector
+    \Ensure $\vec{x}$ is a solution
+    \Function{Gauss-Seidel}{$A$, $\vec{b}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
+    \State $\vec{p}\gets\vec{0}$ \algorithmiccomment{for previous iteration's guess}
+    \For{$k=1,\dots,N_{\text{max}}$}
+      \For{i=1,\dots,n}
+        \State{$x_{i}\gets (b_{i} - \sum^{i-1}_{j=1}a_{ij}x_{j}- \sum^{n}_{j=i+1}a_{ij}p_{j})/a_{ii}$}
+      \EndFor
+      \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
+        \State\Return $\vec{x}$
+      \EndIf
+      \State $\vec{p}\gets\vec{x}$
+    \EndFor
+    \State\Return $\vec{x}$
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{chunk}
+  The \FORTRAN/ implementation of Gauss-Seidel is straightforward. The
+  only subtle bit is that at the start of each iteration, we don't need
+  to initialize
+  $\vec{x}^{(k+1)}=\vec{x}^{(k)}$ since it's already storing the
+  previous iteration's results. So we can update the values
+  in-place. Special attention must be paid that we are subtracting from
+  $b_{i}$ the values $a_{ij}x_{j}$ for all $j\neq i$, and that this is
+  stored in $x_{i}$. We still need \verb#prev_iter# for the stopping
+  condition, which is why we keep it around.
+  The same caveat about pivoting mentioned regarding
+  the Jacobi implementation applies here as well. The
+  \verb#gauss_seidel# subroutine will store the approximation in the
+  \verb#ans# parameter.\marginpar{\texttt{jacobi.f90}}
+  \lstinputlisting[language=fortran18,firstline=59,lastline=90]{src/jacobi.f90}
+\end{chunk}
 
 We have some estimate on the error bounds using the following result.
 
@@ -79,6 +148,45 @@ Moreover the sequence $\{\vec{x}^{(k)}\}_{k\in\NN}$ defined by
 $\vec{x}^{(k+1)}=T\vec{x}^{(k)}+\vec{c}$ converges to the solution if
 and only if $\rho(T)<1$.
 \end{lemma}
+
+\begin{proof}[Proof sketch]
+$(\Longleftarrow)$ Assume $\rho(T)<1$. We want to prove
+convergence. Observe that 
+\begin{align*}
+\vec{x}^{(k)}
+&=T\vec{x}^{(k-1)}+\vec{c}\\
+&=T(T\vec{x}^{(k-2)}+\vec{c})+\vec{c}=T^{2}\vec{x}^{(k-2)}+(I+T)\vec{c}\\
+&=\dots=T^{k}\vec{x}^{(0)}+(I+T+\dots+T^{k-1})\vec{c}.
+\end{align*}
+Taking the $k\to\infty$ limit gives us
+\begin{equation}
+\lim_{k\to\infty}\vec{x}^{(k)}=(I-T)^{-1}\vec{c},
+\end{equation}
+since $T^{k}\to0$ as $k\to\infty$. This gives us convergence.
+
+$(\Longrightarrow)$ Assume that $\vec{x}^{(k)}\to\vec{x}$ for any
+initial value $\vec{x}^{(0)}$ and $\vec{x}=T\vec{x}+\vec{c}$. Now let us
+have $\vec{y}$ be any arbitrary value, and let us have
+$\vec{x}^{(0)}=\vec{x}-\vec{y}$ be the initial value for the sequence.
+Observe
+\begin{equation}
+\begin{split}
+\vec{x}-\vec{x}^{(k)}&=(T\vec{x}+\vec{c})-(T\vec{x}^{(k-1)}+\vec{c})\\
+&=T(\vec{x}-\vec{x}^{(k-1)}),
+\end{split}
+\end{equation}
+so
+\begin{equation}
+\vec{x}-\vec{x}^{(k)}=T(\vec{x}-\vec{x}^{(k-1)})=T^{2}(\vec{x}-\vec{x}^{(k-2)})
+=\dots=T^{k}(\vec{x}-\vec{x}^{(0)})=T^{k}\vec{y}.
+\end{equation}
+In particular, since we assumed the sequence $\vec{x}^{(k)}$ converges,
+this means
+\begin{equation}
+\lim_{k\to\infty}T^{k}\vec{y}=\vec{0},
+\end{equation}
+which implies $\rho(T)<1$.
+\end{proof}
 
 \begin{prop}
 If $\|T\|<1$ for any induced matrix norm and $\vec{c}$ is any given

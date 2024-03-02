@@ -68,8 +68,8 @@ contains
     integer :: i, j, k
     real(real64), dimension(n) :: x, prev_iter
     prev_iter = init_guess
+    x = prev_iter
     do k=1,max_iter
-       x = prev_iter
        do i=1,n
           x(i) = b(i)
           do j=1,n
