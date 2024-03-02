@@ -26,6 +26,8 @@
 \include{tex/quadrature}
 
 \part{Linear Algebra}
+\include{tex/gaussian-elim}
+\include{tex/iterative-linear}
 
 \part{Differential Equations}
 

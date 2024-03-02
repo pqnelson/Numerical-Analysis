@@ -1,0 +1,144 @@
+\chapter{Iterative Algorithms Solving Systems of Linear Equations}
+
+\section{Jacobi and Gauss-Seidel}
+
+We ultimately want to construct a sequence of vectors
+$\{\vec{x}^{(k)}\}_{k\in\NN}$ which converges to the solution of a
+system of linear equations $A\vec{x}=\vec{b}$. The first step will be to
+write down some recurrence relation
+\begin{equation}
+\vec{x}^{(k+1)}=T\vec{x}^{(k)}+\vec{c}.
+\end{equation}
+How to do this?
+
+We could begin by writing
+\begin{equation}
+A = L + D + U
+\end{equation}
+where $L$ is strictly lower-triangular, $D$ is diagonal, and $U$ is
+strictly upper-triangular. Then we would take our system of equations
+\begin{equation}
+(L+D+U)\vec{x}=\vec{b},
+\end{equation}
+subtract $(L+U)\vec{x}$ from both sides to obtain,
+\begin{equation}
+D\vec{x}=-(L+U)\vec{x}+\vec{b},
+\end{equation}
+and finally multiply on the left by $D^{-1}$
+\begin{equation}
+\vec{x}=-D^{-1}(L+U)\vec{x}+D^{-1}\vec{b}.
+\end{equation}
+We then use this as our recurrence relation
+\begin{equation}\label{eq:iterative-linear:jacobi-matrix-form}
+\vec{x}^{(k+1)}=-D^{-1}(L+U)\vec{x}^{(k)}+D^{-1}\vec{b}.
+\end{equation}
+The presence of an inverse matrix might appear discouraging, but we
+should recall the inverse of a diagonal matrix is just the inverse of
+its components (which is easily computable!). So, we're good. We
+strategy obtained from Eq~\eqref{eq:iterative-linear:jacobi-matrix-form}
+is called the \define{Jacobi method}, and its basic structure may be
+outlined in Algorithm~\ref{alg:iterative-linear:jacobi-iterative}.
+
+\begin{algorithm}\label{alg:iterative-linear:jacobi-iterative}
+  \caption{Jacobi iterative method}
+  \begin{algorithmic}[1]
+    \Require $A=(a_{ij})$ is an $n\times n$ matrix
+    \Require $\vec{b}$ is an $n$ vector
+    \Ensure $\vec{x}$ is a solution
+    \Function{Jacobi}{$A$, $\vec{b}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
+    \State $\vec{p}\gets\vec{0}$ \algorithmiccomment{for previous iteration's guess}
+    \For{$k=1,\dots,N_{\text{max}}$}
+      \For{i=1,\dots,n}
+        \State{$x_{i}\gets b_{i} - \sum^{n}_{j\neq i}a_{ij}p_{j}$}
+      \EndFor
+      \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
+        \State\Return $\vec{x}$
+      \EndIf
+      \State $\vec{p}\gets\vec{x}$
+    \EndFor
+    \State\Return $\vec{x}$
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+We have some estimate on the error bounds using the following result.
+
+\begin{defn}\index{Spectral Radius}
+Let $T$ be an $n\times n$ matrix over the reals\footnote{We could extend
+this to the complex numbers, or restrict it to the rationals, or any
+other subfield of $\CC$ if you want. But floating point numbers are
+supposed to approximate $\RR$, so we are really interested in that field.}.
+We define the \define{Spectral Radius} of $T$ to be the non-negative
+real number $\rho(T) := \max\spec(T)$ equal to the maximum of the
+absolute value of the eigenvalues of $T$.
+\end{defn}
+
+\begin{lemma}
+The solution to $\vec{x}=T\vec{x}+\vec{c}$ is $\vec{x}=(I-T)^{-1}\vec{c}$.
+Moreover the sequence $\{\vec{x}^{(k)}\}_{k\in\NN}$ defined by
+$\vec{x}^{(k+1)}=T\vec{x}^{(k)}+\vec{c}$ converges to the solution if
+and only if $\rho(T)<1$.
+\end{lemma}
+
+\begin{prop}
+If $\|T\|<1$ for any induced matrix norm and $\vec{c}$ is any given
+vector, then the sequence $\{\vec{x}^{(k)}\}_{k\in\NN}$ converges to the
+solution $\vec{x}$ for any initial guess $\vec{x}^{(0)}$. Furthermore,
+we have the following error bounds:
+\begin{enumerate}
+\item $\|\vec{x}-\vec{x}^{(k)}\|\leq\|T\|^{k}\|\vec{x}^{(0)}-\vec{x}\|$;
+\item $\displaystyle\|\vec{x}-\vec{x}^{(k)}\|\leq\frac{\|T\|^{k}}{1-\|T\|}\|\vec{x}^{(1)}-\vec{x}^{(0)}\|$.
+\end{enumerate}
+\end{prop}
+
+\begin{proof}
+Observe that
+\begin{subequations}
+\begin{equation}
+\vec{x}=T\vec{x}+\vec{c}
+\end{equation}
+and
+\begin{equation}
+\vec{x}^{(k)}=T\vec{x}^{(k-1)}+\vec{c}.
+\end{equation}
+\end{subequations}
+Therefore
+\begin{equation}
+\vec{x}-\vec{x}^{(k)}=(T\vec{x}+\vec{c})-(T\vec{x}^{(k-1)}+\vec{c})=T(\vec{x}-\vec{x}^{(k-1)}).
+\end{equation}
+Therefore
+\begin{equation}
+\vec{x}-\vec{x}^{(k)}=T^{k}(\vec{x}-\vec{x}^{(0)}).
+\end{equation}
+Taking the norm on both sides produces the first error bound.
+
+Observe that
+\begin{equation}
+\begin{split}
+\vec{x}^{(k+1)}-\vec{x}^{(k)}
+&=(T\vec{x}^{(k)}+\vec{c})-(T\vec{x}^{(k-1)}+\vec{c})\\
+&=T(\vec{x}^{(k)}-\vec{x}^{(k-1)}).
+\end{split}
+\end{equation}
+Then by induction, we would have
+\begin{equation}
+\vec{x}^{(k+1)}-\vec{x}^{(k)}=T^{k}(\vec{x}^{(1)}-\vec{x}^{(0)}).
+\end{equation}
+So far, so good. Now, for any nonzero $m\in\NN$, $m\neq0$, we would have
+\begin{align*}
+\|\vec{x}^{(k+m)}-\vec{x}^{(k)}\|&=
+\|\vec{x}^{(k+m)}-\vec{x}^{(k+m-1)}+\vec{x}^{(k+m-1)}-\dots+\vec{x}^{(k+1)}-\vec{x}^{(k)}\|\\
+&\leq\|\vec{x}^{(k+m)}-\vec{x}^{(k+m-1)}\|+\|\vec{x}^{(k+m-1)}-\vec{x}^{(k+m-2)}\|+\dots+\|\vec{x}^{(k+1)}-\vec{x}^{(k)}\|\\
+&\leq \|T^{k+m-1}\|\cdot\|\vec{x}^{(1)}-\vec{x}^{(0)}\|+\|T^{k+m-2}\|\cdot\|\vec{x}^{(1)}-\vec{x}^{(0)}\|+\dots+\|T^{k}\|\cdot\|\vec{x}^{(1)}-\vec{x}^{(0)}\|.
+\end{align*}
+Taking the $m\to\infty$ limit yields the result
+\begin{equation}
+  \begin{split}
+\|\vec{x}-\vec{x}^{(k)}\|&\leq\|T^{k}\sum^{\infty}_{n=0}T^{n}\|\cdot\|\vec{x}^{(1)}-\vec{x}^{(0)}\|\\
+&\leq\|T^{k}\|\left(\sum^{\infty}_{n=0}\|T^{n}\|\right)\|\vec{x}^{(1)}-\vec{x}^{(0)}\|=\frac{\|T^{k}\|}{1-\|T\|}\|\vec{x}^{(1)}-\vec{x}^{(0)}\|.
+  \end{split}
+\end{equation}
+Note that submultiplicativity of the matrix norm is key in obtaining the
+second line of the previous equation. Thus we obtain the second error bound.
+\end{proof}
+

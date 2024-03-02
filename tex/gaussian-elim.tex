@@ -1,0 +1,161 @@
+\chapter{Direct Methods for Solving Systems of Linear Equations}
+
+\section{Gaussian Elimination with Backsubstitution}
+
+We all learn how to solve systems of linear equations first by Gaussian
+elimination. This takes a system,
+\begin{equation}
+A\vec{x}=\vec{b},
+\end{equation}
+then creates the augmented matrix $(A\mid\vec{b})$. We perform
+elementary row operations to transform $A$ into an upper-triangular
+matrix, then backsubstitution to solve for the unknowns (i.e., transform
+the upper-triangular matrix into the identity matrix). This gives us
+$(I\mid\vec{x})$, turning $\vec{b}$ into the solution.
+
+Recall, the three types of elementary row operations are:
+\begin{enumerate}
+\item Multiply row $i$ by a nonzero scalar $\lambda$;
+\item Add row $i$ to row $j$;
+\item Switch rows $i$ and $j$.
+\end{enumerate}
+When we encounter a zero along the diagonal, we need to pivot --- that
+is to say, we need to swap that row with another.
+
+Sounds simple enough, let's try to describe the algorithm for Gaussian
+elimination.
+
+How many operations are involved when solving a generic system of $n$
+linear equations in $n$ unknowns? Well, in
+step~\ref{alg:gauss-elim:gaussian-elimination-with-backsubstitution:dilate}
+there's one division operation in a nested loop, which contributes
+\begin{equation}
+\sum^{n-1}_{i=1}\sum^{n}_{j=i+1}1 = \sum^{n-1}_{i=1}(n-i) = \frac{n(n-1)}{2}
+\end{equation}
+division operations. Then step~\ref{alg:gauss-elim:gaussian-elimination-with-backsubstitution:eliminate}
+contributes a deceptive number of operations, because these are row
+operations: $n+1$ multiplication operations and $n+1$ subtraction
+operations \emph{per iteration}. That means we need
+$\frac{1}{2}n(n-1)(n+1)$ multiplications and subtractions from the
+elimination procedure \emph{in total}.
+
+Backsubstitution needs a further $n$ division operations, as well as
+$n-1$ subtraction operations (once for each iteration of the loop),
+$\frac{1}{2}n(n-1)$ multiplication and addition operations in total.
+
+Combined together, we'd need:
+\begin{itemize}
+\item $\frac{1}{2}n(n-1)(n+1)+n-1=\frac{1}{2}(n^{3}+n)-1$ subtraction operations
+\item $\frac{1}{2}n(n-1)$ addition operations
+\item $\frac{1}{2}n(n-1)+\frac{1}{2}n(n-1)(n+1)=\frac{1}{2}(n^{3}+n^{2}-2n)$
+  multiplication operations
+\item $\frac{1}{2}n(n-1)+n=\frac{1}{2}n(n+1)$ division operations.
+\end{itemize}
+Recall our discussion of floating-point cycle costs in Section~\S\ref{sec:float:computer:arithmetic:costs},
+but the main point is that there are $\frac{1}{2}n^{3}$ subtraction and
+$\frac{1}{2}n^{3}$ multiplication operations. Typically $n$ will be
+huge, especially for numerical differential equations.
+
+\begin{algorithm}\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution}
+  \caption{Gaussian elimination for a system of linear equations}
+  \begin{algorithmic}[1]
+    \Require $A$ is an augmented $n\times(n+1)$ matrix
+    \Ensure $\vec{x}$ is a solution or failure
+    \Function{GaussElim}{$A$}
+    \For{$i=1,\dots,n-1$}
+      \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:pivot} $p\gets\min\{j\in\ZZ\mid i\leq j\leq n, A_{ji}\neq0\}$
+      \algorithmiccomment{pivot, if needed}
+      \If{$p$ does not exist}
+        \State\Fail ``No unique solution exists''
+      \ElsIf{$p\neq i$}
+        \State Swap rows $i$ and $p$
+      \EndIf
+      \For{$j=i+1,\dots,n$} \algorithmiccomment{triangularize}
+        \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:dilate} $m_{ji}\gets a_{ji}/a_{ii}$
+        \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:eliminate} $a_{j\star}\gets a_{j\star}-m_{ji}a_{i\star}$ \algorithmiccomment{\parbox[t]{.5\linewidth}{Subtract
+        $m_{ji}$ multiples of row $i$ from row $j$, then set the result
+        as row $j$}}
+      \EndFor
+    \EndFor
+    \If{$a_{nn}=0$}
+      \State\Fail ``No unique solution exists''
+    \EndIf
+    \State $x_{n}\gets a_{n,n+1}/a_{nn}$ \algorithmiccomment{backsubstitution}
+    \For{$i=n-1,\dots,1$}
+      \State $\displaystyle x_{i}\gets\left(a_{i,n+1}-\sum_{j=i+1}^{n}a_{ij}x_{j}\right)/a_{ii}$
+    \EndFor
+    \State\Return $\vec{x}$
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\section{Different Pivoting Strategies}
+
+Even if Gaussian elimination were viable, we could run into problems
+with numerical instability.
+
+\begin{example}
+Consider the system of equations
+\begin{subequations}\label{eq:gaussian-elim:motivation-for-partial-pivot}
+\begin{align}
+0.0030000x_{1} + 59.14 x_{2} &= 59.17\\
+5.291x_{1} - 6.130 x_{2} &= 46.78
+\end{align}
+\end{subequations}
+We see that $a_{1,1}=0.003000$ is nonzero, and Gaussian elimination (as
+we have described it) will not pivot the first row. Round-off error will
+kill us: performing elimination gives us
+\begin{subequations}
+\begin{align}
+0.0030000x_{1} + 59.14 x_{2} &= 59.17\\
+ -104300x_{2} &\approx -104400
+\end{align}
+\end{subequations}
+instead of the correct values
+\begin{subequations}
+\begin{align}
+0.0030000x_{1} + 59.14 x_{2} &= 59.17\\
+ -104309.37666\dots x_{2} &=-104309.37666\dots
+\end{align}
+\end{subequations}
+The correct solution should be $x_{1}=10$, $x_{2}=1$; the computer
+offers us $x_{1}\approx-10$ and $x_{2}\approx1.001$.
+\end{example}
+
+If we instead swapped the rows, we would obtain a sensible
+approximation.
+
+In general, if in
+Step~\ref{alg:gauss-elim:gaussian-elimination-with-backsubstitution:pivot}
+of Gaussian Elimination we pivot to the row where $|a_{p,i}|$ is greatest, 
+then we would have a more numerically stable algorithm. This is the
+\define{Partial Pivoting} technique. Is this good enough?
+
+\begin{example}
+Consider the system of linear equations
+\begin{subequations}
+\begin{align}
+30.0x_{1} + 591400 x_{2} &= 591700\\
+5.291x_{1} - 6.130 x_{2} &= 46.78
+\end{align}
+\end{subequations}
+Does this look familiar? It should: it's simply Eq~\eqref{eq:gaussian-elim:motivation-for-partial-pivot}
+with the first row multiplied by $10^{4}$. If we tried Gaussian
+elimination with partial pivoting, we would get
+\begin{equation*}
+m_{21}=\frac{5.291}{30.0}=0.1764
+\end{equation*}
+and then obtain the system
+\begin{subequations}
+\begin{align}
+30.0x_{1} + 591400 x_{2} &= 591700\\
+-104300 x_{2} &\approx 104400.
+\end{align}
+\end{subequations}
+This is exactly the problematic system of equations we had which
+motivated partial pivoting in the first place!
+\end{example}
+
+There are other pivoting strategies we could employ, but the
+$\bigO(n^{3})$ complexity of Gaussian elimination would sink us
+anyways. 

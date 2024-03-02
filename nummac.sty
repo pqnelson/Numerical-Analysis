@@ -86,6 +86,12 @@
    \pushQED{\qed}\begin{XxmpX}}
   {\popQED\end{XxmpX}}
 
+\newenvironment{example}    % this is the environment name for the input
+  {\renewcommand{\qedsymbol}{$\lozenge$}%
+   \pushQED{\qed}\begin{XxmpX}}
+  {\popQED\end{XxmpX}}
+
+  
 \theoremstyle{remark}
 \newtheorem{rmk}{Remark}[thm]
 \newtheorem{note}[rmk]{Note}
@@ -226,6 +232,9 @@
 \def\flEq{\approx}
 \DeclareMathOperator{\ulp}{ulp}
 \DeclareMathOperator{\ULP}{ULP}
+
+% spectrum of a matrix
+\DeclareMathOperator{\spec}{spec}
 
 
 
