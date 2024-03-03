@@ -1,5 +1,6 @@
 \ProvidesPackage{nummac}[2021/06/05 Numerical Macros Package]
 
+\RequirePackage{enumitem}
 \RequirePackage{fortran}
 \RequirePackage{assembly}
 \RequirePackage{longtable}
@@ -24,6 +25,24 @@
 \usepackage{fixltx2e}
 \RequirePackage{algpseudocode}
 \RequirePackage{manfnt} % for dangerous bend
+
+% Imitating amsart
+\setlist{parsep=0pt,
+  topsep=\smallskipamount,
+  itemsep=0pt
+}
+\def\labelenumi{(\theenumi)}
+\def\theenumi{\@arabic\c@enumi}
+\def\labelenumii{(\theenumii)}
+\def\theenumii{\@alph\c@enumii}
+\def\p@enumii{\theenumi}
+\def\labelenumiii{(\theenumiii)}
+\def\theenumiii{\@roman\c@enumiii}
+\def\p@enumiii{\theenumi(\theenumii)}
+\def\labelenumiv{(\theenumiv)}
+\def\theenumiv{\@Alph\c@enumiv}
+\def\p@enumiv{\p@enumiii\theenumiii}
+
 
 % https://tex.stackexchange.com/a/16060
 \MakeRobust{\Call}
@@ -58,8 +77,12 @@
 %%% theorems
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}[section]
+\let\theorem\thm
+\let\endtheorem\endthm
 \newtheorem{cor}[thm]{Corollary}
 \newtheorem{prop}[thm]{Proposition}
+\let\proposition\prop
+\let\endproposition\endprop
 \newtheorem{lemma}[thm]{Lemma}
 \newtheorem{axiom}[thm]{Axiom}
 \newtheorem{heuristic}[thm]{Heuristic}
@@ -69,6 +92,8 @@
 \theoremstyle{definition}
 \newtheorem{convention}[thm]{Convention}
 \newtheorem{defn}[thm]{Definition}
+\let\definition\defn
+\let\enddefinition\enddefn
 %\newtheorem{ex}[thm]{Example}
 \newtheorem{xca}[thm]{\noindent\llap{\mantriangleright\kern.15em}Exercise}
 \newtheorem{puzzle}[thm]{Puzzle}
@@ -233,9 +258,9 @@
 \DeclareMathOperator{\ulp}{ulp}
 \DeclareMathOperator{\ULP}{ULP}
 
-% spectrum of a matrix
-\DeclareMathOperator{\spec}{spec}
-
+% linear algebra notation 
+\DeclareMathOperator{\spec}{spec} % spectrum of a matrix
+\newcommand\condition{\kappa}
 
 
 

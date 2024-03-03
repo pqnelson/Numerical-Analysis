@@ -1,5 +1,10 @@
 \chapter{Direct Methods for Solving Systems of Linear Equations}
 
+We assume the reader is a mathematician who is familiar with linear
+algebra, so we won't dedicate a section for introducing notions like
+``eigenvalue'', ``determinant'', ``vector norm'', etc. However, we will
+review the relevant notions when necessary.
+
 \section{Gaussian Elimination with Backsubstitution}
 
 We all learn how to solve systems of linear equations first by Gaussian
@@ -158,4 +163,290 @@ motivated partial pivoting in the first place!
 
 There are other pivoting strategies we could employ, but the
 $\bigO(n^{3})$ complexity of Gaussian elimination would sink us
-anyways. 
+anyways.
+
+\section{Norms and Error}
+
+\begin{definition}
+Let $\RR^{n}$ be a vector space. We define the \define{Vector Norm} on
+$\RR^{n}$ to be the function $\|-\|\colon\RR^{n}\to\RR$ such that:
+\begin{enumerate}
+\item Non-negativity: $\|\vec{x}\|\geq0$ for all $\vec{x}\in\RR^{n}$, and
+  $\|\vec{x}\|=0$ iff $\vec{x}=0$;
+\item Absolute homogeneity: $\|\alpha\vec{x}\|=|\alpha|\cdot\|\vec{x}\|$
+  for all $\alpha\in\RR$ and $\vec{x}\in\RR^{n}$;
+\item Triangle inequality: $\|\vec{x}+\vec{y}\|\leq\|\vec{x}\|+\|\vec{y}\|$
+  for all $\vec{x},\vec{y}\in\RR^{n}$.
+\end{enumerate}
+\end{definition}
+
+\begin{example}
+The familiar Euclidean norm 
+\begin{equation}
+\|\vec{x}\|_{2}:=\sqrt{\sum^{n}_{j=1}x_{j}^{2}}
+\end{equation}
+is a norm. For any real $1\leq p<\infty$, we can define the $p$-norm as
+\begin{equation}
+\|\vec{x}\|_{p}:=\left(\sum^{n}_{j=1}|x_{j}|^{p}\right)^{1/p}.
+\end{equation}
+An important property that $p$-norms satisfy is that if we have some
+inequality $\|\vec{x}\|_{p}\leq\|\vec{y}\|_{p}$ in one $p$-norm, then it
+holds in all $p$-norms. 
+\end{example}
+
+\begin{example}
+The infinity norm
+\begin{equation}
+\|\vec{x}\|_{\infty} := \max_{i}|x_{i}|.
+\end{equation}
+This is usually grouped with the $p$-norms, so $p\in[1,+\infty]$.  
+\end{example}
+
+
+\begin{theorem}
+For each $\vec{x}\in\RR^{n}$, we have
+$\|\vec{x}\|_{\infty}\leq\|\vec{x}\|_{2}\leq\sqrt{n}\|\vec{x}\|_{\infty}$.
+\end{theorem}
+
+\begin{proof}
+  Suppose $|x_{k}|=\|\vec{x}\|_{\infty}$. Now write
+  \begin{subequations}
+  \begin{equation}
+{\|\vec{x}\|_{2}}^{2}=x_{k}^{2}+\sum^{n}_{\substack{i=1\\i\neq k}}x_{i}^{2}
+  \end{equation}
+  We see that
+  \begin{equation}
+\|\vec{x}\|_{\infty}^{2}\leq\|\vec{x}\|_{\infty}^{2}+\sum^{n}_{\substack{i=1\\i\neq k}}x_{i}^{2},
+  \end{equation}
+  which implies
+  \begin{equation}
+\|\vec{x}\|_{\infty}\leq\|\vec{x}\|_{2}.
+  \end{equation}
+  \end{subequations}
+  We also see that $x_{i}^{2}\leq x_{k}^{2}$ for each $i=1,\dots,n$; therefore,
+  \begin{subequations}
+    \begin{equation}
+\sum^{n}_{i=1}x_{i}^{2}\leq\sum^{n}_{i=1}x_{k}^{2}=n\|\vec{x}\|_{\infty}^{2}.
+    \end{equation}
+Taking the squareroot of both sides yields
+    \begin{equation}
+\|\vec{x}\|_{2}=\sqrt{\sum^{n}_{i=1}x_{i}^{2}}\leq\sqrt{n}\|\vec{x}\|_{\infty}..
+    \end{equation}
+  \end{subequations}
+  Thus combining these together yields the results.
+\end{proof}
+
+\begin{definition}
+We can define a \define{Matrix Norm} on $\RR^{n\times n}$ square
+$n\times n$ real matrices as a function $\|-\|\colon\RR^{n\times n}\to\RR$
+satisfying:
+\begin{enumerate}
+\item Non-negativity: $\|A\|\geq0$ for all $A\in\RR^{n\times n}$, and
+  $\|A\|=0$ iff $A=0$;
+\item Absolute homogeneity: $\|\alpha A\|=|\alpha|\cdot\|A\|$ for all
+  $\alpha\in\RR$ and $A\in\RR^{n\times n}$;
+\item Triangle inequality: $\|A+B\|\leq\|A\|+\|B\|$ for all $A,B\in\RR^{n\times n}$;
+\item Submultiplicativity: $\|AB\|\leq\|A\|\cdot\|B\|$ for all $A,B\in\RR^{n\times n}$.
+\end{enumerate}
+\end{definition}
+
+\begin{example}
+Let $\|-\|$ be a vector norm on $\RR^{n}$. We can construct the
+\define{Induced Matrix Norm} on $\RR^{n\times n}$ defined by
+\begin{equation}
+\|A\| := \max_{\|\vec{x}\|=1}\|A\vec{x}\|.
+\end{equation}
+Frequently we'll work with the induced $\infty$-norm in numerical analysis.
+\end{example}
+
+\begin{example}
+The induced $p=1$-norm for matrices $\RR^{n\times n}$ is given by
+\begin{equation}
+\|A\|_{1}=\max_{1\leq j\leq n}\sum^{n}_{i=1}|a_{ij}|.
+\end{equation}
+This is the $\infty$-norm for vectors applied to each column of $A$, then
+taking the maximum among them.
+\end{example}
+
+\begin{example}
+The induced $\infty$-norm for matrices $\RR^{n\times n}$ is given by
+\begin{equation}
+\|A\|_{\infty}=\max_{1\leq i\leq n}\sum^{n}_{j=1}|a_{ij}|.
+\end{equation}
+This is the $\infty$-vector norm applied to each row of $A$, then
+taking the maximum among them.
+\end{example}
+
+\begin{example}
+For a concrete example, consider the matrix
+\begin{equation}
+  A = \begin{pmatrix}1 & 2\\
+    1.001 & 2
+  \end{pmatrix}
+\end{equation}
+We then have
+\begin{equation}
+\|A\|_{\infty}=\max\{1+2, 1.001+2\}=3.001,
+\end{equation}
+and
+\begin{equation}
+\|A\|_{1}=\max\{1+1.001,2+2\}=4.
+\end{equation}
+\end{example}
+
+\begin{definition}
+Let $\|-\|$ be a matrix norm on $\RR^{n\times n}$, let $\|-\|_{v}$ be a
+vector norm on $\RR^{n}$. We call $\|-\|$
+\define{Consistent} with the vector norm if
+$\|A\vec{x}\|_{v}\leq\|A\|\cdot\|\vec{x}\|_{v}$ for all
+$A\in\RR^{n\times n}$ and $\vec{x}\in\RR^{n}$.
+\end{definition}
+
+\begin{example}
+Any induced matrix norm is consistent with the vector norm inducing it.
+\end{example}
+
+\begin{theorem}
+A matrix norm $\|-\|$ is consistent with the vector norm if and only if
+when applied to the identity matrix its value is $1=\|I\|$.
+\end{theorem}
+
+\begin{example}
+The Frobenius norm $\|-\|_{\text{Frob}}$ treats a matrix as a vector of
+length $n^{2}$, then just uses the Euclidean norm on it. That is,
+\begin{equation}
+\|A\|_{\text{Frob}}=\left(\sum^{n}_{i,j=1}a_{ij}^{2}\right)^{1/2}.
+\end{equation}
+The Frobenius norm is not consistent for $n>1$:
+\begin{equation}
+\|I\|_{\text{Frob}}=\left(n\right)^{1/2}.
+\end{equation}
+So not all matrix norms are consistent.
+\end{example}
+
+\begin{definition}
+Let $\vec{x}_{c}$ be the computed or approximate solution to the system
+of equations $A\vec{x}=\vec{b}$. Let $\|-\|$ be a vector norm. Then we define:
+\begin{enumerate}
+\item the \define{Residual Vector} to be $\vec{r}:=\vec{b}-A\vec{x}_{c}$;
+\item the \define{Relative Backward Error} to be the ratio $\|\vec{r}\|/\|\vec{b}\|$;
+\item the \define{Relative Forward Error} to be the ratio $\|x-x_{c}\|/\|x\|$;
+\item the \define{Magnification of Error} is the ratio of the relative
+  forward error to the relative backward error.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+Let $A\in\RR^{n\times n}$ be an invertible matrix. Let $\|-\|$ be a
+consistent matrix norm on $\RR^{n\times n}$. We define the
+\define{Condition Number} of $A$ to be
+\begin{equation}
+\condition(A) := \|A\|\cdot\|A^{-1}\|.
+\end{equation}
+\end{definition}
+
+\begin{rmk}
+Observe the condition number requires a choice of matrix norm.
+\end{rmk}
+
+\begin{rmk}
+There is a more general notion of a [relative] condition number for any
+function $f\colon\RR^{n}\to\RR^{n}$. We will not need it, but the
+interested reader is referred to Rice~\cite{rice1966theory}.
+\end{rmk}
+
+\begin{theorem}
+Let $A$ be a nonsingular matrix.
+Let $\vec{x}_{c}$ be the approximation to the solution of $A\vec{x}=\vec{b}$.
+Let $\vec{r}$ be the residual vector for $\vec{x}_{c}$. Then for any
+induced matrix norm,
+\begin{subequations}
+\begin{equation}
+\|\vec{x}-\vec{x}_{c}\|\leq\|\vec{r}\|\cdot\|A^{-1}\|,
+\end{equation}
+and if $\vec{x}\neq\vec{0}$ and $\vec{b}\neq\vec{0}$,
+\begin{equation}\label{eq:gaussian-elim:cond-number-bounds-error-magnification}
+\frac{\|\vec{x}-\vec{x}_{c}\|}{\|\vec{x}\|}\leq\|A\|\cdot\|A^{-1}\|\frac{\|\vec{r}\|}{\|\vec{b}\|}.
+\end{equation}
+\end{subequations}
+\end{theorem}
+
+\begin{proof}
+We have
+\begin{subequations}
+\begin{align}
+\vec{r} &= \vec{b}-A\vec{x}_{c}\\
+        &= A\vec{x}-A\vec{x}_{c}\\
+        &= A(\vec{x}-\vec{x}_{c}).
+\end{align}
+Then since $A$ is invertible, multiply both sides on the left by
+$A^{-1}$ to obtain
+\begin{equation}
+\vec{x}-\vec{x}_{c}=A^{-1}\vec{r}.
+\end{equation}
+Taking the norm of both sides yields
+\begin{equation}
+\|\vec{x}-\vec{x}_{c}\|=\|A^{-1}\vec{r}\|\leq\|A^{-1}\|\cdot\|\vec{r}\|.
+\end{equation}
+\end{subequations}
+This is the first claim we needed to prove.
+
+Now, since
+\begin{subequations}
+\begin{equation}
+\vec{b}=A\vec{x},
+\end{equation}
+we have
+\begin{equation}
+\|\vec{b}\|=\|A\vec{x}\|\leq\|A\|\cdot\|\vec{x}\|.
+\end{equation}
+Then we obtain
+\begin{equation}
+\frac{1}{\|\vec{x}\|}\leq\frac{\|A\|}{\|\vec{b}\|}.
+\end{equation}
+Therefore, recalling elementary algebra that $0\leq a\leq b$ and $0\leq c\leq d$
+implies $ac\leq bd$ gives us: 
+\begin{equation}
+\frac{1}{\|\vec{x}\|}\|\vec{x}-\vec{x}_{c}\|\leq\frac{\|A\|}{\|\vec{b}\|}\|A^{-1}\|\cdot\|\vec{r}\|.
+\end{equation}
+\end{subequations}
+Hence the second claim.
+\end{proof}
+
+\begin{cor}
+The condition number is the maximum magnification of error for solving
+the system of linear equations $A\vec{x}=\vec{b}$.
+\end{cor}
+
+\begin{proof}
+We see the error magnification factor $\mu$ is equal to
+\begin{equation}
+\mu = \frac{\|\vec{x}-\vec{x}_{c}\|/\|\vec{x}\|}{\|\vec{r}\|/\|\vec{b}\|}.
+\end{equation}
+But we just proved Eq~\eqref{eq:gaussian-elim:cond-number-bounds-error-magnification}, when $\vec{x}\neq0$ and $\vec{b}\neq 0$ that
+\begin{equation}
+\frac{\|\vec{x}-\vec{x}_{c}\|/\|\vec{x}\|}{\|\vec{r}\|/\|\vec{b}\|}\leq\|A\|\cdot\|A^{-1}\|=\condition(A).
+\end{equation}
+Therefore we obtain the result.
+\end{proof}
+
+\begin{proposition}
+For any invertible matrix $A\in\RR^{n\times n}$, we have
+$1\leq\condition(A)$.
+\end{proposition}
+
+\begin{proof}
+From submultiplicativity of the matrix norm,
+\begin{equation}
+\|I\|=\|AA^{-1}\|\leq\|A\|\cdot\|A^{-1}\|=\condition(A)
+\end{equation}
+Consistency of the matrix norm permits us to replace $\|I\|=1$ on the
+left-hand side, which is the desired result.
+\end{proof}
+
+\begin{definition}
+Let $A\vec{x}=\vec{b}$ be a system of linear equations. When
+$\condition(A)\approx 1$, we call the problem \define{Well-Conditioned}.
+When $\condition(A)\gg 1$, we call the problem \define{Ill-Conditioned}.
+\end{definition}
+
