@@ -51,8 +51,8 @@ $\vec{x}^{(0)}$, then the standard is to pick $\vec{x}^{(0)}=\vec{c}=D^{-1}\vec{
     \Ensure $\vec{x}$ is a solution
     \Function{Jacobi}{$A$, $\vec{b}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
     \State $\vec{p}\gets\vec{0}$ \algorithmiccomment{for previous iteration's guess}
-    \For{$k=1,\dots,N_{\text{max}}$}
-      \For{i=1,\dots,n}\label{alg:iterative-linear:jacobi-iterative:parallelizable-step}
+    \For{$k=1$, \dots, $N_{\text{max}}$}
+      \For{$i=1$, \dots, $n$}\label{alg:iterative-linear:jacobi-iterative:parallelizable-step}
         \State{$x_{i}\gets (b_{i} - \sum^{n}_{j\neq i}a_{ij}p_{j})/a_{ii}$}
       \EndFor
       \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
@@ -99,8 +99,8 @@ found in Algorithm~\ref{alg:iterative-linear:gauss-seidel}.
     \Ensure $\vec{x}$ is a solution
     \Function{Gauss-Seidel}{$A$, $\vec{b}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
     \State $\vec{p}\gets\vec{0}$ \algorithmiccomment{for previous iteration's guess}
-    \For{$k=1,\dots,N_{\text{max}}$}
-      \For{i=1,\dots,n}
+    \For{$k=1$, \dots, $N_{\text{max}}$}
+      \For{$i=1$,\dots, $n$}
         \State{$x_{i}\gets (b_{i} - \sum^{i-1}_{j=1}a_{ij}x_{j}- \sum^{n}_{j=i+1}a_{ij}p_{j})/a_{ii}$}
       \EndFor
       \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
@@ -250,3 +250,4 @@ Note that submultiplicativity of the matrix norm is key in obtaining the
 second line of the previous equation. Thus we obtain the second error bound.
 \end{proof}
 
+\input{tex/iterative-linear/sor}

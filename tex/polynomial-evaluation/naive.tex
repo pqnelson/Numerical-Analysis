@@ -13,7 +13,7 @@ The first question we should ask:
       \State\label{alg-step:naive-polynomial-evaluation:initial-load} $r\gets p_{0}$
       \State $n\gets\Call{PolynomialOrder}{p}$
       \State $x\gets 1$
-      \For{$j=1,n$}
+      \For{$j=1$, \dots, $n$}
         \State $x\gets x\otimes x_{0}$
         \State\label{alg-step:naive-polynomial-evaluation:fma} $r\gets r\oplus p_{j}\otimes x$
       \EndFor

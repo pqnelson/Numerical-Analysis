@@ -1,0 +1,99 @@
+\section{Successive Over-Relaxation}
+
+Now, Gauss-Seidel gives us the iterative method:
+\begin{equation}
+a_{ii}x_{i}^{(k)}=\underbrace{b_{i}-\sum^{i-1}_{j=1}a_{ij}x^{(k)}_{j}-\sum^{n}_{j=i}a_{ij}x_{j}^{(k-1)}}_{\mbox{looks like a residual}}
++a_{ii}x_{i}^{(k-1)}.
+\end{equation}
+We shall introduce some notation to assist our discussion.
+
+Let us denote by $\vec{x}_{i}^{(k)}$ the $i^{\text{th}}$ step in
+computing the $k^{\text{th}}$ iteratative approximation in Gauss-Seidel,
+i.e.,
+\begin{equation}
+\vec{x}_{i}^{(k)}=(x_{1}^{(k)}, x_{2}^{(k)},\dots, x_{i-1}^{(k)},
+x_{i}^{(k-1)}, \dots, x_{n}^{(k-1)}).
+\end{equation}
+Let us denote the residual for this vector be denoted by
+\begin{equation}
+\vec{r}_{i}^{(k)}=\vec{b}-A\vec{x}_{i}^{(k)}.
+\end{equation}
+
+Now, using this notation, we can write Gauss-Seidel as
+\begin{equation}
+a_{ii}x^{(k)}_{i} = a_{ii}x^{(k-1)}_{i} + r_{ii}^{(k)},
+\end{equation}
+equivalently
+\begin{equation}
+x^{(k)}_{i} = x^{(k-1)}_{i} + \frac{r_{ii}^{(k)}}{a_{ii}}.
+\end{equation}
+So far, we have just described Gauss-Seidel with different notation.
+
+Successive over-relaxation introduces a new parameter $\omega>0$ and
+modified Gauss-Seidel by
+\begin{equation}
+x^{(k)}_{i} = x^{(k-1)}_{i} + \omega\frac{r_{ii}^{(k)}}{a_{ii}}.
+\end{equation}
+When $\omega=1$ we recover Gauss-Seidel, when $\omega<1$ we have
+under-relaxation (useful for obtaining convergence for a divergent
+situation), and when $\omega>1$ we have over-relaxation. The problem
+before us now is to pick an ``optimal'' $\omega$.
+
+\begin{algorithm}\label{alg:iterative-linear:sor:sor}
+  \caption{Successive over-relaxation}
+  \begin{algorithmic}[1]
+    \Require $A=(a_{ij})$ is an $n\times n$ matrix
+    \Require $a_{ii}\neq0$ for each $i=1,\dots,n$
+    \Require $0<\omega$
+    \Require $\vec{b}$ is an $n$ vector
+    \Ensure $\vec{x}$ is a solution
+    \Function{Successive Over-Relaxation}{$A$, $\vec{b}$, $\vec{x}_{\text{init}}$, $\omega$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
+    \State $\vec{p}\gets\vec{x}_{\text{init}}$ \algorithmiccomment{for previous iteration's guess}
+    \For{$k=1$, \dots, $N_{\text{max}}$}
+      \For{$i=1$, \dots, $n$}
+        \State{$x_{i}\gets (1-\omega)p_{i} + \omega (b_{i} - \sum^{i-1}_{j=1}a_{ij}x_{j}- \sum^{n}_{j=i+1}a_{ij}p_{j})/a_{ii}$}
+      \EndFor
+      \If{$\|\vec{x}-\vec{p}\|<\varepsilon_{\text{tol}}$}
+        \State\Return $\vec{x}$
+      \EndIf
+      \State $\vec{p}\gets\vec{x}$
+    \EndFor
+    \State\Return $\vec{x}$
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{theorem}[Kahan]
+If $a_{ii}\neq0$ for each $i=1,\dots,n$, then
+$\rho(T_{\omega})\geq|\omega-1|$ where if $A=D+L+U$ we have
+\[ T_{\omega} = (D+\omega L)^{-1}[(1-\omega)D-\omega U]. \]
+\end{theorem}
+
+This was part of Kahan's 1958 doctoral thesis.
+
+\begin{theorem}[{Ostrowski--Reich~\cite{ostrowski1954linear,reich1949convergence}}]
+If $A$ is a [symmetric] positive-definite matrix and $0<\omega<2$, then
+successive over-relaxation converges for any choice of initial $\vec{x}^{(0)}$.
+\end{theorem}
+
+\begin{theorem}
+Let $T_{g}$ and $T_{j}$ be the iterative matrices associated with the
+Gauss-Seidel and Jacobi methods, respectively. If $A$ is symmetric
+positive-definite, then $\rho(T_{g})=[\rho(T_{j})]^{2}<1$ and the
+optimal choice of $\omega$ for successive over-relaxation is
+\begin{equation}\label{eq:iterative:sor:optimal-w-for-positive-definite-mat}
+\omega = \frac{2}{1 + \sqrt{1 - [\rho(T_{j})]^{2}}}.
+\end{equation}
+With this choice, $\rho(T_{\omega})=\omega-1$.
+\end{theorem}
+
+\begin{rmk}
+When $A=D+L+U$ satisfies $\det(\lambda D+zL+z^{-1}U)=\det(\lambda D+L+U)$
+for any $z\in\CC\setminus\{0\}$ and $\lambda\in\CC$, then Eq~\eqref{eq:iterative:sor:optimal-w-for-positive-definite-mat}
+gives the optimal $\omega$. This is the more general situation, since it
+automatically describes tridiagonal matrices. The more general situation
+was proven in Young's doctoral thesis~\cite{young1950} and may be found
+in \S10.1 of Greenbaum~\cite{greenbaum1997iterative} as well as \S4.6.2 of Hackbusch~\cite{hackbusch2016iterative}.
+\end{rmk}
+

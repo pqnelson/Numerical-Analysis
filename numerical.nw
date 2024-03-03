@@ -35,7 +35,7 @@
 \part{Appendices}
 \include{tex/appendix/pseudocode}
 \nocite{*}
-\bibliographystyle{siam}
+\bibliographystyle{amsalpha}
 \bibliography{numerical}
 
 % https://tex.stackexchange.com/a/138973

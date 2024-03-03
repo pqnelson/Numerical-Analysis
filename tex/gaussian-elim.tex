@@ -67,7 +67,7 @@ huge, especially for numerical differential equations.
     \Require $A$ is an augmented $n\times(n+1)$ matrix
     \Ensure $\vec{x}$ is a solution or failure
     \Function{GaussElim}{$A$}
-    \For{$i=1,\dots,n-1$}
+    \For{$i=1$, \dots, $n-1$}
       \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:pivot} $p\gets\min\{j\in\ZZ\mid i\leq j\leq n, A_{ji}\neq0\}$
       \algorithmiccomment{pivot, if needed}
       \If{$p$ does not exist}
@@ -75,7 +75,7 @@ huge, especially for numerical differential equations.
       \ElsIf{$p\neq i$}
         \State Swap rows $i$ and $p$
       \EndIf
-      \For{$j=i+1,\dots,n$} \algorithmiccomment{triangularize}
+      \For{$j=i+1$, \dots, $n$} \algorithmiccomment{triangularize}
         \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:dilate} $m_{ji}\gets a_{ji}/a_{ii}$
         \State\label{alg:gauss-elim:gaussian-elimination-with-backsubstitution:eliminate} $a_{j\star}\gets a_{j\star}-m_{ji}a_{i\star}$ \algorithmiccomment{\parbox[t]{.5\linewidth}{Subtract
         $m_{ji}$ multiples of row $i$ from row $j$, then set the result
@@ -86,7 +86,7 @@ huge, especially for numerical differential equations.
       \State\Fail ``No unique solution exists''
     \EndIf
     \State $x_{n}\gets a_{n,n+1}/a_{nn}$ \algorithmiccomment{backsubstitution}
-    \For{$i=n-1,\dots,1$}
+    \For{$i=n-1$, \dots, $2$, $1$}
       \State $\displaystyle x_{i}\gets\left(a_{i,n+1}-\sum_{j=i+1}^{n}a_{ij}x_{j}\right)/a_{ii}$
     \EndFor
     \State\Return $\vec{x}$
