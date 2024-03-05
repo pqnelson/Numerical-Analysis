@@ -1,39 +1,178 @@
 \section{Conjugate Gradient Method}
 
-\begin{definition}
-We call an $n\times n$ matrix $A$ \define{Symmetric} if $\transpose{A}=A$,
-and \define{Antisymmetric} (or \emph{skew-symmetric}) if $\transpose{A}=-A$.
-\end{definition}
+The ``trick'' to the conjugate gradient method is a standard one
+deployed by mathematicians: change the problem to one more palatable to
+a different toolkit.
 
-\begin{prop}
-Let $A$ be an antisymmetric $n\times n$ matrix. Then for any
-$\vec{x}\in\RR^{n}$ we have $\transpose{\vec{x}}A\vec{x}=0$.
-\end{prop}
-
-\begin{prop}
-Let $M$ be any $n\times n$ real matrix. We can write $M$ uniquely as the
-sum of a symmetric matrix $S$ and antisymmetric matrix $A$, i.e.,
-$M=A+S$ where $A=(M-\transpose{M})/2$ and $S=(M+\transpose{M})/2$.
-\end{prop}
-
-\begin{definition}
-Let $A$ be a symmetric $n\times n$ real matrix. We call $A$
-\define{Positive-Definite} if for all $\vec{x}\in\RR^{n}$ we have $\transpose{\vec{x}}A\vec{x}>0$.
-\end{definition}
-
-\begin{rmk}
-Note that, by the previous propositions in this section, we could
-ostensibly weaken the notion of a positive-definite matrix to any
-nonsingular matrix $M$ since
+\begin{theorem}
+Let $A$ be a positive definite matrix, and $\vec{b}$ be a vector.
+Then $\vec{x}_{*}$ solves $A\vec{x}=\vec{b}$ if and only if
+$\vec{x}_{*}$ minimizes
 \begin{equation}
-  \begin{split}
-\transpose{\vec{x}}M\vec{x}&=\transpose{\vec{x}}S\vec{x}+\transpose{\vec{x}}A\vec{x}\\
-&=\transpose{\vec{x}}S\vec{x},
-  \end{split}
+g(\vec{x})=\langle\vec{x},A\vec{x}\rangle-2\langle\vec{x},\vec{b}\rangle.
 \end{equation}
-where $A=(M-\transpose{M})/2$ and $S=(M+\transpose{M})/2$.
-In practice, however, we must be careful because floating-point arithmetic
-doesn't necessarily respect $\transpose{\vec{x}}A\vec{x}=0$.
-\end{rmk}
+\end{theorem}
 
+\begin{proof}
+Obvious.
+\end{proof}
 
+Let $\vec{x}^{(0)}$ be an initial guess for $\vec{x}_{*}$. If
+$A\vec{x}^{(0)}=\vec{b}$, then we're done. We'll assume this is not the
+case. Let
+$\vec{v}^{(1)}\neq\vec{0}$ be an initial search direction. Compute
+\begin{equation}
+t_{1} = \frac{\langle\vec{v}^{(1)},\vec{b}-A\vec{x}^{(0)}\rangle}{\langle\vec{v}^{(1)},A\vec{v}^{(1)}\rangle},
+\end{equation}
+then set
+\begin{equation}
+\vec{x}^{(1)} = \vec{x}^{(0)}+t_{1}\vec{v}^{(1)}.
+\end{equation}
+Now, look, $t_{1}$ describes the overlap of the residual vector
+$\vec{r}^{(0)}=\vec{b}-A\vec{x}^{(0)}$ in the direction of
+$\vec{v}^{(1)}$, so what $\vec{x}^{(1)}$ computes is the correction in
+the $\vec{v}^{(1)}$ direction to minimize the residual vector's
+$\vec{v}^{(1)}$ component. This leads to
+$g(\vec{x}^{(1)})<g(\vec{x}^{(0)})$.
+
+If we had access to $n$ direction vectors $\vec{v}^{(1)}$, \dots,
+$\vec{v}^{(n)}$ which are $A$-orthogonal,
+\begin{equation}
+\langle\vec{v}^{(i)},A\vec{v}^{(j)}\rangle=0\quad\mbox{if }i\neq j,
+\end{equation}
+then we can iterative step by taking
+\begin{equation}
+\vec{x}^{(k)} = \vec{x}^{(k-1)} + t_{k}\vec{v}^{(k)},
+\end{equation}
+where
+\begin{equation}
+t_{k} = \frac{\langle\vec{v}^{(k)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}.
+\end{equation}
+Since we keep moving towards the direction which systematically reduces
+the residual vector, one dimension at a time, this leads us to conclude
+$g(\vec{x}^{(k)})<g(\vec{x}^{(k-1)})$. 
+The problem before us now is how to pick the $A$-orthogonal direction
+vectors $\vec{v}^{(k)}$?
+
+We see that
+\begin{equation}
+\langle\vec{r}^{(k-1)},\vec{v}^{(i)}=0
+\end{equation}
+for $i=1,$ $2$, \dots, $k-1$. Then we can use the residual vector
+$\vec{r}^{(k-1)}$ to determine $\vec{v}^{(k)}$ by
+\begin{subequations}
+\begin{equation}
+\vec{v}^{(k)}=\vec{r}^{(k-1)}+s_{k-1}\vec{v}^{(k-1)},
+\end{equation}
+and now we just need to determine what $s_{k-1}$. Now we just need to
+pick $s_{k-1}$ to make $\vec{v}^{(k)}$ ``$A$-orthogonal'' to
+$\vec{v}^{(k-1)}$,
+\begin{equation}
+\langle\vec{v}^{(k-1)},A\vec{v}^{(k)}\rangle=0.
+\end{equation}
+Since
+\begin{equation}
+A\vec{v}^{(k)}=A\vec{r}^{(k-1)}+s_{k-1}A\vec{v}^{(k-1)},
+\end{equation}
+and
+\begin{equation}
+0=\langle\vec{v}^{(k-1)},A\vec{v}^{(k)}\rangle=
+\langle\vec{v}^{(k-1)},A\vec{r}^{(k-1)}\rangle
++s_{k-1}\langle\vec{v}^{(k-1)},A\vec{v}^{(k-1)}\rangle,
+\end{equation}
+we can solve this to find
+\begin{equation}\label{eq:iterative:conjugate-gradient:sk-init}
+s_{k-1} = -\frac{\langle\vec{v}^{(k-1)},A\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k-1)},A\vec{v}^{(k-1)}\rangle}.
+\end{equation}
+\end{subequations}
+It can be shown that $\langle\vec{v}^{(k)},A\vec{v}^{(j)}\rangle=0$ for
+$i=1$, \dots, $k-1$.
+
+The goal now will be to express $s_{k}$ and $t_{k}$ using the residual
+vectors $\vec{r}^{(k)}$ and $\vec{r}^{(k-1)}$.
+
+We see that, by direct calculation,
+\begin{subequations}
+\begin{align}
+t_{k} &= \frac{\langle\vec{v}^{(k)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}\\
+&= \frac{\langle\vec{r}^{(k-1)}+s_{k-1}\vec{v}^{(k-1)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}\\
+&= \frac{\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}
++ s_{k-1}\frac{\langle\vec{v}^{(k-1)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}
+\end{align}
+\end{subequations}
+Since $\langle\vec{v}^{(k-1)},\vec{r}^{(k-1)}\rangle=0$, we conclude
+\begin{equation}\label{eq:iterative:conjugate-gradient:tk}
+\boxed{t_{k} = \frac{\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}.} 
+\end{equation}
+Great, this allows us to use the residual vectors to determine the $t_{k}$.
+
+Now, we will determine $s_{k}$ using residual vectors, and this will
+enable us to find the direction vectors. We begin by remembering
+\begin{subequations}
+\begin{equation}
+\vec{x}^{(k)}=\vec{x}^{(k-1)}+t_{k}\vec{v}^{(k)}.
+\end{equation}
+Then we compute $\vec{r}^{(k)}$ the residual vector by multiplying both
+sides on the left by $A$ and subtracting out by $\vec{b}$,
+\begin{equation}
+A\vec{x}^{(k)}-\vec{b}=A\vec{x}^{(k-1)}-\vec{b}+t_{k}A\vec{v}^{(k)},
+\end{equation}
+hence
+\begin{equation}
+\vec{r}^{(k)}=\vec{r}^{(k-1)}+t_{k}A\vec{v}^{(k)}.
+\end{equation}
+We have
+\begin{equation}
+  \langle\vec{r}^{(k)},\vec{r}^{(k)}\rangle
+  =\langle\vec{r}^{(k-1)}-t_{k}A\vec{v}^{(k)},\vec{r}^{(k)}\rangle
+  =-t_{k}\langle A\vec{v}^{(k)},\vec{r}^{(k)}\rangle.
+\end{equation}
+Now we use Eq~\eqref{eq:iterative:conjugate-gradient:tk} to give us
+another relationship,
+\begin{equation}
+\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle=t_{k}\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle.
+\end{equation}
+Then we have, starting with Eq~\eqref{eq:iterative:conjugate-gradient:sk-init},
+\begin{align}
+s_{k}
+&=-\frac{\langle\vec{v}^{(k)},A\vec{r}^{(k)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}\\
+&=-\frac{\langle\vec{r}^{(k)},A\vec{v}^{(k)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}\\
+&=\frac{(1/t_{k})\langle\vec{r}^{(k)},A\vec{r}^{(k)}\rangle}{(1/t_{k})\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}\\
+&=\frac{\langle\vec{r}^{(k)},A\vec{r}^{(k)}\rangle}{\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}.
+\end{align}
+\end{subequations}
+This culminates our derivation of the conjugate gradient method.
+
+In summary, we have the conjugate gradient method be given by the
+following equations:
+\begin{align}
+t_{k} &= \frac{\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}{\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}\\
+\vec{x}^{(k)} &= \vec{x}^{(k-1)} + t_{k}\vec{v}^{(k)}\\
+\vec{r}^{(k)} &= \vec{r}^{(k-1)} - t_{k}A\vec{v}^{(k)}\\
+s_{k} &= \frac{\langle\vec{r}^{(k)},A\vec{r}^{(k)}\rangle}{\langle\vec{r}^{(k-1)},\vec{r}^{(k-1)}\rangle}\\
+\vec{v}^{(k+1)} &= \vec{r}^{(k)} + s_{k}\vec{v}^{(k)}.
+\end{align}
+
+\subsection{Conditioned Conjugate Gradient Method}
+
+If the matrix $A$ is ill-conditioned, then the conjugate gradient method
+is highly susceptible to rounding errors. The trick is to select a
+nonsingular ``conditioning matrix'' $C$ such that
+\begin{equation}
+\widetilde{A}=C^{-1}A\transpose{(C^{-1})}
+\end{equation}
+is better conditioned. Then our system of equations we would want to
+solve would be
+\begin{subequations}
+\begin{equation}
+\widetilde{A}\widetilde{\vec{x}}=\widetilde{\vec{b}}
+\end{equation}
+or
+\begin{equation}
+(C^{-1}A\transpose{(C^{-1})})(\transpose{C}\vec{x})=C^{-1}\vec{b}.
+\end{equation}
+\end{subequations}
+Usually it's desirable to take $C$ to be a diagonal matrix, e.g., if
+$A=D+L+U$ has all nonzero diagonal entries, then take the component-wise
+inverse squareroot of the absolute value of the diagonal entries
+$C=|D|^{-1/2}$. 

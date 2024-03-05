@@ -63,6 +63,46 @@ before us now is to pick an ``optimal'' $\omega$.
 \end{algorithmic}
 \end{algorithm}
 
+Before we analyze the convergence properties of successive
+over-relaxation, let us review a few definitions from linear algebra.
+
+\begin{definition}
+We call an $n\times n$ matrix $A$ \define{Symmetric} if $\transpose{A}=A$,
+and \define{Antisymmetric} (or \emph{skew-symmetric}) if $\transpose{A}=-A$.
+\end{definition}
+
+\begin{prop}
+Let $A$ be an antisymmetric $n\times n$ matrix. Then for any
+$\vec{x}\in\RR^{n}$ we have $\transpose{\vec{x}}A\vec{x}=0$.
+\end{prop}
+
+\begin{prop}
+Let $M$ be any $n\times n$ real matrix. We can write $M$ uniquely as the
+sum of a symmetric matrix $S$ and antisymmetric matrix $A$, i.e.,
+$M=A+S$ where $A=(M-\transpose{M})/2$ and $S=(M+\transpose{M})/2$.
+\end{prop}
+
+\begin{definition}
+Let $A$ be a symmetric $n\times n$ real matrix. We call $A$
+\define{Positive-Definite} if for all (nonzero)
+$\vec{x}\in\RR^{n}\setminus\{\vec{0}\}$ we have
+$\transpose{\vec{x}}A\vec{x}>0$.
+\end{definition}
+
+\begin{rmk}
+Note that, by the previous propositions in this section, we could
+ostensibly weaken the notion of a positive-definite matrix to any
+nonsingular matrix $M$ since
+\begin{equation}
+  \begin{split}
+\transpose{\vec{x}}M\vec{x}&=\transpose{\vec{x}}S\vec{x}+\transpose{\vec{x}}A\vec{x}\\
+&=\transpose{\vec{x}}S\vec{x},
+  \end{split}
+\end{equation}
+where $A=(M-\transpose{M})/2$ and $S=(M+\transpose{M})/2$.
+In practice, however, we must be careful because floating-point arithmetic
+doesn't necessarily respect $\transpose{\vec{x}}A\vec{x}=0$.
+\end{rmk}
 
 \begin{theorem}[Kahan]
 If $a_{ii}\neq0$ for each $i=1,\dots,n$, then
