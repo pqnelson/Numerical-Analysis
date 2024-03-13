@@ -9,16 +9,16 @@ extract_tex:
 	noweave -delay -index -latex numerical.nw > numerical.tex
 
 with_bib:
-	$(TEX) numerical
+	$(TEX) -draftmode numerical
 	$(BIB) numerical
 	makeindex numerical
-	$(TEX) numerical
-	$(TEX) numerical
+	$(TEX) -draftmode -interaction=batchmode numerical
+	$(TEX) -interaction=batchmode numerical
 
 without_bib:
-	$(TEX) numerical
+	$(TEX) -draftmode numerical
 	makeindex numerical
-	$(TEX) numerical
+	$(TEX) -interaction=batchmode numerical
 
 doc: extract_tex with_bib
 

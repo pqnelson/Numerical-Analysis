@@ -175,4 +175,183 @@ or
 Usually it's desirable to take $C$ to be a diagonal matrix, e.g., if
 $A=D+L+U$ has all nonzero diagonal entries, then take the component-wise
 inverse squareroot of the absolute value of the diagonal entries
-$C=|D|^{-1/2}$. 
+$C=|D|^{-1/2}$.
+
+\textbf{However,} instead of solving for $\widetilde{\vec{x}}$ and then
+multiplying by $\transpose{(C^{-1})}$, we can incorporate the
+conditioning \emph{into} the conjugate gradient algorithm
+\emph{implicitly}.
+
+We find by direct computation and recalling
+$\widetilde{\vec{x}}^{(k)}=\transpose{C}\vec{x}^{(k)}$:
+\begin{calculation}
+  \widetilde{\vec{r}}^{(k)}
+\step{definition of residual}
+  \widetilde{\vec{b}} - \widetilde{A}\widetilde{\vec{x}}^{(k)}
+\step{unfolding tilde notation}
+  C^{-1}\vec{b}-(C^{-1}A\transpose{(C^{-1})})(\transpose{C}\vec{x}^{(k)})
+\step{since $I=\transpose{(C^{-1})}\transpose{C}$, distributivity}
+  C^{-1}(\vec{b}-A\vec{x}^{(k)})
+\step{definition of residual}
+  C^{-1}\vec{r}^{(k)}.
+\end{calculation}
+We therefore denote the residual vector for the conditioned system
+$\vec{w}^{(k)}=C^{-1}\vec{r}^{(k)}$. \emph{This will need to be computed for each step.}
+
+We want to determine the scalar $\widetilde{s}_{k}$ to pick the next
+direction vector $\widetilde{\vec{v}}^{(k)} = \transpose{C}\vec{v}^{(k)}$.
+As before,
+\begin{equation}
+\boxed{\widetilde{s}_{k} = \frac{\langle\vec{w}^{(k)},\vec{w}^{(k)}\rangle}{\langle\vec{w}^{(k-1)},\vec{w}^{(k-1)}\rangle}}
+\end{equation}
+where $\vec{w}$ is the residual vector.
+
+The scalar $\widetilde{t}_{k}$ is computed similarly, if we just naively
+put tildes on things we would expect
+\begin{calculation}
+  \widetilde{t}_{k}
+\step{unfolding $t_{k}$}
+  \frac{\langle\widetilde{\vec{r}}^{(k-1)},\widetilde{\vec{r}}^{(k-1)}\rangle}{\langle\widetilde{\vec{v}}^{(k)},A\widetilde{\vec{v}}^{(k)}\rangle}
+\step{unfolding tildes}
+  \frac{\langle C^{-1}\vec{r}^{(k-1)}, C^{-1}\vec{r}^{(k-1)}\rangle}%
+     {\langle\transpose{C}\vec{v}^{(k)},C^{-1}A(\transpose{C})^{-1}\transpose{C}\widetilde{v}^{(k)}\rangle}
+\step{since $(\transpose{C})^{-1}\transpose{C}=I$, associativity}
+  \frac{\langle C^{-1}\vec{r}^{(k-1)}, C^{-1}\vec{r}^{(k-1)}\rangle}%
+     {\langle\transpose{C}\vec{v}^{(k)},C^{-1}A\vec{v}^{(k)}\rangle}
+\step{folding in $\vec{w}^{(k-1)}$}
+  \frac{\langle \vec{w}^{(k-1)}, \vec{w}^{(k-1)}\rangle}%
+     {\langle\transpose{C}\vec{v}^{(k)},C^{-1}A\vec{v}^{(k)}\rangle}
+\step{since $C$ is real and symmetric}
+  \frac{\langle \vec{w}^{(k-1)}, \vec{w}^{(k-1)}\rangle}%
+     {\langle\vec{v}^{(k)},CC^{-1}A\vec{v}^{(k)}\rangle}
+\step{since $CC^{-1}=I$}
+  \frac{\langle \vec{w}^{(k-1)}, \vec{w}^{(k-1)}\rangle}%
+     {\langle\vec{v}^{(k)},A\vec{v}^{(k)}\rangle}
+\end{calculation}
+thus giving us
+\begin{equation}
+\boxed{\widetilde{t}_{k} = \frac{\langle \vec{w}^{(k-1)}, \vec{w}^{(k-1)}\rangle}%
+     {\langle\vec{v}^{(k)},A\widetilde{v}^{(k)}\rangle}.}
+\end{equation}
+Similarly, from
+\begin{equation*}
+\widetilde{\vec{x}}^{(k)}=\widetilde{\vec{x}}^{(k-1)} + \widetilde{t}_{k}\widetilde{\vec{v}}^{(k)},
+\end{equation*}
+we have
+\begin{equation*}
+\transpose{C}\vec{x}^{(k)}=\transpose{C}\vec{x}^{(k-1)} + \widetilde{t}_{k}\transpose{C}\vec{v}^{(k)},
+\end{equation*}
+and therefore multiplying on both side from the left by $(\transpose{C})^{-1}$,
+\begin{equation}
+\boxed{\vec{x}^{(k)}=\vec{x}^{(k-1)} + \widetilde{t}_{k}\vec{v}^{(k)}.}
+\end{equation}
+Similarly, we can find
+\begin{calculation}
+  \widetilde{\vec{r}}^{(k)} = \widetilde{\vec{r}}^{(k-1)} - \widetilde{t}_{k}\widetilde{A}\widetilde{\vec{v}}^{(k)}
+\step[\equiv]{unfolding tildes}
+  C^{-1}\vec{r}^{(k)} = C^{-1}\vec{r}^{(k-1)} - \widetilde{t}_{k} C^{-1}A\transpose{(C^{-1})}\transpose{C}\vec{v}^{(k)}
+\step[\equiv]{multiply through by $C$ on the left}
+  \vec{r}^{(k)} = \vec{r}^{(k-1)} - \widetilde{t}_{k} A\transpose{(C^{-1})}\transpose{C}\vec{v}^{(k)}
+\step[\equiv]{since $I=\transpose{(C^{-1})}\transpose{C}$}
+  \vec{r}^{(k)} = \vec{r}^{(k-1)} - \widetilde{t}_{k} A\vec{v}^{(k)}
+\end{calculation}
+Hence
+\begin{equation}
+\boxed{\vec{r}^{(k)} = \vec{r}^{(k-1)} - \widetilde{t}_{k} A\vec{v}^{(k)}.}
+\end{equation}
+Finally, we find the next direction vector $\vec{v}^{(k+1)}$, again by
+direct calculation
+\begin{calculation}
+  \widetilde{\vec{v}}^{(k+1)}=\widetilde{\vec{r}}^{(k)} + \widetilde{s}_{k}\widetilde{\vec{v}}^{(k)}
+\step[\equiv]{unfolding tildes}
+  \transpose{C}\vec{v}^{(k+1)}=C^{-1}\vec{r}^{(k)} + \widetilde{s}_{k}\transpose{C}\vec{v}^{(k)}
+\step[\equiv]{folding in $\vec{w}^{(k)}$}
+  \transpose{C}\vec{v}^{(k+1)}=\vec{w}^{(k)} + \widetilde{s}_{k}\transpose{C}\vec{v}^{(k)}
+\step[\equiv]{multiply both sides by $(\transpose{C})^{-1}$ on the left}
+  \vec{v}^{(k+1)}=(\transpose{C})^{-1}\vec{w}^{(k)} + \widetilde{s}_{k}\vec{v}^{(k)},
+\end{calculation}
+which gives us:
+\begin{equation}
+\boxed{\vec{v}^{(k+1)}=(\transpose{C})^{-1}\vec{w}^{(k)} + \widetilde{s}_{k}\vec{v}^{(k)}.}
+\end{equation}
+These boxed equations are precisely the conjugate-gradient method
+applied to the conditioned system. Let us now collate these results in
+one location:
+\begin{align*}
+\widetilde{s}_{k} &= \frac{\langle\vec{w}^{(k)},\vec{w}^{(k)}\rangle}{\langle\vec{w}^{(k-1)},\vec{w}^{(k-1)}\rangle}\\
+\widetilde{t}_{k} &= \frac{\langle \vec{w}^{(k-1)}, \vec{w}^{(k-1)}\rangle}%
+     {\langle\vec{v}^{(k)},A\widetilde{v}^{(k)}\rangle}\\
+\vec{x}^{(k)} &= \vec{x}^{(k-1)} + \widetilde{t}_{k}\vec{v}^{(k)}\\
+\vec{r}^{(k)} &= \vec{r}^{(k-1)} - \widetilde{t}_{k} A\vec{v}^{(k)}\\
+\vec{w}^{(k)} &= C^{-1}\vec{r}^{(k)}\\
+\vec{v}^{(k+1)} &= (\transpose{C})^{-1}\vec{w}^{(k)} + \widetilde{s}_{k}\vec{v}^{(k)}
+\end{align*}
+It's usually best to pick some $C$ which is easy to invert and take the
+transpose of (hint: diagonal matrices).
+
+\begin{algorithm}\label{alg:iterative-linear:conjugate-gradient}
+  \caption{Preconditioned conjugate gradient method}
+  \begin{algorithmic}[1]
+    \Require $A=(a_{ij})$ is an $n\times n$ positive-definite matrix
+    \Require $a_{ii}\neq0$ for each $i=1,\dots,n$
+    \Require $C^{-1}=(c_{ij})$ is an $n\times n$ matrix
+    \Require $\vec{b}$ is an $n$ vector
+    \Require $\vec{x}^{(0)}$ is some initial guess $n$ vector
+    \Ensure $\vec{x}$ is a solution
+    \Function{ConjugateGradient}{$A$, $C^{-1}$, $\vec{b}$, $\vec{x}_{\text{init}}$, $\omega$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
+    \State $\vec{x}\gets\vec{x}^{(0)}$ \algorithmiccomment{initialize}
+    \State $\vec{r}\gets \vec{b}-A\vec{x}$
+    \State $\vec{w}\gets C^{-1}\vec{r}$
+    \State $\vec{v}\gets\transpose{(C^{-1})}\vec{w}$
+    \State $\alpha\gets\sum^{n}_{j=1}w_{j}^{2}$
+
+    \For{$k=1$, \dots, $N_{\text{max}}$}
+      \If{$\|\vec{v}\|<\varepsilon_{\text{tol}}$}
+        \State\Return $\vec{x}$
+      \EndIf
+      \State $\vec{u}\gets A\vec{v}$
+      \State $t\gets \alpha/(\sum^{n}_{j=1}v_{j}u_{j})$
+      \State $\vec{x}\gets\vec{x}+t\vec{u}$
+      \State $\vec{r}\gets\vec{r}-t\vec{u}$
+      \State $\vec{w}\gets C^{-1}\vec{r}$
+      \State $\beta\gets\sum^{n}_{j=1}w_{j}^{2}$
+      \If{$\beta<\varepsilon_{\text{tol}}$}
+        \If{$\|\vec{r}\|<\varepsilon_{\text{tol}}$}
+          \State\Return $\vec{x}$
+        \EndIf
+      \EndIf
+      \State $s\gets\beta/\alpha$
+      \State $\vec{v}\gets C^{-1}\vec{w}+s\vec{v}$
+      \State $\alpha\gets\beta$
+    \EndFor
+    \State\Fail ``Maximum number of iterations exceeded''
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Note that when we are working with a huge system of equations, the
+preconditioning matrix $C$ is approximately equal to $L$ in the Cholesky
+factorization $L\transpose{L}=A$. Then
+$\transpose{(C^{-1})}C^{-1}\approx A^{-1}$ (up to errors due to
+floating-point arithmetic).
+
+Also note that we would run into these situations (a large system of
+equations, mostly sparse, but positive-definite) when trying to solve
+boundary-value ordinary differential equations.
+
+For more information about the conjugate gradient method,
+Kelley~\cite{kelley1995} spends about the first third of his book
+discussing it.
+
+\begin{theorem}
+The $\vec{x}^{(k)}$ approximation from the conjugate-gradient method
+without preconditioning has its absolute error
+$\vec{e}^{(k)}=\vec{x}^{(k)}-\vec{x}$ satisfy the bounds
+\begin{equation}
+\|\vec{e}^{(k)}\|_{A}\leq2\left(\frac{\sqrt{\condition(A)}-1}{\sqrt{\condition(A)}+1}\right)^{k}\|\vec{e}^{(0)}\|_{A}
+\end{equation}
+where $\|\vec{e}\|_{A}=\sqrt{\langle\vec{e},A\vec{e}\rangle}$ is the
+energy norm associated with the positive-definite matrix $A$.
+\end{theorem}
+
+See, e.g., Hackbusch~\cite[\S10.2.3]{hackbusch2016iterative} for details.
