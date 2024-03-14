@@ -28,6 +28,7 @@
 \part{Linear Algebra}
 \include{tex/gaussian-elim}
 \include{tex/iterative-linear}
+\include{tex/eigenvalues}
 
 \part{Differential Equations}
 

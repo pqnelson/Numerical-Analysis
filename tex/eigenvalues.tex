@@ -1,0 +1,64 @@
+\chapter{Finding Eigenvalues and Vectors}
+
+\begin{problem}
+  \textsc{Given:}\enspace\ignorespaces%
+an $n\times n$ matrix $A$ over $\RR$.
+
+\textsc{Find:}\enspace\ignorespaces%
+an eigenvalue $\lambda$ and possibly its eigenvector $\vec{v}$.
+\end{problem}
+
+Recall that the characteristic polynomial of an $n\times n$ matrix $A$
+over a field $\FF$ is the polynomial defined by
+\begin{equation}
+p(\lambda):=\det(A-\lambda I).
+\end{equation}
+Finding eigenvalues amounts to finding the roots of an $n\times n$
+polynomial, which we studied in Chapter~\ref{ch:root-finding-single-var}.
+We want to find all $\lambda$ such that $p(\lambda)=0$. However, the
+naive way to calculate the determinant
+\begin{equation}
+\det(A) = \sum_{\sigma\in S_{n}}\left(\sgn(\sigma)\prod^{n}_{i=1}a_{i,\sigma(i)}\right)
+\end{equation}
+would require $n$ multiplications in $n!$ terms, so there would be $n!$
+addition/subtraction operations and $n!n$ multiplication
+operations. This\dots this is horrible.
+
+\begin{fact}
+Similar matrices have identical eigenvalues: if $A=XBX^{-1}$, then
+$\spec(A)=\spec(B)$. 
+\end{fact}
+
+\begin{theorem}[Gershgorin circle]
+Let $A$ be an $n\times n$ real matrix, let $R_{i}$ be the circle in
+$\CC$ centered at $a_{ii}$ with radius $\sum_{j\neq i}|a_{ij}|$, that is
+to say,
+\begin{equation*}
+R_{i} = \{z\in\CC\mid |z-a_{ii}|<\sum^{n}_{j\neq i}|a_{ij}|\}.
+\end{equation*}
+Then the eigenvalues of $A$ are contained in $R=\bigcup_{i}R_{i}$, and
+the union of any of these circles that do not intersect the remaining
+$n-k$ must contain precisely $k$ (counting multiplicity) of the eigenvalues.
+\end{theorem}
+
+This gives us a way to give some estimate for the eigenvalues of a
+matrix.
+
+\begin{example}
+Consider the matrix
+\begin{equation}
+A = \begin{pmatrix}4 & 1 & 1\\
+ 0 & 2 & -1\\
+-2 & 0 &  9
+\end{pmatrix}.
+\end{equation}
+We find its Gershgorin discs are:
+\begin{enumerate}
+\item $R_{1} = \{z\in\CC\mid |z-4|\leq|1|+|1|=2\}$
+\item $R_{2} = \{z\in\CC\mid |z-2|\leq|0|+|-1|=1\}$
+\item $R_{3} = \{z\in\CC\mid |z-9|\leq|-2|+|0|=2\}$
+\end{enumerate}
+Therefore the spectral radius of $A$ satisfies the bounds $7\leq\rho(A)\leq11$.
+\end{example}
+
+\input{tex/eigenvalues/power-method}

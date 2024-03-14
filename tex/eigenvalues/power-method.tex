@@ -1,0 +1,59 @@
+\section{Power Method}
+
+Assume $A$ is an $n\times n$ matrix, and suppose $\lambda_{1}$, \dots,
+$\lambda_{n}$ are eigenvalues of $A$. Let $\vec{x}_{1}$, \dots,
+$\vec{x}_{n}$ be the corresponding eigenvectors for $A$, and assume they
+form a basis for $\CC^{n}$. Now assume that
+\begin{equation*}
+\abs{\lambda_{1}}>\abs{\lambda_{2}}\geq\abs{\lambda_{3}}\cdots\geq\abs{\lambda_{n}}\geq0
+\end{equation*}
+The power method will give us the \emph{dominant} eigenvalue
+$\lambda_{1}$ and its associated eigenvector $\vec{x}_{1}$. How?
+
+Well, the basic idea is to start with some initial guess
+$\vec{z}^{(0)}$ for the eigenvector $\vec{x}_{1}$, then perform the
+iteration
+\begin{equation}
+\vec{w}^{(m+1)}:=A\vec{z}^{(m)},\quad\mbox{and}\quad
+\vec{z}^{(m+1)}:=\frac{\vec{w}^{(m+1)}}{\|\vec{w}^{(m+1)}\|}.
+\end{equation}
+The claim is that $\lim_{m\to\infty}\vec{z}^{(m+1)}=\vec{x}_{1}$. How
+can we see this? Well, we can consider the first few iterates for
+$\vec{z}^{(m)}$ and $\vec{w}^{(m)}$:
+\begin{subequations}
+\begin{align}
+\vec{z}^{(0)} &= \mbox{guess}\\
+\vec{w}^{(1)} &= A\vec{z}^{(0)}\\
+\vec{z}^{(1)} &= \frac{\vec{w}^{(1)}}{\|\vec{w}^{(1)}\|} = \frac{A\vec{z}^{(0)}}{\|A\vec{z}^{(0)}\|}\\
+\vec{w}^{(2)} &= A\vec{z}^{(1)}\\
+\vec{z}^{(2)} &= \frac{\vec{w}^{(2)}}{\|\vec{w}^{(2)}\|}
+= \left.\frac{A^{2}\vec{z}^{(0)}}{\|A\vec{z}^{(0)}\|} \middle/
+\left\|\frac{A^{2}\vec{z}^{(0)}}{\|A\vec{z}^{(0)}\|}\right\|\right.
+= \frac{A^{2}\vec{z}^{(0)}}{\|A^{2}\vec{z}^{(0)}\|}
+\end{align}
+We see that the $m^{\text{th}}$ iterate would give us
+\begin{equation}
+\vec{z}^{(m)} = \frac{A^{m}\vec{z}^{(0)}}{\|A^{m}\vec{z}^{(0)}\|}.
+\end{equation}
+\end{subequations}
+Now why does this work? Let's neglect the normalization for the moment,
+since it won't affect answering why the method works.
+Expand $\vec{z}^{(0)}$ as a linear combination
+of the eigenbasis $\vec{x}_{1}$, \dots, $\vec{x}_{n}$:
+\begin{subequations}
+\begin{align}
+\vec{z}^{(0)} &= \alpha_{1}\vec{x}_{1}+\cdots+\alpha_{n}\vec{x}_{n}\\
+\vec{z}^{(1)} &= A\vec{z}^{(0)}= \alpha_{1}\lambda_{1}\vec{x}_{1}+\cdots+\alpha_{n}\lambda_{n}\vec{x}_{n}\\
+\vec{z}^{(2)} &= A^{2}\vec{z}^{(0)}= \alpha_{1}\lambda_{1}^{2}\vec{x}_{1}+\cdots+\alpha_{n}\lambda_{n}^{2}\vec{x}_{n}\\
+\vec{z}^{(m)} &= A^{m}\vec{z}^{(0)}= \alpha_{1}\lambda_{1}^{m}\vec{x}_{1}+\cdots+\alpha_{n}\lambda_{n}^{m}\vec{x}_{n}
+\end{align}
+then for $\vec{z}^{(m)}$, we can factorize out $\lambda_{1}^{m}$
+\begin{equation}
+\vec{z}^{(m)} = \lambda_{1}^{m}\left(\alpha_{1}\vec{x}_{1}+\alpha_{2}\frac{\lambda_{2}^{m}}{\lambda_{1}^{m}}\vec{x}_{2}+\cdots+\alpha_{n}\frac{\lambda_{n}^{m}}{\lambda_{1}^{m}}\vec{x}_{n}\right),
+\end{equation}
+and since $\lambda_{1}$ is dominant, this is approximately equal to
+\begin{equation}
+\vec{z}^{(m)} \approx \lambda_{1}^{m}\alpha_{1}\vec{x}_{1}.
+\end{equation}
+Then we can obtain $\lambda_{1}$ and $\vec{x}_{1}$, as desired.
+\end{subequations}
