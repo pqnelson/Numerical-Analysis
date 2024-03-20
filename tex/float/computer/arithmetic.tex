@@ -286,6 +286,39 @@ operation satisfies the standard model of floating-point operations.
   these operations, and then determine the worst-case, best-case, and
   average-case complexity of each operation.
 \end{xca}
+\begin{rmk}
+Some notes could be offered. For example, Harvey and van der Hoeven
+showed\footnote{See ``Integer multiplication in time $\bigO(n \log n)$''
+by David Harvey and Joris van der Hoeven, \url{https://hal.science/hal-02070778v2/file/nlogn.pdf}} in 2019 that multiplying two
+$n$-bit numbers has complexity $\bigO(n\log_{10}(n))$ and adding two
+$n$-bit numbers has complexity $\Omega(n)$. So in the best possible
+world, adding two 64-bit floating-point numbers together has complexity
+$\sim64$ steps, and multiplying two 64-bit floating-point numbers has
+the complexity of multiplying the 52-bit mantissas and adding the 11-bit
+exponents $\sim 52\log_{10}(52)+11\approx 100.232$ steps. This suggests
+that floating-point multiplication for double-precision numbers is
+approximately $1.56613A$ where $A$ is the cost of adding
+double-precision numbers.
+
+We can similarly show that given an $n$-digit number $x$, computing
+$1/x$ using the Newton--Raphson method requires
+$\log_{2}((n+1)/\log_{2}(17))$ iterations. Each iteration requires $2$
+multiplication operations and 1 subtraction operation. For 52-bit
+mantissas, this requires 4 iterations. The total complexity for division
+would be $4M(n)+4A$ for the inversion of the denominator, and another
+$M(n)$ for multiplying the numerator by the inverted denominator, for a
+total of $5M(n)+4A$ steps for dividing the mantissas. This
+would be for double-precision arithmetic about $743.393$ steps for the
+mantissas alone, and a further $11$ steps for the exponents. This
+combines to be $11.7874A$ where $A$ is the cost of a floating-point addition.
+
+If these estimates are correct, then division should cost about $7.5$
+the cost of a single multiplication operation --- i.e., we should have
+multiplication be $1.6A$ and division be $12A$. As it stands, our
+estimates for the complexity are not terribly off the mark. Bear in mind,
+we are assuming there is no overhead due to normalization, unpacking,
+etc., which is to say: \emph{this is a very idealized model of floating-point arithmetic!}
+\end{rmk}
 \begin{ex}[x86-64 Estimates]
   Empirically, the latency seems to be bounded by the following CPU
   cycles for Intel/AMD x86 architectures:
