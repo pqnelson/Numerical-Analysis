@@ -355,4 +355,15 @@ where $\|\vec{e}\|_{A}=\sqrt{\langle\vec{e},A\vec{e}\rangle}$ is the
 energy norm associated with the positive-definite matrix $A$.
 \end{theorem}
 
-See, e.g., Hackbusch~\cite[\S10.2.3]{hackbusch2016iterative} for details.
+See, e.g., Hackbusch~\cite[\S10.2.3]{hackbusch2016iterative} for
+details.
+
+\begin{rmk}
+The conjugate gradient method is the first ``non-stationary iterative method''
+we've seen. Stationary iterative methods look like
+$\vec{x}^{(k+1)}=T\vec{x}^{(k)}+\vec{c}$, whereas nonstationary methods
+requires changing the operator on each step (e.g., taking the inner
+product of the residual and using this as step size). For a good review
+of the various methods for solving systems of linear equations, see
+Barrett and friends's \textit{Templates for the Solution of Linear Systems}~\cite{barrett1994templates}.
+\end{rmk}
