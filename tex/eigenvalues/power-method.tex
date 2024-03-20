@@ -57,3 +57,56 @@ and since $\lambda_{1}$ is dominant, this is approximately equal to
 \end{equation}
 Then we can obtain $\lambda_{1}$ and $\vec{x}_{1}$, as desired.
 \end{subequations}
+
+More explicitly, let $\lambda_{1}^{(k)}$ be the $k^{\text{th}}$
+approximation of $\lambda_{1}$, let $\vec{x}^{(k)}$ be the associated
+eigenvector. We begin with $\vec{x}^{(0)}$ such that
+$\|\vec{x}^{(0)}\|_{\infty}=1$ (say, the vector consisting of all
+components equal to 1). We have the temporary variable,
+\begin{equation}
+\vec{y} = A\vec{x}^{(k)}.
+\end{equation}
+We then find the smallest index $p$ such that
+\begin{equation}
+y_{p} = \|\vec{y}\|_{\infty}.
+\end{equation}
+Then we set
+\begin{equation}
+\lambda_{1}^{(k+1)}=y_{p},
+\end{equation}
+and
+\begin{equation}
+\vec{x}^{(k+1)} = \frac{\vec{y}}{y_{p}}.
+\end{equation}
+This is the iterative method.
+
+\begin{algorithm}\label{alg:eigenvalues:power-method}
+  \caption{Power method for matrix $A$}
+  \begin{algorithmic}[1]
+    \Require $A=(a_{ij})$ is an $n\times n$ matrix with dominant eigenvalue
+    \Require $\vec{x}_{\text{init}}$ is some initial guess $n$ vector
+    \Require $1>\varepsilon_{\text{tol}}>0$ is the error tolerance
+    \Require $N_{\text{max}}>0$ is the maximum number of iterations
+    \Ensure $\vec{x}$ is an eigenvector
+    \Ensure $\lambda$ is the dominant eigenvalue of $A$
+    \Function{PowerMethod}{$A$, $\vec{x}_{\text{init}}$, $\varepsilon_{\text{tol}}$, $N_{\text{max}}$}
+    \State $\vec{x}\gets\vec{x}_{\text{init}}$ \algorithmiccomment{initialize}
+    \State Find the smallest $p\in\NN$ such that $p\leq n$ and $|x_{p}|=\|\vec{x}\|_{\infty}$
+    \State $\vec{x}\gets \vec{x}_{\text{init}}/x_{p}$
+    \For{$k=1$, \dots, $N_{\text{max}}$}
+      \State $\vec{y}\gets A\vec{x}$
+      \State Find the smallest $p\in\NN$ such that $p\leq n$ and $|y_{p}|=\|\vec{y}\|_{\infty}$
+      \State $\lambda\gets y_{p}$
+      \If{$\lambda = 0$}
+        \State\Fail ``Matrix $A$ has a zero eigenvalue, guess a different $x_{\text{init}}$''
+      \EndIf
+      \State $r\gets \|\vec{x}-\vec{y}/\lambda\|_{\infty}$
+      \State $\vec{x}\gets\vec{y}/\lambda$
+      \If{$|r|<\varepsilon_{\text{tol}}$}
+        \State\Return $(\lambda,\vec{x})$
+      \EndIf
+    \EndFor
+    \State\Fail ``Maximum number of iterations exceeded''
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
