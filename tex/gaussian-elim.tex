@@ -5,6 +5,11 @@ algebra, so we won't dedicate a section for introducing notions like
 ``eigenvalue'', ``determinant'', ``vector norm'', etc. However, we will
 review the relevant notions when necessary.
 
+Remember, we proved in Proposition~\ref{prop:float:identities:failure-of-cauchy-schwarz}
+that the Cauchy--Schwarz inequality \emph{fails} with floating-point
+arithmetic. So extraordinary care must be taken when deriving algorithms
+for numerical linear algebra.
+
 \section{Gaussian Elimination with Backsubstitution}
 
 We all learn how to solve systems of linear equations first by Gaussian
@@ -166,6 +171,11 @@ $\bigO(n^{3})$ complexity of Gaussian elimination would sink us
 anyways.
 
 \section{Norms and Error}
+
+\textsc{Caution:} Remember, we proved in Proposition~\ref{prop:float:identities:failure-of-cauchy-schwarz}
+that the Cauchy--Schwarz inequality \emph{fails} with floating-point
+arithmetic. So extraordinary care must be taken when deriving algorithms
+for numerical linear algebra.
 
 \begin{definition}
 Let $\RR^{n}$ be a vector space. We define the \define{Vector Norm} on
