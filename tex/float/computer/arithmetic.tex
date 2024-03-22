@@ -308,13 +308,13 @@ mantissas, this requires 4 iterations. The total complexity for division
 would be $4M(n)+4A$ for the inversion of the denominator, and another
 $M(n)$ for multiplying the numerator by the inverted denominator, for a
 total of $5M(n)+4A$ steps for dividing the mantissas. This
-would be for double-precision arithmetic about $743.393$ steps for the
+would be for double-precision arithmetic about $654.161$ steps for the
 mantissas alone, and a further $11$ steps for the exponents. This
-combines to be $11.7874A$ where $A$ is the cost of a floating-point addition.
+combines to be $10.393A$ where $A$ is the cost of a floating-point addition.
 
-If these estimates are correct, then division should cost about $7.5$
+If these estimates are correct, then division should cost about $6.6$
 the cost of a single multiplication operation --- i.e., we should have
-multiplication be $1.6A$ and division be $12A$. As it stands, our
+multiplication be $1.6A$ and division be $10.4A$. As it stands, our
 estimates for the complexity are not terribly off the mark. Bear in mind,
 we are assuming there is no overhead due to normalization, unpacking,
 etc., which is to say: \emph{this is a very idealized model of floating-point arithmetic!}
