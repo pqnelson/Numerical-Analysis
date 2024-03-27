@@ -1,0 +1,166 @@
+\section{Numerical Integration}
+
+There are two ways to approximate the integral
+\begin{equation}
+I = \int^{b}_{a}f(x)\,\D x.
+\end{equation}
+We can either approximate the integrand, or we can approximate the
+integration process.
+
+The first way uses polynomial interpolation for $f(x)\approx p(x)$
+relying on the methods we developed in Chapter~\ref{ch:polynomial-interpolation},
+then we know how to integrate a polynomial. This gives us the ability to
+estimate the error of this approximation, since polynomial interpolation
+gives us $f(x)=p(x)+R$.
+
+The second approach uses Riemann sums to approximate the integral, which
+relies on knowing real analysis. While useful, it provides both
+insight and a ``consistency check'' on results obtained via polynomial
+interpolation. However, such an approach lies a bit out of scope for
+these notes.
+
+\subsection{Newton--Cotes Quadrature}
+
+The first family of methods work with polynomial interpolation passing
+through $x_{j}=x_{0}+j\,\Delta x$ where $\Delta x = (b-a)/n$. That is to
+say, it passes through $n+1$ equally spaced points $x_{j}$.
+
+\begin{example}
+As a warm-up, let us consider the simplest interpolation: a linear
+interpolation passing through $f(a)$ and $f(b)$. That is to say, we have
+$x_{0}=a$, $x_{1}=b$, and $h=b-a$, with the interpolating polynomial:
+\begin{subequations}
+\begin{equation}
+p(x) = \frac{(x-x_{1})}{(x_{0}-x_{1})}f(x_{0}) + \frac{(x-x_{0})}{(x_{1}-x_{0})}f(x_{1}).
+\end{equation}
+That is to say, when we include the explicit error term, we have
+\begin{equation}
+f(x)=p(x)+\frac{1}{2}f''(\xi(x))(x-x_{0})(x-x_{1}).
+\end{equation}
+Integrating both sides with respect to $x$ from $a$ to $b$,
+\begin{equation}
+\int^{b}_{a}f(x)\,\D x=\int^{b}_{a}p(x)\,\D x + \frac{f''(\xi)}{2}\int^{b}_{a}(x-x_{0})(x-x_{1})\,\D x,
+\end{equation}
+where we used the weighted mean-value theorem to pull $f''(\xi(x))$ out
+in front of the error term's integral.
+We can calculate the integral for the error term
+\begin{calculation}
+  \int^{b}_{a}(x-x_{0})(x-x_{1})\,\D x
+\step{expand the polynomial}
+  \int^{b}_{a}(x^{2}-(x_{0}+x_{1})x+x_{0}x_{1})\,\D x
+\step{power rule for integral}
+  \left.\frac{x^{3}}{3}-\frac{(x_{0}+x_{1})}{2}x^{2}+x_{0}x_{1}x\right|^{b}_{a}
+\step{substitute the limits of integration, algebra}
+  \frac{b^{3}-a^{3}}{3}-\frac{1}{2}(b^{3}-a^{3})-\frac{1}{2}(ab^{2}-a^{2}b)+(ab^{2}-a^{2}b)
+\step{simplification}
+  \frac{-(b^{3}-a^{3})}{6}+\frac{1}{2}(ab^{2}-a^{2}b)
+\step{using binomial theorem}
+  \frac{-(b-a)^{3}}{6}
+\end{calculation}
+This gives us
+\begin{equation}
+\int^{b}_{a}f(x)\,\D x=\int^{b}_{a}p(x)\,\D x - \frac{(b-a)^{3}f''(\xi)}{12}.
+\end{equation}
+Similarly, calculating the integral for the linear polynomial $p(x)$
+gives us
+\begin{calculation}
+  \int^{b}_{a}p(x)\,\D x
+\step{since $\int(x-c)\,\D x=(x-c)^{2}/2$}
+  \left[\frac{(x-b)^{2}}{2(a-b)}f(a)+\frac{(x-a)^{2}}{2(b-a)}f(b)\right]^{b}_{a}
+\step{substitute the limits of integration}
+  \left[0-\frac{(a-b)^{2}}{2(a-b)}f(a)+\frac{(b-a)^{2}}{2(b-a)}f(b)-0\right]
+\step{algebra}
+  \left[-\frac{(a-b)}{2}f(a)+\frac{(b-a)}{2}f(b)\right]
+\step{distributivity}
+  \frac{b-a}{2}\left[f(b)-f(a)\right]
+\end{calculation}
+Therefore we obtain:
+\begin{equation}
+\int^{b}_{a}f(x)\,\D x=\frac{b-a}{2}\left[f(b)-f(a)\right] - \frac{(b-a)^{3}f''(\xi)}{12}.
+\end{equation}
+This is known as the \define{Trapezoid Rule}.
+\end{subequations}
+\end{example}
+
+\begin{example}
+Now, we can use the quadratic Lagrangian polynomial interpolation
+passing through the points $x_{0}=a$, $x_{2}=b$, and the midpoint
+$x_{1}=m=(b+a)/2$. We have
+\begin{subequations}
+\begin{multline}
+f(x)=f(a)\frac{(x-m)(x-b)}{(a-m)(a-b)}+f(m)\frac{(x-a)(x-b)}{(m-a)(m-b)}
++f(b)\frac{(x-a)(x-m)}{(b-a)(b-m)}\\
++\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b).
+\end{multline}
+We see that the error term's polynomial factor $(x-a)(x-m)(x-b)$ is
+positive on $[a,m]$ and negative on $[m,b]$. So to apply the weighted
+mean-value theorem for the integral of the error term, we need to break
+it up as
+\begin{multline}
+\int^{b}_{a}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\,\D x\\
+=\int^{m}_{a}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\,\D x\\
++\int^{b}_{m}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\,\D x.
+\end{multline}
+Direct calculation gives us
+\begin{calculation}
+  \int^{m}_{a}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\,\D x
+  +\int^{b}_{m}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\,\D x
+\step{weighted mean-value theorem}
+  \frac{f'''(\xi_{1})}{3!}\int^{m}_{a}(x-a)(x-m)(x-b)\,\D x
+  +\frac{f'''(\xi_{2})}{3!}\int^{b}_{m}(x-a)(x-m)(x-b)\,\D x
+\step{performing the integrals}
+  \frac{f'''(\xi_{1})}{3!}\frac{(a-b)^{4}}{64}
+  +\frac{f'''(\xi_{2})}{3!}\frac{(-1)(a-b)^{4}}{64}
+\step{distributivity}
+  \bigl(f'''(\xi_{1})-f'''(\xi_{2})\bigr)\frac{(a-b)^{4}}{3!64}
+\step{mean-value theorem}
+  \bigl(\xi_{1}-\xi_{2}\bigr)f^{(4)}(\xi)\frac{(a-b)^{4}}{3!64}
+\end{calculation}
+Now, since $a\leq\xi_{1}\leq\xi_{2}\leq b$ we have
+$0\leq\xi_{2}-\xi_{1}\leq\xi_{2}-a\leq b-a$, and then we can take the absolute
+value of the error term to give us the bound:
+\begin{equation}
+\left|\int^{b}_{a}\frac{f'''(\xi(x))}{3!}(x-a)(x-m)(x-b)\right|\leq\left|\frac{h^{5}f^{(4)}(\xi)}{3!2}\right|,
+\end{equation}
+where $h=(b-a)/2$ and $h^{5}=(b-a)/32$.
+
+Now, we can evaluate the integral for the
+interpolating polynomial, first we observe
+\begin{equation}
+\int^{b}_{a}(x-c_{1})(x-c_{2})\,\D x
+=\frac{b^{3}-a^{3}}{3}-\frac{1}{2}(b^{2}-a^{2})(c_{1}+c_{2})+(b-a)c_{1}c_{2}.
+\end{equation}
+Then we find
+\begin{align}
+\int^{b}_{a}f(a)\frac{(x-m)(x-b)}{(a-m)(a-b)}\D x &= f(a)\frac{b-a}{6}\\
+\int^{b}_{a}f(m)\frac{(x-a)(x-b)}{(m-a)(m-b)}\D x &= f(m)\frac{2}{3}(b-a)\\
+\int^{b}_{a}f(b)\frac{(x-a)(x-m)}{(b-a)(b-m)}\D x &= f(b)\frac{b-a}{6}.
+\end{align}
+\end{subequations}
+Therefore, combining all these terms together, we get
+\begin{subequations}
+\begin{equation}
+\int^{b}_{a}f(x)\,\D x = \frac{b-a}{6}\left[f(a)+4f(m)+f(b)\right] + R
+\end{equation}
+where the error term $R$ is bounded by
+\begin{equation}
+|R|\leq\left|\frac{h^{5}f^{(4)}(\xi)}{12}\right|,
+\end{equation}
+\end{subequations}
+where $\xi\in[a,b]$ and $h=(b-a)/2$. This is \define{Simpson's Rule}.
+A slightly tighter expression may be found for the error,
+$R=-h^{5}f^{(4)}(\xi)/90$, but the important thing is not the
+coefficient $1/90$ or $1/12$.
+\end{example}
+
+\begin{definition}
+The \define{Degree of Precision} for a numerical integral method is the
+greatest integer $n$ such that every polynomial $x^{k}$ is integrated
+exactly for each $k=1,2,\dots,n$.
+\end{definition}
+
+We see that the trapezoid rule has its error directly proportional to
+$f''(\xi)$, which means it is of degree of precision 1. On the other
+hand, Simpson's method has error directly proportional to $f^{(4)}(\xi)$
+which means any polynomial of degree less than 4 is integrated exactly
+--- so Simpson's method has a degree of precision equal to 3.
